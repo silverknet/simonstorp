@@ -1,0 +1,43 @@
+{
+  "kind": "collectionType",
+  "collectionName": "nyheter",
+  "info": {
+    "singularName": "nyhet",
+    "pluralName": "nyheter",
+    "displayName": "Nyhet",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Rubrik": {
+      "type": "string",
+      "required": true
+    },
+    "Beskrivning": {
+      "type": "richtext",
+      "required": true
+    },
+    "Bild": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "Datum": {
+      "type": "date",
+      "required": true
+    },
+    "url": {
+      "type": "string",
+      "required": true
+    }
+  }
+}
