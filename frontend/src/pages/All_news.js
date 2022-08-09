@@ -1,26 +1,24 @@
 import React from 'react'
 import Menubar from '../components/Menubar'
 import useFetch from '../hooks/useFetch'
+import URL from '../url'
 
 
 
 export default function All_news() {
-    const news = useFetch('http://localhost:1337/api/nyheter?populate=%2A');
-    const {loading, error, data} = useFetch('http://localhost:1337/api/categories?populate=%2A');
+    const news = useFetch(URL + '/api/nyheter?populate=%2A');
 
-
-    if(error || loading || news.loading || news.error){
+    if( news.loading || news.error){
         return (<p>loading</p>)
     }
 
   return (
-    <div className='mainContainer'> 
-        <Menubar loading={loading} error={error} data={data} />
+    <div className='mainContainerAllNews'> 
         <div className='home_content'>
             {news.data.data.map((value, index) => {
                 return(
-                    <div className='newsBox'>
-                        <img className="newsImg" src={"http://localhost:1337" + value.attributes.Bild.data.attributes.url}/>
+                    <div className='newsBoxAll'>
+                        <img className="newsImg" src={URL + value.attributes.Bild.data.attributes.url}/>
                         <div className='newsText'>
                             <div className='newsHeadText'>
                                 <p className='newsHead'>{value.attributes.Rubrik}</p>

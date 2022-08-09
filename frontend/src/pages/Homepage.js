@@ -4,19 +4,19 @@ import useFetch from '../hooks/useFetch'
 import { useEffect, useState } from "react"
 
 import Menubar from '../components/Menubar'
-import Slideshow from '../components/Slideshow';
 
-import { Link } from "react"
+import ImageSlider from '../components/ImageSlider'
 
 
-export default function Homepage() {
+import {Link} from 'react-router-dom'
+import URL from '../url'
 
-    const {loading, error, data} = useFetch('http://localhost:1337/api/categories?populate=%2A');
-    const home = useFetch('http://localhost:1337/api/homepage?populate=%2A');
-    const news = useFetch('http://localhost:1337/api/nyheter?populate=%2A');
 
-    const [slideindex, setSlideindex] = useState(0);
+export default function Homepage(props) {
 
+    const {loading, error, data} = useFetch(URL + '/api/categories?populate=%2A');
+    const home = useFetch(URL + '/api/homepage?populate=%2A');
+    const news = useFetch(URL + '/api/nyheter?populate=%2A');
 
     
     if(home.loading || home.error || error || loading || news.loading || news.error){
@@ -27,20 +27,20 @@ export default function Homepage() {
     const a_length = imgs.length;
     return (
         <div className='mainContainer'>
-            <Menubar loading={loading} error={error} data={data} />
-            <Slideshow imgs = {imgs} a_length = {a_length} s_index = {slideindex} set_slide = {(value) => setSlideindex(value)}/>
+            <ImageSlider home={home} />
+
             <div className='home_content'>
                 <div className='home_B b1'>
-                    <p className='big_text'>{home.data.data.attributes.upper}</p>
+                    <p className='big_text_home'>{home.data.data.attributes.upper}</p>
                     <ReactMarkdown className='small_text'>{home.data.data.attributes.Huvudtext}</ReactMarkdown>
                 </div>
                 <div className='home_B b2'>
                     <div className='newsContainer'>
-                        <p className='aktuellt'>Aktuellt</p>
+                        <div className='aktuellt-con'><p className='aktuellt'>Aktuellt</p></div>
                         {news.data.data.map((value, index) => {
                             if(index < 2){return(
                                 <div className='newsBox'>
-                                    <img className="newsImg" src={"http://localhost:1337" + value.attributes.Bild.data.attributes.url}/>
+                                    <img className="newsImg" src={URL + value.attributes.Bild.data.attributes.url}/>
                                     <div className='newsText'>
                                         <div className='newsHeadText'>
                                             <p className='newsHead'>{value.attributes.Rubrik}</p>
@@ -50,8 +50,12 @@ export default function Homepage() {
                                         <p className='newsBody'>{value.attributes.Beskrivning}</p>
                                     </div>
                                 </div>
+                                
                             )}
                         })}
+                        <div className='seeAll-con'>
+                        <Link className="seeAll" to="/allanyheter">Se alla nyheter</Link>
+                        </div>
                         
                     </div>
                 </div>

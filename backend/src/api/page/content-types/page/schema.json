@@ -27,7 +27,8 @@
       ]
     },
     "Namn": {
-      "type": "string"
+      "type": "string",
+      "maxLength": 30
     },
     "categories": {
       "type": "relation",
