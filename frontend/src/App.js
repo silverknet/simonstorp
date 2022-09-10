@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Route, Routes} from 'react-router-dom'
 
 import useFetch from './hooks/useFetch'
 import Infopage from './pages/Infopage'
+import Full_news from './pages/Full_news'
 import Homepage from './pages/Homepage'
 import All_news from './pages/All_news'
 import Menubar from './components/Menubar'
@@ -21,6 +22,9 @@ function App() {
 
   const {loading, error, data} = useFetch(URL + '/api/pages?populate=%2A');
   const categories = useFetch(URL + '/api/categories?populate=%2A');
+  const news = useFetch(URL + '/api/nyheter?populate=%2A');
+  const members = useFetch(URL + '/api/styrelsemedlems')
+
   
   const [info, setInfo] = useState(0);
 
@@ -28,17 +32,30 @@ function App() {
   
 
   if(loading) {
-    return (<p>loading1</p>)
+    return (<p>loading</p>)
   }
   if(error) {
       return (<p>Error!</p>)
   }
   if(categories.loading) {
-    return (<p>loading2</p>)
+    return (<p>loading</p>)
   }
   if(categories.error) {
       return (<p>Error!</p>)
   }
+  if(news.loading) {
+    return (<p>loading</p>)
+  }
+  if(news.error) {
+      return (<p>Error!</p>)
+  }
+  if(members.loading) {
+    return (<p>loading</p>)
+  }
+  if(members.error) {
+      return (<p>Error!</p>)
+  }
+  
   
   return (
     <Router>
@@ -56,10 +73,15 @@ function App() {
 
             {data.data.map((page, index) => {
               return (
-                <Route key={page.id} path={"/" + page.attributes.url} element={<Infopage id={page.id} page={page}/>}></Route>
+                <Route key={page.id} path={"/" + page.attributes.url} element={<Infopage id={page.id} page={page} members={members.data}/>}></Route>
               )
             }
             )}
+            {news.data.data.map((page, index) =>{
+              return (
+                <Route key={page.id} path={"/" + page.attributes.url} element={<Full_news id={page.id} page={page}/>}></Route>
+              )
+            })}
           </Routes>
         
         

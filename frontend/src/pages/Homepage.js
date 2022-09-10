@@ -39,7 +39,7 @@ export default function Homepage(props) {
                         <div className='aktuellt-con'><p className='aktuellt'>Aktuellt</p></div>
                         {news.data.data.map((value, index) => {
                             if(index < 2){return(
-                                <div className='newsBox'>
+                                <Link className='newsBox' key={value.id} to={value.attributes.url}>
                                     <img className="newsImg" src={URL + value.attributes.Bild.data.attributes.url}/>
                                     <div className='newsText'>
                                         <div className='newsHeadText'>
@@ -49,7 +49,7 @@ export default function Homepage(props) {
                                         
                                         <p className='newsBody'>{value.attributes.Beskrivning}</p>
                                     </div>
-                                </div>
+                                </Link>
                                 
                             )}
                         })}

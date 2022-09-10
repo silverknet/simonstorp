@@ -1,0 +1,14 @@
+{
+  "kind": "singleType",
+  "collectionName": "medlemmars",
+  "info": {
+    "singularName": "medlemmar",
+    "pluralName": "medlemmars",
+    "displayName": "Medlemmar"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {}
+}

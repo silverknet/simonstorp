@@ -69,7 +69,7 @@ export default function Menubar(props) {
                             <a href="http://www.facebook.com/simonstorparna"><img  className="fblogo clickable"src={ URL + data.data.attributes.fblogo.data.attributes.url} /></a>
                         
                         </div>            
-                        <div className='mobileMenuTop'><p className='navTextTop'>Meny</p>
+                        <div className='mobileMenuTop'><p className='navTextTop'>MENY</p>
                         <div className='topnav'>
                         
                             {props.data.data.map(category => (

@@ -16,7 +16,7 @@ export default function ImageSlider(props) {
 
         setCounter(prev => prev + 1)
 
-      }, 16000);
+      }, 22000);
   
       return () => clearInterval(interval);
     }, []);

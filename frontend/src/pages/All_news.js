@@ -14,12 +14,12 @@ export default function All_news() {
 
   return (
     <div className='mainContainerAllNews'> 
-        <div className='home_content'>
+        <div className='all_news_box'>
             {news.data.data.map((value, index) => {
                 return(
                     <div className='newsBoxAll'>
-                        <img className="newsImg" src={URL + value.attributes.Bild.data.attributes.url}/>
-                        <div className='newsText'>
+                        <img className="newsImgAll" src={URL + value.attributes.Bild.data.attributes.url}/>
+                        <div className='newsTextAll'>
                             <div className='newsHeadText'>
                                 <p className='newsHead'>{value.attributes.Rubrik}</p>
                                 <p className='newsDate'>{value.attributes.Datum}</p>

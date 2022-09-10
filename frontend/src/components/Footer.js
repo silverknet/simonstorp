@@ -13,13 +13,18 @@ export default function Footer() {
   return (
     <div className='outerFooter'>
         <div className='footerBox'>
-            <div className='location'>
+            {/*<div className='location'>
                 <iframe className='locationIFRAME' frameborder="0" scrolling="no" marginheight="0" marginwidth="0" id="gmap_canvas" src="https://maps.google.com/maps?width=559&amp;height=535&amp;hl=en&amp;q=Simonstorp&amp;t=&amp;z=10&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"></iframe> <script type='text/javascript' src='https://embedmaps.com/google-maps-authorization/script.js?id=fde0f4ca5f76dd86407649d2f8b34e9eb6e58722'></script>
-            </div>
+  </div>*/}
             <div className='footercontent'>
-                <ReactMarkdown>
-                    {data.data.attributes.Footercontent}
-
+                <ReactMarkdown className='footerUnit fleft'>
+                    {data.data.attributes.Left}
+                </ReactMarkdown>
+                <ReactMarkdown className='footerUnit'>
+                    {data.data.attributes.Center}
+                </ReactMarkdown>
+                <ReactMarkdown className='footerUnit fright'>
+                    {data.data.attributes.Right}
                 </ReactMarkdown>
             </div>
             
