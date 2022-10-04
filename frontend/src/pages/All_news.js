@@ -2,6 +2,7 @@ import React from 'react'
 import Menubar from '../components/Menubar'
 import useFetch from '../hooks/useFetch'
 import URL from '../url'
+import { ReactDOM } from 'react'
 
 
 
@@ -15,6 +16,7 @@ export default function All_news() {
   return (
     <div className='mainContainerAllNews'> 
         <div className='all_news_box'>
+            <p className='big_text_center'>Alla nyheter i Simonstorp</p>
             {news.data.data.map((value, index) => {
                 return(
                     <div className='newsBoxAll'>

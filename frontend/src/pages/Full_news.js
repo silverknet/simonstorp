@@ -1,7 +1,12 @@
 import React from 'react'
 import URL from '../url'
 
+import { ReactDOM } from 'react'
+
 export default function Full_news(props) {
+
+
+
   return (
     <div className='fullNewsBox'>
             <img className="fullNewsImg" src={URL + props.page.attributes.Bild.data.attributes.url}/>

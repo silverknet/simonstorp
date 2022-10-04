@@ -39,7 +39,7 @@ export default function Infopage(props) {
 
                   <ReactMarkdown className='small_text'>{props.page.attributes.Huvudtext}</ReactMarkdown>
                   {props.page.id === 1 ? <p className='small_text styr'>Styrelsen består av</p> : <></>}
-                  <table>
+                  <table className='styrelse'>
                   {props.page.id === 1 ? 
                   
                     props.members.data.map((value, index) => {
