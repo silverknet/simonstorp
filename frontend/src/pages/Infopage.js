@@ -29,7 +29,7 @@ export default function Infopage(props) {
                 {
                   props.page.attributes.img.data.map((value, index) => {
                     return (
-                      <img className="contentImage" src={URL + value.attributes.url}/>
+                      <img className="contentImage" src={URL + value.attributes.formats.large.url}/>
                     )
                   })
                 }

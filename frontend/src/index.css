@@ -185,6 +185,7 @@ strong{
   height: 50vh;
   object-fit: cover;
   opacity: 0.94;
+  background-color: #272926;
 }
 .divider{
   width: 100%;
@@ -786,7 +787,7 @@ strong{
     /*overflow:hidden;*/
     visibility: hidden;
     position: absolute;
-    margin-top: 380px;
+    margin-top: 172px;
     z-index: 2;
     background-color:#f1f1f1;
     width: 50%;
@@ -797,6 +798,7 @@ strong{
   .down{
     max-height: none;
     visibility: visible;
+    transform: translate(0, 50%); 
     
   }
   .navbox{
