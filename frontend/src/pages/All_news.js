@@ -20,7 +20,7 @@ export default function All_news() {
             {news.data.data.map((value, index) => {
                 return(
                     <div className='newsBoxAll'>
-                        <img className="newsImgAll" src={URL + value.attributes.Bild.data.attributes.url}/>
+                        <img className="newsImgAll" src={URL + value.attributes.Bild.data.attributes.formats.medium.url}/>
                         <div className='newsTextAll'>
                             <div className='newsHeadText'>
                                 <p className='newsHead'>{value.attributes.Rubrik}</p>
