@@ -22,39 +22,44 @@ function App() {
 
   const {loading, error, data} = useFetch(URL + '/api/pages?populate=%2A');
   const categories = useFetch(URL + '/api/categories?populate=%2A');
-  const news = useFetch(URL + '/api/nyheter?populate=%2A');
+  const news = useFetch(URL + '/api/nyhets?populate=%2A');
   const members = useFetch(URL + '/api/styrelsemedlems')
+  const home = useFetch(URL + '/api/homepage?populate=%2A');
+
 
   
   const [info, setInfo] = useState(0);
 
 
-  
+
 
   if(loading) {
-    return (<p>loading</p>)
+    return (<p></p>)
   }
   if(error) {
       return (<p>Error!</p>)
   }
   if(categories.loading) {
-    return (<p>loading</p>)
+    return (<p></p>)
   }
   if(categories.error) {
       return (<p>Error!</p>)
   }
   if(news.loading) {
-    return (<p>loading</p>)
+    return (<p></p>)
   }
   if(news.error) {
       return (<p>Error!</p>)
   }
   if(members.loading) {
-    return (<p>loading</p>)
+    return (<p></p>)
   }
   if(members.error) {
       return (<p>Error!</p>)
   }
+  if(home.loading || home.error){
+    return (<p></p>)
+}
   
   
   return (
@@ -66,7 +71,7 @@ function App() {
 
 
           <Routes>
-              <Route exact path="/" element={<Homepage />}></Route>
+              <Route exact path="/" element={<Homepage homecontent={home}/>}></Route>
 
             <Route exact path="/allanyheter" element={<All_news />}></Route>
 

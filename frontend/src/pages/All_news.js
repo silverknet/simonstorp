@@ -7,10 +7,10 @@ import { ReactDOM } from 'react'
 
 
 export default function All_news() {
-    const news = useFetch(URL + '/api/nyheter?populate=%2A');
+    const news = useFetch(URL + '/api/nyhets?populate=%2A');
 
     if( news.loading || news.error){
-        return (<p>loading</p>)
+        return (<p></p>)
     }
 
   return (

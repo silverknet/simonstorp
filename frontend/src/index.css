@@ -406,12 +406,14 @@ strong{
 
 }
 .slideimgActive{
+  visibility: visible;
   transition: 1s;
   opacity: 1;
 
 }
 .slideimg{
-  opacity: 0;
+  visibility:visible;
+  opacity: 1;
   transition: 1s;
 }
 /*NEWS BOX*/

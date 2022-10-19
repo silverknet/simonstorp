@@ -15,24 +15,25 @@ import URL from '../url'
 export default function Homepage(props) {
 
     const {loading, error, data} = useFetch(URL + '/api/categories?populate=%2A');
-    const home = useFetch(URL + '/api/homepage?populate=%2A');
-    const news = useFetch(URL + '/api/nyheter?populate=%2A');
+    const news = useFetch(URL + '/api/nyhets?populate=%2A');
 
-    
-    if(home.loading || home.error || error || loading || news.loading || news.error){
-        return (<p>loading</p>)
+
+    if( error || loading || news.loading || news.error){
+        return (<p></p>)
     }
+    
+    
 
-    const imgs = home.data.data.attributes.headerimages.data;
+    const imgs = props.homecontent.data.data.attributes.headerimages.data;
     const a_length = imgs.length;
     return (
         <div className='mainContainer'>
-            <ImageSlider home={home} />
+            <ImageSlider home={props.homecontent} />
 
             <div className='home_content'>
                 <div className='home_B b1'>
-                    <p className='big_text_home'>{home.data.data.attributes.upper}</p>
-                    <ReactMarkdown className='small_text'>{home.data.data.attributes.Huvudtext}</ReactMarkdown>
+                    <p className='big_text_home'>{props.homecontent.data.data.attributes.upper}</p>
+                    <ReactMarkdown className='small_text'>{props.homecontent.data.data.attributes.Huvudtext}</ReactMarkdown>
                 </div>
                 <div className='home_B b2'>
                     <div className='newsContainer'>
@@ -40,7 +41,7 @@ export default function Homepage(props) {
                         {news.data.data.map((value, index) => {
                             if(index < 2){return(
                                 <Link className='newsBox' key={value.id} to={value.attributes.url}>
-                                    <img className="newsImg" src={URL + value.attributes.Bild.data.attributes.url}/>
+                                    <img className="newsImg" src={URL + value.attributes.Bild.data.attributes.formats.thumbnail.url}/>
                                     <div className='newsText'>
                                         <div className='newsHeadText'>
                                             <p className='newsHead'>{value.attributes.Rubrik}</p>

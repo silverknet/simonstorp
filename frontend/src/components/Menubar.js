@@ -52,13 +52,13 @@ export default function Menubar(props) {
     }); 
 
     if(props.loading) {
-        return (<p>loading</p>)
+        return (<p></p>)
     }
     if(props.error) {
         return (<p>Error!</p>)
     }
     if(loading) {
-        return (<p>loading</p>)
+        return (<p></p>)
     }
     if(error) {
         return (<p>Error!</p>)
