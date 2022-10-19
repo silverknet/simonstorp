@@ -8,7 +8,7 @@ export default function Footer() {
     const {loading, error, data} = useFetch(URL + '/api/footer');
 
     if( loading || error){
-        return (<p>loading</p>)
+        return (<p></p>)
     }
   return (
     <div className='outerFooter'>
