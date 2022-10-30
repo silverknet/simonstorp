@@ -17,6 +17,17 @@ export default function Homepage(props) {
     const {loading, error, data} = useFetch(URL + '/api/categories?populate=%2A');
     const news = useFetch(URL + '/api/nyhets?populate=%2A');
 
+    let slideImages = [];
+
+    useEffect(() => {
+        props.homecontent.data.data.attributes.headerimages.data.map((picture) => {
+            const img = new Image();
+            img.src = picture.attributes.url;
+            slideImages.push(img);
+
+        })
+      }, [])
+
 
     if( error || loading || news.loading || news.error){
         return (<p></p>)
@@ -28,7 +39,7 @@ export default function Homepage(props) {
     const a_length = imgs.length;
     return (
         <div className='mainContainer'>
-            <ImageSlider home={props.homecontent} />
+            <ImageSlider home={props.homecontent} slideimages={slideImages} />
 
             <div className='home_content'>
                 <div className='home_B b1'>
@@ -55,7 +66,7 @@ export default function Homepage(props) {
                             )}
                         })}
                         <div className='seeAll-con'>
-                        <Link className="seeAll" to="/allanyheter">Se alla nyheter</Link>
+                        <Link className="seeAll" to="/allanyheter">Se alla nyheter {">"}</Link>
                         </div>
                         
                     </div>

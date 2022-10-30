@@ -32,7 +32,7 @@ export default function Menubar(props) {
     useEffect(() => {
         if (typeof window !== "undefined") {
         window.addEventListener("scroll", () =>
-            setSmall(window.pageYOffset > 50)
+            setSmall(window.pageYOffset > 20)
         );
         }
     }, []);
@@ -69,7 +69,7 @@ export default function Menubar(props) {
     return (
         <div>
             <div className={props.loc === 1 ? "outerMenu Home2" : "outerMenu Info2"}>
-                <div className={ width > 800 ? (small ? 'scrollMenuDown' : 'scrollMenuUp') :'scrollMenuUp'} >
+                <div className={props.loc != 1 ? (width > 800 ? (small ? 'scrollMenuDown' : 'scrollMenuUp') :'scrollMenuUp') : 'scrollMenuUp'} >
 
                     <div className={props.loc === 1 ? "headerBox Home" : "headerBox Info"}>
                         <div className={props.loc === 1 ? "top Home1" : "top Info1" }>
@@ -79,15 +79,15 @@ export default function Menubar(props) {
                         
                         </div>            
                         
-                        <div className={menuDown?'topnav down':"topnav"} >
+                        <div className={menuDown?'topnav down':"topnav" + (small ? ' topnavdown' : '')} >
                         
                             {props.data.data.map((category, index) => (
-                                <div key={category.id} className={(activeID === index ? "marked3 " : "") + (width > 800 ? "navboxBig " : "") + (currentCategory === category.id && width > 800 ? 'navbox marked2' : 'navbox') } onClick={() => { activeID === index ? setActiveID(-1): setActiveID(index) }}>
+                                <div key={category.id} className={(activeID === index ? "marked3 " : "") + (width > 800 ? "navboxBig " : "") + (currentCategory === category.id && width > 800 ? 'navbox marked2' : 'navbox') } onClick={() => { width <= 800 ? (activeID === index ? setActiveID(-1): setActiveID(index) ): void(0) }}>
                                     <p key={"2." + category.id} className='navtext' >{category.attributes.name}</p>
                                     <div key={"3." + category.id} className={"dropdown-content " + (activeID === index ? "showdrop":"")}>
                                         {category.attributes.pages.data.map(page => (
                                             <Link key={page.id} to={"/" + page.attributes.url} >
-                                                <div key={page.id} className={location.pathname === ("/" + page.attributes.url) ? 'dropdown-unit marked' : 'dropdown-unit'} onClick={() => setMenuDown(false)}>
+                                                <div key={page.id} className={location.pathname === ("/" + page.attributes.url) ? 'dropdown-unit marked' : 'dropdown-unit' } onClick={() => setMenuDown(false)}>
                                                     <p key={page.id} className='dropdown-text'>{page.attributes.Namn}</p>
                                                 </div>
                                             </Link>

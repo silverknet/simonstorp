@@ -16,7 +16,7 @@ export default function ImageSlider(props) {
 
         setCounter(prev => prev + 1)
 
-      }, 22000);
+      }, 6000);
   
       return () => clearInterval(interval);
     }, []);
@@ -37,3 +37,4 @@ export default function ImageSlider(props) {
       </div>
     );
 }
+/*props.home.data.data.attributes.headerimages.data */
