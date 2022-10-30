@@ -1,11 +1,15 @@
 import React from 'react'
 import URL from '../url'
+import { useEffect, useState } from "react"
+
 
 import { ReactDOM } from 'react'
 
 export default function Full_news(props) {
 
-
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
 
   return (
     <div className='fullNewsBox'>

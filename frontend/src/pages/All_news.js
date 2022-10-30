@@ -3,15 +3,25 @@ import Menubar from '../components/Menubar'
 import useFetch from '../hooks/useFetch'
 import URL from '../url'
 import { ReactDOM } from 'react'
+import { useEffect, useState } from "react"
+
 
 
 
 export default function All_news() {
+
+    useEffect(() => {
+        window.scrollTo(0, 0)
+      }, [])
+
     const news = useFetch(URL + '/api/nyhets?populate=%2A');
 
     if( news.loading || news.error){
         return (<p></p>)
     }
+
+    
+    
 
   return (
     <div className='mainContainerAllNews'> 
