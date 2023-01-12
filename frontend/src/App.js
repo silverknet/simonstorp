@@ -20,17 +20,13 @@ import React, { Suspense } from 'react';
 function App() {
 
 
-  const {loading, error, data} = useFetch(URL + '/api/pages?populate=%2A');
-  const categories = useFetch(URL + '/api/categories?populate=%2A');
-  const news = useFetch(URL + '/api/nyhets?populate=%2A');
-  const members = useFetch(URL + '/api/styrelsemedlems')
+  const {loading, error, data} = useFetch(URL + '/api/pages?populate=%2A&sort=rank:asc');
+  const categories = useFetch(URL + '/api/categories?populate=%2A&sort=rank:asc');
+  const news = useFetch(URL + '/api/nyhets?populate=%2A&sort=rank:asc');
+  const members = useFetch(URL + '/api/styrelsemedlems?sort=rank:asc')
   const home = useFetch(URL + '/api/homepage?populate=%2A');
 
-
-  
   const [info, setInfo] = useState(0);
-
-
 
 
   if(loading) {

@@ -30,7 +30,7 @@ export default function ImageSlider(props) {
         {props.home.data.data.attributes.headerimages.data.map((img, index) => {
                 return (
                 <div className= {index === counter ? 'slideimgActive' : 'slideimg'} key={index}>
-                    {index === counter && (<img className="bannerimg" src={ URL + img.attributes.url} alt=""/>) }
+                    {index === counter && (<img className="bannerimg" src={ img.attributes.url} alt=""/>) }
                 </div>
                 )
         })}
