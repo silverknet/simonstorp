@@ -35,7 +35,7 @@ export default function Infopage(props) {
                   {
                     props.page.attributes.img.data.map((value, index) => {
                       return (
-                        <img className="contentImage" src={URL + value.attributes.formats.large.url}/>
+                        <img className="contentImage" src={value.attributes.formats.large.url}/>
                       )
                     })
                   }
@@ -43,12 +43,12 @@ export default function Infopage(props) {
 
                     {/*<img className="contentImage" src={URL + props.page.attributes.img.data.attributes.url}/>*/}
                   <div className='text_container'>
-                    <p className='big_text'>{props.page.attributes.Namn}</p>
+                    <p className='big_text'>{props.page.attributes.title}</p>
                     <ReactMarkdown className='small_text'>{props.page.attributes.Huvudtext}</ReactMarkdown>
 
-                    {props.page.id === 1 ? <p className='small_text styr'>Styrelsen består av</p> : <></>}
+                    {props.page.id === 17 ? <p className='small_text styr'>Styrelsen består av</p> : <></>}
                     <table className='styrelse'>
-                    {props.page.id === 1 ? 
+                    {props.page.id === 17 ? 
                     
                       props.members.data.map((value, index) => {
                         return (

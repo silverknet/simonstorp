@@ -52,10 +52,10 @@ export default function Homepage(props) {
                         {news.data.data.map((value, index) => {
                             if(index < 2){return(
                                 <Link className='newsBox' key={value.id} to={value.attributes.url}>
-                                    <img className="newsImg" src={URL + value.attributes.Bild.data.attributes.formats.small.url}/>
+                                    <img className="newsImg" src={value.attributes.Bild.data.attributes.formats.small.url}/>
                                     <div className='newsText'>
                                         <div className='newsHeadText'>
-                                            <p className='newsHead'>{value.attributes.Rubrik}</p>
+                                            <p className='newsHead'>{value.attributes.title}</p>
                                             <p className='newsDate'>{value.attributes.Datum}</p>
                                         </div>
                                         

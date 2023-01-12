@@ -47,7 +47,7 @@ strong{
 }
 
 .mainContainer {
-  min-height: calc(100vh - 299px) ;
+  min-height: calc(100vh - 437px) ;
   padding-bottom: 80px;
 }
 
@@ -373,15 +373,16 @@ strong{
 
 .marked:hover{
   color: var(--accent-one);
-  padding-left: 0px;
+  /*padding-left: 0px;*/
   border-style: none;
 }
 
 .navboxBig{
   transition: 0.0s;
   font-weight: 500;
-  max-width: 140px;
+  max-width: 182px;
   min-width: 125px;
+  
 }
 
 .navboxBig:hover .dropdown-content {
@@ -570,6 +571,7 @@ strong{
   overflow: hidden;
   border-style: solid;
   border-color: var(--bg-white);
+  text-decoration: none;
 }
 
 .newsImgAll{
@@ -775,6 +777,7 @@ strong{
 
 .outerFooter{
   width: 100%;
+  margin-top: 100px;
   background-color: var(--fancy-green);
   /*box-shadow: 0px 0px 16px 0px rgba(0,0,0,0.07);*/
 }
@@ -907,6 +910,7 @@ strong{
 
   .navbox{
     text-align: left;
+
   }
 
   .navbox:hover{
@@ -1027,7 +1031,8 @@ strong{
   }
 
   .b2{
-    padding: 45px;
+    /*padding: 45px;*/
+    margin:10px;
   }
 
   .footerBox{
@@ -1118,7 +1123,7 @@ strong{
 
   .outerMenu{
     width: 100%;
-    /*background-color: var(--bg-white);*/
+    background-color: var(--bg-white);
     display:inline-flex;
     justify-content: center;
     position: fixed;

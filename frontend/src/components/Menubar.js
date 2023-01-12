@@ -64,6 +64,38 @@ export default function Menubar(props) {
         return (<p>Error!</p>)
     }
 
+    function ranksort(object){
+        console.log("debug******************");
+
+        var new_dict = new Array(object.length);
+        var ranks =[]
+
+        for (var element in object) {
+            ranks.push(object[element].attributes.rank);
+        }
+        ranks.sort();
+
+        for (var element in object) {
+            var index = ranks.findIndex((el) => el == object[element].attributes.rank);
+            new_dict[index] = object[element];
+        }
+
+        //new_dict[object[element].attributes.rank] = object[element];
+
+
+        return new_dict
+        
+        /*let sortable = [];
+        for (var rank in dict) {
+            sortable.push([vehicle, dict[vehicle]]);
+        }
+        console.log(dict);
+        let newdict = {};
+        Object.assign(newdict, dict);
+        dict.forEach((element, index) => newdict[index].id = element.attributes.rank);
+        return newdict;
+        */
+    }
 
 
     return (
@@ -74,7 +106,7 @@ export default function Menubar(props) {
                     <div className={props.loc === 1 ? "headerBox Home" : "headerBox Info"}>
                         <div className={props.loc === 1 ? "top Home1" : "top Info1" }>
                             <div className='mobileMenuTop'><img src={menuICO} className={"navTextTop " + (menuDown?"menuButtonActive":"")} onClick={() =>{ menuDown?setMenuDown(false):setMenuDown(true)}}/></div>
-                            <Link to={"/"}><img className="logo"src={ URL  + data.data.attributes.logo.data.attributes.url} /></Link>
+                            <Link to={"/"}><img className="logo"src={data.data.attributes.logo.data.attributes.url} /></Link>
                             <a  className="fblogo clickable" href="http://www.facebook.com/simonstorparna"><img className="fblogoImg" src={fblogo} /></a>
                         
                         </div>            
@@ -83,12 +115,12 @@ export default function Menubar(props) {
                         
                             {props.data.data.map((category, index) => (
                                 <div key={category.id} className={(activeID === index ? "marked3 " : "") + (width > 800 ? "navboxBig " : "") + (currentCategory === category.id && width > 800 ? 'navbox marked2' : 'navbox') } onClick={() => { width <= 800 ? (activeID === index ? setActiveID(-1): setActiveID(index) ): void(0) }}>
-                                    <p key={"2." + category.id} className='navtext' >{category.attributes.name}</p>
+                                    <p key={"2." + category.id} className='navtext' >{category.attributes.title}</p>
                                     <div key={"3." + category.id} className={"dropdown-content " + (activeID === index ? "showdrop":"")}>
-                                        {category.attributes.pages.data.map(page => (
+                                        {ranksort(category.attributes.pages.data).map(page => (
                                             <Link key={page.id} to={"/" + page.attributes.url} >
                                                 <div key={page.id} className={location.pathname === ("/" + page.attributes.url) ? 'dropdown-unit marked' : 'dropdown-unit' } onClick={() => setMenuDown(false)}>
-                                                    <p key={page.id} className='dropdown-text'>{page.attributes.Namn}</p>
+                                                    <p key={page.id} className='dropdown-text'>{page.attributes.title}</p>
                                                 </div>
                                             </Link>
                                         ))}
@@ -105,14 +137,14 @@ export default function Menubar(props) {
                 <div className={props.loc === 1 ? "headerBox Home nofill" : "headerBox Info nofill"}>
                     <div className={props.loc === 1 ? "top Home1 nofill" : "top Info1 nofill" }>
                     
-                        <Link to={"/"}><img className="logo nofill"src={ URL  + data.data.attributes.logo.data.attributes.url} /></Link>
+                        <Link to={"/"}><img className="logo nofill"src={data.data.attributes.logo.data.attributes.url} /></Link>
                     
                     </div>            
                     <div className='topnav nofill'>
                     
                         {props.data.data.map(category => (
                             <div key={category.id} className={currentCategory === category.id ? 'navbox nofill' : 'navbox nofill'}>
-                                <p className='navtext nofill'>{category.attributes.name}</p>
+                                <p className='navtext nofill'>{category.attributes.title}</p>
                                 
                             </div>
                         ))}
