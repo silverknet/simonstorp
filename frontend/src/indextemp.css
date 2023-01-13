@@ -16,6 +16,9 @@ div,
 a {
   -webkit-tap-highlight-color: transparent;
 }
+h1{
+  font-style: none;
+}
 
 img {
   width: 100%;
@@ -685,6 +688,7 @@ strong{
 
 .big_text_home{
   font-size: 28px;
+  font-weight: 300;
 }
 
 /*INFO PAGE*/
