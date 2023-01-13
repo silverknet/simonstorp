@@ -37,7 +37,6 @@ export default function Menubar(props) {
         }
     }, []);
 
-    console.log("render");
 
     if (location.pathname === "/"){
         props.set_loc(1)
@@ -65,7 +64,6 @@ export default function Menubar(props) {
     }
 
     function ranksort(object){
-        console.log("debug******************");
 
         var new_dict = new Array(object.length);
         var ranks =[]
@@ -126,7 +124,7 @@ export default function Menubar(props) {
                                         ))}
                                     </div>
                                 </div>
-                            ))}
+                            ))} 
                     
                         </div>
                     
