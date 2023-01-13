@@ -17,6 +17,10 @@ a {
   -webkit-tap-highlight-color: transparent;
 }
 
+img {
+  width: 100%;
+}
+
 body {
   margin: 0;
   font-family: 'Lato', sans-serif;
