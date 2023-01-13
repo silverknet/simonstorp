@@ -334,6 +334,8 @@ strong{
   transition: 0.0s;
   transition-timing-function: ease-in-out;
   width: 250px;
+
+  transform: translate(0, calc(50% + 30px));
 }
 
 .dropdown-unit{
@@ -382,6 +384,9 @@ strong{
   font-weight: 500;
   max-width: 182px;
   min-width: 125px;
+
+  display: flex;
+  align-items: center;
   
 }
 
@@ -941,6 +946,8 @@ strong{
     width: 100%;
     margin-left: 100%;
     margin-top: -45px;
+
+    transform: translate(0, 0);
   }
 
   .showdrop{
