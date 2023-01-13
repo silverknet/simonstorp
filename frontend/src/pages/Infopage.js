@@ -43,7 +43,7 @@ export default function Infopage(props) {
 
                     {/*<img className="contentImage" src={URL + props.page.attributes.img.data.attributes.url}/>*/}
                   <div className='text_container'>
-                    <p className='big_text'>{props.page.attributes.title}</p>
+                    <h1 className='big_text'>{props.page.attributes.title}</h1>
                     <ReactMarkdown className='small_text'>{props.page.attributes.Huvudtext}</ReactMarkdown>
 
                     {props.page.id === 17 ? <p className='small_text styr'>Styrelsen består av</p> : <></>}

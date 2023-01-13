@@ -43,7 +43,7 @@ export default function Homepage(props) {
 
             <div className='home_content'>
                 <div className='home_B b1'>
-                    <p className='big_text_home'>{props.homecontent.data.data.attributes.upper}</p>
+                    <h1 className='big_text_home'>{props.homecontent.data.data.attributes.upper}</h1>
                     <ReactMarkdown className='small_text'>{props.homecontent.data.data.attributes.Huvudtext}</ReactMarkdown>
                 </div>
                 <div className='home_B b2'>
