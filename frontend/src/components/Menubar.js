@@ -109,7 +109,7 @@ export default function Menubar(props) {
                         <div className={props.loc === 1 ? "top Home1" : "top Info1" }>
                             <div className='mobileMenuTop'><img src={menuICO} className={"navTextTop " + (menuDown?"menuButtonActive":"")} onClick={() =>{ menuDown?setMenuDown(false):setMenuDown(true)}}/></div>
                             <Link to={"/"}><img className="logo"src={data.data.attributes.logo.data.attributes.url} /></Link>
-                            <a  className="fblogo clickable" href="http://www.facebook.com/simonstorparna"><img className="fblogoImg" src={fblogo} /></a>
+                            <a  className="fblogo clickable nolink" href="http://www.facebook.com/simonstorparna"><img className="fblogoImg" src={fblogo} /></a>
                         
                         </div>            
                         
