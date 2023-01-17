@@ -55,17 +55,12 @@ function App() {
   }
   if(home.loading || home.error){
     return (<p></p>)
-}
-  
+  }
   
   return (
     <Router>
-
       <Menubar loading={categories.loading} error={categories.error} data={categories.data} page_data={data} set_loc={(i) => setInfo(i)} loc  = {info}/>
-
       <div className='App'>
-
-
           <Routes>
               <Route exact path="/" element={<Homepage homecontent={home}/>}></Route>
 
