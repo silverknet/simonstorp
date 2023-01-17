@@ -18,8 +18,7 @@ export default function Menubar(props) {
     const [activeID, setActiveID] = useState(-1);
     const [menuDown, setMenuDown] = useState(false);
 
-    const {loading, error, data} = useFetch(URL + '/api/static-bar?populate=%2A')
-    const [currentPage, setCurrentPage] = useState(null);
+    const {loading, error, data} = useFetch(URL + '/api/static-bar?populate=%2A');
 
     const { height, width } = useWindowDimensions();
     
@@ -35,8 +34,10 @@ export default function Menubar(props) {
             setSmall(window.pageYOffset > 20)
         );
         }
-    }, []);
 
+        
+
+    }, []);
 
     if (location.pathname === "/"){
         props.set_loc(1)
@@ -49,6 +50,9 @@ export default function Menubar(props) {
             currentCategory = (element.attributes.categories.data[0].id)
         }
     }); 
+    
+
+    
 
     if(props.loading) {
         return (<p></p>)

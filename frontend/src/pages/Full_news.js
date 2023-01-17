@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 
 
 import { ReactDOM } from 'react'
+import { ReactMarkdown } from 'react-markdown/lib/react-markdown'
 
 export default function Full_news(props) {
 
@@ -20,7 +21,7 @@ export default function Full_news(props) {
                     <p className='fullNewsDate'>{props.page.attributes.Datum}</p>
                 </div>
                 
-                <p className='fullNewsBody'>{props.page.attributes.Beskrivning}</p>
+                <ReactMarkdown className='fullNewsBody'>{props.page.attributes.Beskrivning}</ReactMarkdown>
             </div>
     </div>
   )
