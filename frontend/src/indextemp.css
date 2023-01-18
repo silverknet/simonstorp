@@ -772,6 +772,7 @@ strong{
   min-width: 30%;*/
   object-fit:contain;
   margin-bottom: 10px;
+  z-index: -1;
 }
 .contentImage:hover{
 
