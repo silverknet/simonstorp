@@ -1283,6 +1283,11 @@ strong{
   .scrollMenuUp .logo{
     width: 30vw;
   }
+  .logo{
+    
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
 
   .newsBoxAll{
     display: flex;
