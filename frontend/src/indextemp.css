@@ -650,6 +650,10 @@ strong{
   margin-bottom: 20px;
   font-size: 20px;
 }
+.newsTextAll .newsHeadTextFull{
+  margin-bottom: 20px;
+  font-size: 20px;
+}
 
 .newsTextAll .newsHead{
   font-weight: 700;
@@ -706,9 +710,14 @@ strong{
 .newsHeadText{
   display: flex;
   flex-direction: row;
+  color:var(--main-text);
+}
+.newsHeadTextFull{
+  display: flex;
+  flex-direction: row;
   color:var(--bg-white);
 }
-.newsBoxAll:hover .newsHeadText{
+.newsBoxAll:hover .newsHeadTextFull{
   color: var(--main-text);
 }
 
