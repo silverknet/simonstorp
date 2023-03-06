@@ -30,7 +30,7 @@ export default function All_news() {
                     
                         <img className="newsImgAll" src={value.attributes.Bild.data.attributes.formats.medium.url}/>
                         <div className='newsTextAll'>
-                            <div className='newsHeadText'>
+                            <div className='newsHeadTextFull'>
                                 <p className='newsHead'>{value.attributes.title}</p>
                                 <p className='newsDate'>{value.attributes.Datum}</p>
                             </div>
