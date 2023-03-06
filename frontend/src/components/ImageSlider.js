@@ -1,7 +1,9 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
-import { UNSAFE_NavigationContext } from 'react-router-dom';
 import URL from '../url';
+import {LazyLoadImage} from "react-lazy-load-image-component";
+import "react-lazy-load-image-component/src/effects/blur.css";
+import "react-lazy-load-image-component/src/effects/opacity.css";
 
 
 export default function ImageSlider(props) {
@@ -27,7 +29,7 @@ export default function ImageSlider(props) {
         {props.home.data.data.attributes.headerimages.data.map((img, index) => {
                 return (
                 <div className= {index === counter ? 'slideimgActive' : 'slideimg'} key={index}>
-                    { (index === counter || index === (counter - 1 >= 0 ? counter - 1 : length - 1)) && <img className="bannerimg" src={ img.attributes.url} alt=""/> }
+                    { (index === counter || index === (counter - 1 >= 0 ? counter - 1 : length - 1)) && <LazyLoadImage className="bannerimg" loading="lazy" effect="blur" src={ img.attributes.url} alt=""/> }
                 </div>
                 )
         })}

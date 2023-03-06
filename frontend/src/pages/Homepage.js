@@ -14,8 +14,8 @@ import URL from '../url'
 
 export default function Homepage(props) {
 
-    const {loading, error, data} = useFetch(URL + '/api/categories?populate=%2A');
-    const news = useFetch(URL + '/api/nyhets?populate=%2A');
+    //const {loading, error, data} = useFetch(URL + '/api/categories?populate=%2A');
+    //const news = useFetch(URL + '/api/nyhets?populate=%2A');
 
     let slideImages = [];
 
@@ -29,9 +29,9 @@ export default function Homepage(props) {
       }, [])
 
 
-    if( error || loading || news.loading || news.error){
-        return (<p></p>)
-    }
+    //if( news.loading || news.error){
+    //    return (<p></p>)
+    //}
     
     
 
@@ -49,7 +49,7 @@ export default function Homepage(props) {
                 <div className='home_B b2'>
                     <div className='newsContainer'>
                         <div className='aktuellt-con'><p className='aktuellt'>Aktuellt</p></div>
-                        {news.data.data.map((value, index) => {
+                        {props.news.data.data.map((value, index) => {
                             if(index < 2){return(
                                 <Link className='newsBox' key={value.id} to={value.attributes.url}>
                                     <img className="newsImg" src={value.attributes.Bild.data.attributes.formats.small.url}/>
