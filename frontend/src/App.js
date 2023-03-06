@@ -62,7 +62,7 @@ function App() {
       <Menubar loading={categories.loading} error={categories.error} data={categories.data} page_data={data} set_loc={(i) => setInfo(i)} loc  = {info}/>
       <div className='App'>
           <Routes>
-              <Route exact path="/" element={<Homepage homecontent={home}/>}></Route>
+              <Route exact path="/" element={<Homepage categories={categories.data} news={news} homecontent={home}/>}></Route>
 
             <Route exact path="/allanyheter" element={<All_news />}></Route>
 
