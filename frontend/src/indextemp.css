@@ -706,6 +706,10 @@ strong{
 .newsHeadText{
   display: flex;
   flex-direction: row;
+  color:var(--bg-white);
+}
+.newsBoxAll:hover .newsHeadText{
+  color: var(--main-text);
 }
 
 .newsHead{
@@ -1335,6 +1339,9 @@ strong{
   }
 
   .newsBoxAll:hover .newsBody{
+    color: var(--bg-white);
+  }
+  .newsBoxAll:hover .newsHeadText{
     color: var(--bg-white);
   }
 
