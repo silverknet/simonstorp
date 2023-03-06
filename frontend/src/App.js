@@ -7,6 +7,7 @@ import Homepage from './pages/Homepage'
 import All_news from './pages/All_news'
 import Menubar from './components/Menubar'
 import Footer from './components/Footer'
+import Loading from './Loading'
 import URL from './url'
 import { useLocation } from 'react-router-dom'
 
@@ -29,31 +30,22 @@ function App() {
   const [info, setInfo] = useState(0);
 
 
-  if(loading) {
-    return (<p></p>)
+  if(loading || categories.loading || news.loading || members.loading || home.loading) {
+    return (<Loading/>)
   }
   if(error) {
       return (<p>Error!</p>)
   }
-  if(categories.loading) {
-    return (<p></p>)
-  }
   if(categories.error) {
       return (<p>Error!</p>)
-  }
-  if(news.loading) {
-    return (<p></p>)
   }
   if(news.error) {
       return (<p>Error!</p>)
   }
-  if(members.loading) {
-    return (<p></p>)
-  }
   if(members.error) {
       return (<p>Error!</p>)
   }
-  if(home.loading || home.error){
+  if(home.error){
     return (<p></p>)
   }
   
