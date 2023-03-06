@@ -84,6 +84,7 @@ strong{
 .App{
   width: var(--width);
   margin:auto;
+  min-height: 64vh;
 }
 
 .mainContainer {
