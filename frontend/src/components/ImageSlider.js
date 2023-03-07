@@ -20,7 +20,7 @@ export default function ImageSlider(props) {
 
         setCounter(prev => prev + 1)
 
-      }, 226000);
+      }, 16000);
       return () => clearInterval(interval);
     }, []);
     
@@ -30,10 +30,10 @@ export default function ImageSlider(props) {
                 return (
                   <>
                     <div className= {index === counter ? 'slideimgActive' : 'slideimg'} key={index}>
-                        { (index === counter || index === (counter - 1 >= 0 ? counter - 1 : length - 1)) && <LazyLoadImage className="bannerimg" loading="lazy" effect="blur" src={ img.attributes.url} alt=""/> }
+                        { (index === counter || index === (counter - 1 >= 0 ? counter - 1 : length - 1)) && <LazyLoadImage className="bannerimg" key={index} loading="lazy" effect="blur" src={ img.attributes.url} alt=""/> }
                     </div>
                     <div className="slideimgActive">
-                      {index == 0 && <img className="sliderBackground" src={ img.attributes.formats.medium.url} alt=""/>}
+                      {index == 0 && <img className="sliderBackground" key={index} src={ img.attributes.formats.medium.url} alt=""/>}
                     </div>
                   </>
                 )

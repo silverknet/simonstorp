@@ -30,26 +30,26 @@ export default function Menubar(props) {
 
     useEffect(() => {
         if (typeof window !== "undefined") {
-        window.addEventListener("scroll", () =>
-            setSmall(window.pageYOffset > 20)
-        );
+            window.addEventListener("scroll", () =>
+                setSmall(window.pageYOffset > 20)
+            );
         }
-
+        if (location.pathname === "/"){
+            props.set_loc(1)
+          }else(
+            props.set_loc(0)
+        )
+    
+        props.page_data.data.forEach(element => {
+            if(("/" + element.attributes.url) === location.pathname){
+                currentCategory = (element.attributes.categories.data[0].id)
+            }
+        }); 
         
 
-    }, []);
+    }, [location.pathname]);
 
-    if (location.pathname === "/"){
-        props.set_loc(1)
-      }else(
-        props.set_loc(0)
-    )
-
-    props.page_data.data.forEach(element => {
-        if(("/" + element.attributes.url) === location.pathname){
-            currentCategory = (element.attributes.categories.data[0].id)
-        }
-    }); 
+    
     
 
     
@@ -108,7 +108,7 @@ export default function Menubar(props) {
                     <div className={props.loc === 1 ? "headerBox Home" : "headerBox Info"}>
                         <div className={props.loc === 1 ? "top Home1" : "top Info1" }>
                             <div className='mobileMenuTop'><img src={menuICO} className={"navTextTop " + (menuDown?"menuButtonActive":"")} onClick={() =>{ menuDown?setMenuDown(false):setMenuDown(true)}}/></div>
-                            <Link to={"/"}><img className="logo"src={data.data.attributes.logo.data.attributes.url} /></Link>
+                            <Link to={"/"}><img className="logo"src={data.data.attributes.logo.data.attributes.formats.large.url} /></Link>
                             <a  className="fblogo clickable nolink" href="http://www.facebook.com/simonstorparna"><img className="fblogoImg" src={fblogo} /></a>
                         
                         </div>            
