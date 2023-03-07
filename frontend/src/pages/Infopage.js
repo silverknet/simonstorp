@@ -10,17 +10,23 @@ import URL from '../url'
 import { useEffect, useState } from "react"
 
 import useWindowDimensions from '../hooks/getWindowDimensions'
-
-
+import { useHistory, useLocation } from "react-router-dom";
 
 
 export default function Infopage(props) {
+  const [imageTextShow, setImageTextShow] = useState(-1);
+  const [centerFormat, setCenterFormat] = useState(false);
 
   const { height, width } = useWindowDimensions();
+  
+  const location = useLocation();
+  
 
   useEffect(() => {
+    props.page.attributes.img && props.page.attributes.img.data && props.page.attributes.img.data.length > 0 ? setCenterFormat(false) : setCenterFormat(true);
     window.scrollTo(0, 0)
-  }, [])
+    
+  }, [location.pathname])
 
 
   return (
@@ -35,18 +41,21 @@ export default function Infopage(props) {
                 </div>*/}
 
                 <div className='infoContent'>
-                  <div className='imageContainer'>
+                  <div className={centerFormat?'noContainer':'imageContainer'}>
                   {
-                    props.page.attributes.img.data.map((value, index) => {
+                    
+                     !centerFormat && props.page.attributes.img && props.page.attributes.img.data && props.page.attributes.img.data.length > 0 && props.page.attributes.img.data.map((value, index) => {
                       return (<>
-                        {width > 800 ? <img key={value.id} className="contentImage" src={value.attributes.formats.large.url}/> : index === 0 && <img key={value.id} className="contentImage" src={value.attributes.formats.large.url}/> }
+                        {width > 800 ? <img key={value.id} className="contentImage" onMouseEnter={() => setImageTextShow(index)} onMouseLeave={() => setImageTextShow(-1)} src={value.attributes.formats.large.url}/> : index === 0 && <img key={value.id} className="contentImage" src={value.attributes.url}/> }
+                        <p className={imageTextShow==index?"imageText":"imageTextLo"} key={index}></p>
                       </>)
                     })
                   }
+                  
                   </div>
 
                     {/*<img className="contentImage" src={URL + props.page.attributes.img.data.attributes.url}/>*/}
-                  <div className='text_container'>
+                  <div className={centerFormat?'center_text_container':'text_container'}>
                     <h1 className='big_text'>{props.page.attributes.title}</h1>
                     <ReactMarkdown className='small_text'>{props.page.attributes.Huvudtext}</ReactMarkdown>
 
