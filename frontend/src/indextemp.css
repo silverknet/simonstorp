@@ -261,6 +261,9 @@ strong{
   margin-top: 10px;
   margin-bottom: 27px;
 }
+.logo:hover{
+  cursor: pointer;
+}
 
 /*
 @keyframes logo {
@@ -606,7 +609,6 @@ strong{
 
 .seeAll{
   text-decoration:none;
-  cursor:pointer;
   width:-webkit-fit-content;
   width:-moz-fit-content;
   width:fit-content;
@@ -617,7 +619,6 @@ strong{
 
 .seeAll-con{
   text-decoration:none;
-  cursor:pointer;
   color:rgb(57, 57, 57);
   width:-webkit-fit-content;
   width:-moz-fit-content;
@@ -629,6 +630,7 @@ strong{
 }
 
 .seeAll-con:hover{
+  cursor:pointer;
   color:rgb(47, 47, 47);
   background-color: #F9F9F9;
 }
@@ -1085,6 +1087,7 @@ strong{
 
   .mobileMenuTop:hover{
     background-color:var(--bg-white);
+    cursor: pointer;
   }
 
   /*.mobileMenuTop:hover .topnav{
@@ -1140,7 +1143,6 @@ strong{
 
   .mobileMenuTop{
     display: block;
-    cursor: pointer;
     padding: 0px;
   }
 
