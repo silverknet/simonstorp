@@ -23,6 +23,8 @@ function App() {
   const [data2, setData2] = useState(null);
 
   useEffect(() => {
+    console.log("körs");
+    
     const interval = setInterval(() => {
       // Ping the Strapi server every 5 minutes to keep the session alive
       axios.get('https://simonstorp.up.railway.app/api/homepage?populate=*')
@@ -63,7 +65,7 @@ function App() {
       return (<p>Error!</p>)
   }
   if(home.error){
-    return (<p></p>)
+    return (<p>Error</p>)
   }
   
   return (
