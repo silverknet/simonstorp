@@ -20,24 +20,7 @@ import axios from 'axios';
 
 function App() {
 
-  const [data2, setData2] = useState(null);
-
-  useEffect(() => {
-    console.log("körs");
-    
-    const interval = setInterval(() => {
-      // Ping the Strapi server every 5 minutes to keep the session alive
-      axios.get('https://simonstorp.up.railway.app/api/homepage?populate=*')
-        .then(response => {
-          setData2(response.data);
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    }, 5 * 60 * 1000);
-
-    return () => clearInterval(interval);
-  }, []);
+  
 
 
   const {loading, error, data} = useFetch(URL + '/api/pages?populate=%2A&sort=rank:asc');
