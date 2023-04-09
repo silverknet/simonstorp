@@ -1,2 +1,10 @@
-http://simonstorp.net/* https://simonstorp.se/:splat 301!
-/* /index.html 200
+[[redirects]]
+  from = "http://yourdomain.net/*"
+  to = "https://yourdomain.se/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
