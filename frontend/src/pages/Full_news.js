@@ -14,7 +14,7 @@ export default function Full_news(props) {
 
   return (
     <div className='fullNewsBox'>
-            <img className="fullNewsImg" src={props.page.attributes.Bild.data.attributes.url}/>
+            <img className="fullNewsImg" src={props.page.attributes.Bild.data.attributes.formats.large.url}/>
             <div className='fullNewsText'>
                 <div className='fullNewsHeadText'>
                     <p className='fullNewsHead'>{props.page.attributes.title}</p>

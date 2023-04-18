@@ -14,7 +14,7 @@ export default function All_news() {
         window.scrollTo(0, 0)
       }, [])
 
-    const news = useFetch(URL + '/api/nyhets?populate=%2A');
+    const news = useFetch(URL + '/api/nyhets?populate=%2A&sort=rank:asc');
 
     if( news.loading || news.error){
         return (<p></p>)
