@@ -7,9 +7,9 @@ import "react-lazy-load-image-component/src/effects/opacity.css";
 
 
 export default function ImageSlider(props) {
-    const [counter, setCounter] = useState(0);
-
     let length = props.home.data.data.attributes.headerimages.data.length;
+    const [counter, setCounter] = useState(Math.floor(Math.random() * length)); // <-- Initialize counter randomly here
+
     
     counter > length - 1 ? setCounter(0): void(0);
     
@@ -20,7 +20,7 @@ export default function ImageSlider(props) {
 
         setCounter(prev => prev + 1)
 
-      }, 16000);
+      }, 12000);
       return () => clearInterval(interval);
     }, []);
     
