@@ -391,6 +391,8 @@ strong{
   justify-content: center;
   flex-wrap: wrap;
   color: var(--main-text);
+  width: 80%;
+  margin:auto;
   /*background-color: #eaf2ee;*/
   /*z-index: 1;
   opacity: 0.89;
@@ -644,7 +646,7 @@ strong{
 .newsContainer{
   display: flex;
   flex-direction: column;
-  margin-top: 20px;
+  margin-top: 11px;
 }
 
 .newsBox{
@@ -783,12 +785,14 @@ strong{
   margin: 0px;
   font-weight: 400;
   margin-top: 7px;
+  line-height:1.2;
 }
 
 .newsDate{
   margin: 0px;
   margin-left: 10px;
   margin-top: 7px;
+  line-height:1.2;
 }
 
 .newsBody{
@@ -959,10 +963,10 @@ strong{
 
 .footerBox p{
   color: var(--bg-white);
-  padding: 5px;
+  padding: 0px;
   margin: 0px;
-  margin-top: 5px;
-  margin-bottom: 5px;
+  margin-top: 3px;
+  margin-bottom: 3px;
 }
 
 .footercontent{
@@ -975,10 +979,13 @@ strong{
 }
 
 .footerUnit{
+  margin-top:20px;
+  margin-bottom: 20px;
   width: 25%;
   text-align: center;
   overflow: hidden;
 }
+
 
 .fright{
   width: 25%;
@@ -1078,6 +1085,7 @@ strong{
 
   .navbox{
     text-align: left;
+    position: relative;
 
   }
 
@@ -1109,7 +1117,7 @@ strong{
     transition-timing-function: ease-in-out;
     width: 100%;
     margin-left: 100%;
-    margin-top: -45px;
+    top: 0;
 
     transform: translate(0, 0);
   }
@@ -1351,8 +1359,8 @@ strong{
   }
 
   .menuButtonActive{
-    -webkit-transform:rotate(90deg);
-    transform: rotate(90deg);
+    -webkit-transform:rotate(180deg);
+    transform: rotate(180deg);
   }
 
   .fullNewsText{
@@ -1459,4 +1467,5 @@ strong{
   .newsBoxAll:hover .newsHeadTextFull{
     color: var(--bg-white);
   }
+  
 }
