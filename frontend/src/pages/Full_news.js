@@ -12,9 +12,21 @@ export default function Full_news(props) {
     window.scrollTo(0, 0)
   }, [])
 
+  const getTopImage = (value) => {
+    if (value.attributes.formats?.large){
+      return value.attributes.formats.large.url;
+    }
+    if (value.attributes.formats?.medium){
+      return value.attributes.formats.medium.url;
+    }
+    if (value.attributes.formats?.small){
+      return value.attributes.formats.small.url;
+    }
+  }
+
   return (
     <div className='fullNewsBox'>
-            <img className="fullNewsImg" src={props.page.attributes.Bild.data.attributes.formats.large.url}/>
+            <img className="fullNewsImg" src={getTopImage(props.page.attributes.Bild.data)}/>
             <div className='fullNewsText'>
                 <div className='fullNewsHeadText'>
                     <p className='fullNewsHead'>{props.page.attributes.title}</p>

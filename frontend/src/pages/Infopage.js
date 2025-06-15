@@ -29,6 +29,19 @@ export default function Infopage(props) {
   }, [location.pathname])
 
 
+  const getTopImage = (value) => {
+    if (value.attributes.formats?.large){
+      return value.attributes.formats.large.url;
+    }
+    if (value.attributes.formats?.medium){
+      return value.attributes.formats.medium.url;
+    }
+    if (value.attributes.formats?.small){
+      return value.attributes.formats.small.url;
+    }
+  }
+
+
   return (
     <div className='mainContainer'> 
     <div className='divider'></div>
@@ -46,7 +59,7 @@ export default function Infopage(props) {
                     
                      !centerFormat && props.page.attributes.img && props.page.attributes.img.data && props.page.attributes.img.data.length > 0 && props.page.attributes.img.data.map((value, index) => {
                       return (<>
-                        {width > 800 ? <img key={value.id} className="contentImage" onMouseEnter={() => setImageTextShow(index)} onMouseLeave={() => setImageTextShow(-1)} src={value.attributes.formats.large.url}/> : index === 0 && <img key={value.id} className="contentImage" src={value.attributes.url}/> }
+                        {width > 800 ? <img key={value.id} className="contentImage" onMouseEnter={() => setImageTextShow(index)} onMouseLeave={() => setImageTextShow(-1)} src={getTopImage(value)}/> : index === 0 && <img key={value.id} className="contentImage" src={value.attributes.url}/> }
                         <p className={imageTextShow==index?"imageText":"imageTextLo"} key={index}></p>
                       </>)
                     })
