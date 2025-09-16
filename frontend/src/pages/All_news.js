@@ -5,6 +5,8 @@ import URL from '../url'
 import { ReactDOM } from 'react'
 import { useEffect, useState } from "react"
 import {Link} from 'react-router-dom'
+import { getCategoryFromPage, toValidUrl }  from '../utils/utils';
+
 
 
 
@@ -26,7 +28,7 @@ export default function All_news() {
             <p className='big_text_center'>Alla nyheter i Simonstorp</p>
             {news.data.data.map((value, index) => {
                 return(
-                    <Link className='newsBoxAll' key={value.id} to={"../" + value.attributes.url}>
+                    <Link className='newsBoxAll' key={value.id} to={"../" + toValidUrl(value.attributes.title)}>
                     
                         <img className="newsImgAll" src={value.attributes.Bild.data.attributes.formats.medium.url}/>
                         <div className='newsTextAll'>

@@ -6,6 +6,8 @@ import { useEffect, useState } from "react"
 import Menubar from '../components/Menubar'
 
 import ImageSlider from '../components/ImageSlider'
+import { getCategoryFromPage, toValidUrl }  from '../utils/utils';
+
 
 
 import {Link} from 'react-router-dom'
@@ -51,7 +53,7 @@ export default function Homepage(props) {
                         <div className='aktuellt-con'><p className='aktuellt'>Aktuellt</p></div>
                         {props.news.data.data.map((value, index) => {
                             if(index < 2){return(
-                                <Link className='newsBox' key={value.id} to={value.attributes.url}>
+                                <Link className='newsBox' key={value.id} to={toValidUrl(value.attributes.title)}>
                                     <img className="newsImg" src={value.attributes.Bild.data.attributes.formats.small.url}/>
                                     <div className='newsText'>
                                         <div className='newsHeadText'>

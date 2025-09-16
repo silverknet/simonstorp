@@ -14,6 +14,18 @@ import { useHistory, useLocation } from "react-router-dom";
 
 
 export default function Infopage(props) {
+  const [pageData, setPageData] = useState(null);
+
+  const {loading, error, data} = useFetch(URL + '/api/pages/' + props.id + '?populate=%2A&sort=rank:asc');
+
+  const membersUrl =
+  data?.data.attributes?.title === "Styrelsen"
+    ? URL + "/api/styrelsemedlems?sort=rank:asc"
+    : null;
+
+  const { loading: membersLoading, error: membersError, data: members } = useFetch(membersUrl);
+
+  
   const [imageTextShow, setImageTextShow] = useState(-1);
   const [centerFormat, setCenterFormat] = useState(false);
 
@@ -23,10 +35,12 @@ export default function Infopage(props) {
   
 
   useEffect(() => {
-    props.page.attributes.img && props.page.attributes.img.data && props.page.attributes.img.data.length > 0 ? setCenterFormat(false) : setCenterFormat(true);
+    if (!data) return; 
+    
+    data.data.attributes.img && data.data.attributes.img.data && data.data.attributes.img.data.length > 0 ? setCenterFormat(false) : setCenterFormat(true);
     window.scrollTo(0, 0)
     
-  }, [location.pathname])
+  }, [data])
 
 
   const getTopImage = (value) => {
@@ -39,6 +53,19 @@ export default function Infopage(props) {
     if (value.attributes.formats?.small){
       return value.attributes.formats.small.url;
     }
+  }
+
+  if(error) {
+      return (<p>Error!</p>)
+  }
+  if(loading) {
+      return (<p></p>)
+  }
+  if(!data) {
+      return (<p>no data</p>)
+  }
+  if(data.data.attributes.title === 'Styrelsen' && (membersError || membersLoading)) {
+    return (<p>failed to fetch members</p>)
   }
 
 
@@ -57,7 +84,7 @@ export default function Infopage(props) {
                   <div className={centerFormat?'noContainer':'imageContainer'}>
                   {
                     
-                     !centerFormat && props.page.attributes.img && props.page.attributes.img.data && props.page.attributes.img.data.length > 0 && props.page.attributes.img.data.map((value, index) => {
+                     !centerFormat && data.data.attributes.img && data.data.attributes.img.data && data.data.attributes.img.data.length > 0 && data.data.attributes.img.data.map((value, index) => {
                       return (<>
                         {width > 800 ? <img key={value.id} className="contentImage" onMouseEnter={() => setImageTextShow(index)} onMouseLeave={() => setImageTextShow(-1)} src={getTopImage(value)}/> : index === 0 && <img key={value.id} className="contentImage" src={value.attributes.url}/> }
                         <p className={imageTextShow==index?"imageText":"imageTextLo"} key={index}></p>
@@ -67,17 +94,17 @@ export default function Infopage(props) {
                   
                   </div>
 
-                    {/*<img className="contentImage" src={URL + props.page.attributes.img.data.attributes.url}/>*/}
+                    {/*<img className="contentImage" src={URL + data.attributes.img.data.attributes.url}/>*/}
                   <div className={centerFormat?'center_text_container':'text_container'}>
-                    <h1 className='big_text'>{props.page.attributes.title}</h1>
-                    <ReactMarkdown className='small_text'>{props.page.attributes.Huvudtext}</ReactMarkdown>
+                    <h1 className='big_text'>{data.data.attributes.title}</h1>
+                    <ReactMarkdown className='small_text'>{data.data.attributes.Huvudtext}</ReactMarkdown>
 
-                    {props.page.id === 17 ? <p className='small_text styr'>Styrelsen består av</p> : <></>}
+                    {data.data.attributes.title === 'Styrelsen' ? <p className='small_text styr'>Styrelsen består av</p> : <></>}
                     <table className='styrelse'>
                       <tbody>
-                    {props.page.id === 17 ? 
+                    {data.data.attributes.title === 'Styrelsen' ? 
                     
-                      props.members.data.map((value, index) => {
+                      members.data.map((value, index) => {
                         return (
                           <tr key={value.id}>
                             <td key={"name_" + value.id} className='td name'>{value.attributes.Forefternamn}</td>
@@ -94,6 +121,5 @@ export default function Infopage(props) {
                   </div>        
                 </div>
             </div>
-    </div>
-  )
+    </div>)  
 }

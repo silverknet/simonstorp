@@ -10,6 +10,8 @@ import Footer from './components/Footer'
 import Loading from './Loading'
 import URL from './url'
 import { useLocation } from 'react-router-dom'
+import { getCategoryFromPage, toValidUrl }  from './utils/utils';
+
 
 
 import { useEffect, useState } from "react"
@@ -20,10 +22,7 @@ import axios from 'axios';
 
 function App() {
 
-  
-
-
-  const {loading, error, data} = useFetch(URL + '/api/pages?populate=%2A&sort=rank:asc');
+  const pages = useFetch(URL + '/api/pages?fields=url,title&populate=categories&sort=rank:asc');
   const categories = useFetch(URL + '/api/categories?populate=%2A&sort=rank:asc');
   const news = useFetch(URL + '/api/nyhets?populate=%2A&sort=rank:asc');
   const members = useFetch(URL + '/api/styrelsemedlems?sort=rank:asc')
@@ -31,11 +30,13 @@ function App() {
 
   const [info, setInfo] = useState(0);
 
+  const [currentPage, setCurrentPage] = useState(-1);
 
-  if(loading || categories.loading || news.loading || members.loading || home.loading) {
+
+  if(pages.loading || categories.loading || news.loading || members.loading || home.loading) {
     return (<Loading/>)
   }
-  if(error) {
+  if(pages.error) {
       return (<p>Error!</p>)
   }
   if(categories.error) {
@@ -53,7 +54,7 @@ function App() {
   
   return (
     <Router>
-      <Menubar loading={categories.loading} error={categories.error} data={categories.data} page_data={data} set_loc={(i) => setInfo(i)} loc  = {info}/>
+      <Menubar categories={categories} pages={pages} setCurrentPage={setCurrentPage} currentPage={currentPage} set_loc={(i) => setInfo(i)} loc  = {info}/>
       <div className='App'>
           <Routes>
               <Route exact path="/" element={<Homepage categories={categories.data} news={news} homecontent={home}/>}></Route>
@@ -61,15 +62,15 @@ function App() {
             <Route exact path="/allanyheter" element={<All_news />}></Route>
 
 
-            {data.data.map((page, index) => {
+            {pages.data.data.map((page, index) => {
               return (
-                <Route key={page.id} path={"/" + page.attributes.url} element={<Infopage id={page.id} page={page} members={members.data}/>}></Route>
+                <Route key={page.id} path={"/" + toValidUrl(page.attributes.title)} element={<Infopage id={page.id}/>}></Route>
               )
             }
             )}
             {news.data.data.map((page, index) =>{
               return (
-                <Route key={page.id} path={"/" + page.attributes.url} element={<Full_news id={page.id} page={page}/>}></Route>
+                <Route key={page.id} path={"/" + toValidUrl(page.attributes.title)} element={<Full_news id={page.id} page={page}/>}></Route>
               )
             })}
           </Routes>

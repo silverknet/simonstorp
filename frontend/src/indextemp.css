@@ -2,6 +2,7 @@
   --fancy-green: #3e3c3a;
   --bg-white2: #d8d8d8;
   --bg-white: #F9F9F9;
+  --bg-white-accent: #f5f5f5;
   --accent-one: #829460;
   --main-text: #242424;
   --grey-text: #373737;
@@ -940,8 +941,9 @@ strong{
 .outerFooter{
   width: 100%;
   margin-top: 100px;
-  background-color: var(--fancy-green);
+  background-color: var(--bg-white-accent);
   /*box-shadow: 0px 0px 16px 0px rgba(0,0,0,0.07);*/
+  border-top: 1px solid rgba(173, 173, 173, 0.1); /* subtle/discrete */
 }
 
 .footerBox{
@@ -962,7 +964,7 @@ strong{
 }
 
 .footerBox p{
-  color: var(--bg-white);
+  color: var(--grey-text);
   padding: 0px;
   margin: 0px;
   margin-top: 3px;
@@ -1214,9 +1216,7 @@ strong{
   }
 
   .outerFooter{
-    width: 100%;
     margin-top: 30px;
-    background-color: var(--fancy-green);
     /*box-shadow: 0px 0px 16px 0px rgba(0,0,0,0.07);*/
   }
 
