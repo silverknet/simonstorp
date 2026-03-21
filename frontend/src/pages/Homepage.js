@@ -57,14 +57,15 @@ export default function Homepage(props) {
                                     <img className="newsImg" src={value.attributes.Bild.data.attributes.formats.small.url}/>
                                     <div className='newsText'>
                                         <div className='newsHeadText'>
-                                            <p className='newsHead'>{value.attributes.title}</p>
-                                            <p className='newsDate'>{value.attributes.Datum}</p>
+                                            <p>
+                                                <span className='newsHead'>{value.attributes.title}</span>
+                                                <span className='newsDate'>{value.attributes.Datum}</span>
+                                            </p>
                                         </div>
                                         
                                         <p className='newsBody'>{value.attributes.Beskrivning}</p>
                                     </div>
                                 </Link>
-                                
                             )}
                         })}
                         <div className='seeAll-con'>

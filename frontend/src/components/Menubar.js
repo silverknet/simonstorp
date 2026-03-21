@@ -31,6 +31,9 @@ export default function Menubar(props) {
 
     const activeCategory = useMemo(() => getCategoryFromPage(props.pages.data.data, props.currentPage), [props.pages, props.currentPage]);
 
+    /** Desktop info pages: parent uses scrollMenuDown when scrolled — match for glass nav */
+    const navGlassActive = props.loc !== 1 && width > 800 && small;
+
     useEffect(() => {
         console.log(activeCategory);
     }, [activeCategory])
@@ -116,7 +119,14 @@ export default function Menubar(props) {
             <div className={props.loc === 1 ? "outerMenu Home2" : "outerMenu Info2"}>
                 <div className={props.loc != 1 ? (width > 800 ? (small ? 'scrollMenuDown' : 'scrollMenuUp') :'scrollMenuUp') : 'scrollMenuUp'} >
 
-                    <div className={props.loc === 1 ? "headerBox Home" : "headerBox Info"}>
+                    <div
+                        className={
+                            (props.loc === 1 ? "headerBox Home" : "headerBox Info") +
+                            (navGlassActive
+                                ? " backdrop-blur-lg bg-white/75 supports-[backdrop-filter]:bg-white/65 shadow-sm ring-1 ring-black/[0.06]"
+                                : "")
+                        }
+                    >
                         <div className={props.loc === 1 ? "top Home1" : "top Info1" }>
                             <div className='mobileMenuTop'><img src={menuICO} className={"navTextTop " + (menuDown?"menuButtonActive":"")} onClick={() =>{ menuDown?setMenuDown(false):setMenuDown(true)}}/></div>
                             <Link to={"/"}><img className="logo"src={data.data.attributes.logo.data.attributes.formats.large.url} /></Link>
