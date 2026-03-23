@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import ErrorScreen from '../components/ErrorScreen';
 import NewsMetaDates from '../components/NewsMetaDates';
 import useFetch from '../hooks/useFetch';
-import URL from '../url';
+import apiBaseUrl from '../config/apiBaseUrl';
 import { getOptimizedDisplayUrl } from '../utils/strapiMedia';
 import { getNyhetSlug } from '../utils/utils';
 
@@ -11,7 +11,7 @@ const PAGE_SIZE = 6;
 
 function buildNyheterUrl(page) {
   return (
-    `${URL}/api/nyhets?populate=%2A&sort=publishedAt:desc&pagination[page]=${page}&pagination[pageSize]=${PAGE_SIZE}`
+    `${apiBaseUrl}/api/nyhets?populate=%2A&sort=publishedAt:desc&pagination[page]=${page}&pagination[pageSize]=${PAGE_SIZE}`
   );
 }
 

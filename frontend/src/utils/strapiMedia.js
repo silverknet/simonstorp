@@ -1,4 +1,4 @@
-import strapiRootUrl from '../url';
+import apiBaseUrl from '../config/apiBaseUrl';
 
 export function getStrapiMedia(media) {
   return media?.data ?? media ?? null;
@@ -11,7 +11,7 @@ export function absoluteMediaUrl(path) {
   if (!path) return '';
   if (typeof path !== 'string') return '';
   if (path.startsWith('http://') || path.startsWith('https://')) return path;
-  return path.startsWith('/') ? `${strapiRootUrl}${path}` : `${strapiRootUrl}/${path}`;
+  return path.startsWith('/') ? `${apiBaseUrl}${path}` : `${apiBaseUrl}/${path}`;
 }
 
 /**

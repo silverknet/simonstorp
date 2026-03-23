@@ -1,11 +1,11 @@
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import useFetch from '../hooks/useFetch'
-import URL from '../url'
+import apiBaseUrl from '../config/apiBaseUrl'
 
 
 export default function Footer() {
-    const {loading, error, data} = useFetch(URL + '/api/footer');
+    const {loading, error, data} = useFetch(apiBaseUrl + '/api/footer');
 
     if( loading || error){
         return (<p></p>)
