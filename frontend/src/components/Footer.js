@@ -18,13 +18,13 @@ export default function Footer() {
   </div>*/}
             <div className='footercontent'>
                 <ReactMarkdown className='footerUnit fleft'>
-                    {data.data.attributes.Left}
+                    {data.data.Left}
                 </ReactMarkdown>
                 <ReactMarkdown className='footerUnit'>
-                    {data.data.attributes.Center}
+                    {data.data.Center}
                 </ReactMarkdown>
                 <ReactMarkdown className='footerUnit fright'>
-                    {data.data.attributes.Right}
+                    {data.data.Right}
                 </ReactMarkdown>
             </div>
             
