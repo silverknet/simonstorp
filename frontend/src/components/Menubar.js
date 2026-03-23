@@ -5,7 +5,7 @@ import useFetch from '../hooks/useFetch';
 import useWindowDimensions from '../hooks/getWindowDimensions';
 import { getCategoryFromPage, getStrapiItems, toValidUrl } from '../utils/utils';
 import { absoluteMediaUrl, getStrapiMedia } from '../utils/strapiMedia';
-import URL from '../url';
+import apiBaseUrl from '../config/apiBaseUrl';
 
 import { ChevronDown, Menu, X } from 'lucide-react';
 
@@ -41,7 +41,7 @@ export default function Menubar({
   const desktopNavMeasureRef = useRef(null);
   const [desktopOverflowIds, setDesktopOverflowIds] = useState(() => new Set());
 
-  const { loading, error, data } = useFetch(`${URL}/api/static-bar?populate=%2A`);
+  const { loading, error, data } = useFetch(`${apiBaseUrl}/api/static-bar?populate=%2A`);
   const { width } = useWindowDimensions();
   const location = useLocation();
 
