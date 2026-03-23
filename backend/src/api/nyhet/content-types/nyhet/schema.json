@@ -32,8 +32,12 @@
       ]
     },
     "Datum": {
-      "type": "date",
-      "required": true
+      "type": "datetime",
+      "required": false
+    },
+    "Plats": {
+      "type": "string",
+      "required": false
     },
     "url": {
       "type": "string",
