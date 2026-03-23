@@ -6,12 +6,12 @@ import { Link } from 'react-router-dom';
 import ImageSlider from '../components/ImageSlider';
 import NewsMetaDates from '../components/NewsMetaDates';
 import useFetch from '../hooks/useFetch';
-import URL from '../url';
+import apiBaseUrl from '../config/apiBaseUrl';
 import { getOptimizedDisplayUrl } from '../utils/strapiMedia';
 import { getNyhetSlug } from '../utils/utils';
 
 /** Latest two by publish time — never the full nyhets list */
-const HOME_NEWS_URL = `${URL}/api/nyhets?populate=%2A&sort=publishedAt:desc&pagination[page]=1&pagination[pageSize]=2`;
+const HOME_NEWS_URL = `${apiBaseUrl}/api/nyhets?populate=%2A&sort=publishedAt:desc&pagination[page]=1&pagination[pageSize]=2`;
 
 /* -------------------------------------------------------------------------- */
 /*  Layout — two columns below hero; wraps at lg (matches old max-[1200px])   */

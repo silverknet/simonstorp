@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import URL from '../url';
+import apiBaseUrl from '../config/apiBaseUrl';
 import { getNyhetSlug, normalizeNyhetUrlSegment } from '../utils/utils';
 
 /**
@@ -36,7 +36,7 @@ export function useNyhetBySlug(slug) {
         const want = normalizeNyhetUrlSegment(slug);
 
         while (true) {
-          const paged = `${URL}/api/nyhets?populate=%2A&sort=publishedAt:desc&pagination[page]=${pageNum}&pagination[pageSize]=${pageSize}`;
+          const paged = `${apiBaseUrl}/api/nyhets?populate=%2A&sort=publishedAt:desc&pagination[page]=${pageNum}&pagination[pageSize]=${pageSize}`;
           res = await fetch(paged);
           json = await res.json();
 

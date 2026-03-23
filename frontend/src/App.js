@@ -9,7 +9,7 @@ import Menubar from './components/Menubar'
 import Footer from './components/Footer'
 import ErrorScreen from './components/ErrorScreen'
 import Loading from './Loading'
-import URL from './url'
+import apiBaseUrl from './config/apiBaseUrl'
 import { toValidUrl }  from './utils/utils';
 
 import { useState } from "react"
@@ -67,10 +67,10 @@ function AppLayout({
 
 function App() {
 
-  const pages = useFetch(URL + '/api/pages?fields=url,title&populate=categories&sort=rank:asc');
-  const categories = useFetch(URL + '/api/categories?populate=%2A&sort=rank:asc');
-  const members = useFetch(URL + '/api/styrelsemedlems?sort=rank:asc')
-  const home = useFetch(URL + '/api/homepage?populate=%2A');
+  const pages = useFetch(apiBaseUrl + '/api/pages?fields=url,title&populate=categories&sort=rank:asc');
+  const categories = useFetch(apiBaseUrl + '/api/categories?populate=%2A&sort=rank:asc');
+  const members = useFetch(apiBaseUrl + '/api/styrelsemedlems?sort=rank:asc')
+  const home = useFetch(apiBaseUrl + '/api/homepage?populate=%2A');
 
   const [info, setInfo] = useState(0);
 

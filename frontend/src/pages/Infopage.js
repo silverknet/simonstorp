@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } fro
 
 import ReactMarkdown from 'react-markdown'
 
-import URL from '../url'
+import apiBaseUrl from '../config/apiBaseUrl'
 
 import ErrorScreen from '../components/ErrorScreen'
 import InfopageImageDisplay from '../components/InfopageImageDisplay'
@@ -73,7 +73,7 @@ function formatSwedishUpdatedAt(iso) {
 export default function Infopage(props) {
   const { loading, error, data } = useFetch(
     props.documentId
-      ? `${URL}/api/pages/${props.documentId}?populate=%2A&sort=rank:asc`
+      ? `${apiBaseUrl}/api/pages/${props.documentId}?populate=%2A&sort=rank:asc`
       : null
   )
 
@@ -81,7 +81,7 @@ export default function Infopage(props) {
 
   const membersUrl =
     pageData?.title === 'Styrelsen'
-      ? URL + '/api/styrelsemedlems?sort=rank:asc'
+      ? apiBaseUrl + '/api/styrelsemedlems?sort=rank:asc'
       : null
 
   const { loading: membersLoading, error: membersError, data: members } =
