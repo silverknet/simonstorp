@@ -33,7 +33,7 @@ const columnShell =
   'box-border w-1/2 min-w-96 max-w-3xl font-light leading-relaxed tracking-wide transition-all duration-700 ease-out ' +
   'm-4 p-8 max-[1200px]:w-auto max-[800px]:m-0 max-[800px]:min-w-0 max-[800px]:w-full max-[800px]:max-w-none max-[800px]:p-0';
 
-const columnIntro = `${columnShell} font-['Lato',sans-serif]`;
+const columnIntro = `${columnShell} font-['Lato',sans-serif] max-[800px]:pb-12`;
 
 const columnNews = `${columnShell} font-['Heebo',sans-serif] max-[800px]:m-2.5`;
 
@@ -48,12 +48,12 @@ const introTitle =
 const headingRow =
   'mb-4 flex items-start max-[800px]:mb-4';
 
-const introHeadingRow = `${headingRow} max-[800px]:mx-8 max-[800px]:mt-12`;
+const introHeadingRow = `${headingRow} max-[800px]:mx-[var(--mobile-side)] max-[800px]:mt-12`;
 
 const introMarkdown =
   'text-left font-["Lato",sans-serif] text-base leading-relaxed tracking-wide text-[var(--main-text)] ' +
   '[&_p]:m-0 [&_a]:text-[var(--accent-one)] [&_strong]:font-semibold ' +
-  'max-[800px]:m-9 max-[800px]:text-lg';
+  'max-[800px]:px-[var(--mobile-side)] max-[800px]:mt-0 max-[800px]:text-lg';
 
 /* -------------------------------------------------------------------------- */
 /*  News column — “Aktuellt” + cards + “Se alla”                                */
@@ -63,20 +63,15 @@ const introMarkdown =
 const newsSection = 'mt-0 flex flex-col gap-0';
 
 const aktuelltHeadingWrap =
-  `${headingRow} w-full items-start pt-[15px] gap-2 border-0 p-0 ` +
-  'max-[800px]:items-center max-[800px]:justify-center max-[800px]:gap-3 max-[800px]:pt-0';
+  `${headingRow} w-full items-start pt-[15px] gap-2 border-0 p-0 max-[800px]:pt-0 max-[800px]:mb-1`;
 
-/** Black lines beside “Aktuellt” — only rendered when viewport ≤800px (see Homepage) */
-const aktuelltHeadingRule = 'h-px min-w-0 flex-1 bg-[var(--divider-color)] self-center';
-
-const aktuelltHeadingCluster =
-  'flex flex-1 items-end gap-2 max-[800px]:flex-none max-[800px]:shrink-0 max-[800px]:items-center max-[800px]:gap-2';
+const aktuelltHeadingCluster = 'flex flex-1 items-end gap-2';
 
 const aktuelltHeadingIcon =
-  'mb-0.5 h-5 w-5 shrink-0 self-end text-[#131313] opacity-90 max-[800px]:mb-0 max-[800px]:self-center';
+  'mb-0.5 h-5 w-5 shrink-0 self-end text-[#131313] opacity-90';
 
 const aktuelltHeading =
-  'm-0 self-end text-lg font-light leading-tight text-[#131313] max-[800px]:self-center';
+  'm-0 self-end text-lg font-light leading-tight text-[#131313]';
 
 /** Page-load fade only on the outer Link — avoids transition-delay slowing hover */
 const newsCardLink =
@@ -89,7 +84,7 @@ const newsCardBase =
   'hover:scale-[1.01] hover:shadow-lg';
 
 /** Thumb stays h-28 and sits centered within the taller card */
-const newsThumbCell = 'flex shrink-0 items-center justify-center self-stretch p-1.5';
+const newsThumbCell = 'flex shrink-0 items-center justify-center self-stretch p-2';
 
 const newsThumbWrap =
   'relative h-28 w-28 shrink-0 overflow-hidden rounded-sm bg-[var(--bg-white-accent)]';
@@ -103,13 +98,10 @@ const newsCardBodyBase =
   'flex min-w-0 flex-1 flex-col justify-center gap-0.5 bg-[#f9f9f9] py-3 text-left';
 
 /** Beside image: inner padding of the text column (after thumb). */
-const newsCardBody = `${newsCardBodyBase} px-4`;
+const newsCardBody = `${newsCardBodyBase} pl-2 pr-4`;
 
-/**
- * No image: full-width text — use same left inset as the image row (`p-1.5` around thumb),
- * not `px-4`, or the title sits further right than the image on other cards.
- */
-const newsCardBodyTextOnly = `${newsCardBodyBase} pl-1.5 pr-4`;
+/** No image: full-width text — left inset matches image left edge (p-2 = 8px). */
+const newsCardBodyTextOnly = `${newsCardBodyBase} pl-2 pr-4`;
 
 /** Title row: title left (wraps freely), event meta right (wraps only if forced) */
 const newsCardTitleRow =
@@ -182,13 +174,14 @@ export default function Homepage(props) {
         >
           <div className={newsSection}>
             <div className={aktuelltHeadingWrap}>
-              {showAktuelltMobileRules ? <div className={aktuelltHeadingRule} aria-hidden /> : null}
               <div className={aktuelltHeadingCluster}>
                 <Newspaper className={aktuelltHeadingIcon} strokeWidth={1.75} aria-hidden />
                 <p className={aktuelltHeading}>Aktuellt</p>
               </div>
-              {showAktuelltMobileRules ? <div className={aktuelltHeadingRule} aria-hidden /> : null}
             </div>
+            {showAktuelltMobileRules ? (
+              <div className={newsCardDivider} aria-hidden />
+            ) : null}
 
             {newsLoading || newsError
               ? null
