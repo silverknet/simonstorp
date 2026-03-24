@@ -17,6 +17,7 @@ import {
   getPublishedTimestamp,
   hasDatumValue,
 } from '../utils/newsDateFormat';
+import { plainNewsTeaserText } from '../utils/newsPlainExcerpt';
 
 /** Latest two by publish time — never the full nyhets list */
 const HOME_NEWS_URL = `${apiBaseUrl}/api/nyhets?populate=%2A&sort=createdAt:desc&pagination[page]=1&pagination[pageSize]=2`;
@@ -227,7 +228,7 @@ export default function Homepage(props) {
                             {pubStr ? (
                               <p className={newsCardPubDate}>Publicerad {pubStr}</p>
                             ) : null}
-                            <p className={newsCardExcerpt}>{value.Beskrivning}</p>
+                            <p className={newsCardExcerpt}>{plainNewsTeaserText(value.Beskrivning)}</p>
                           </div>
                         </div>
                       </Link>
