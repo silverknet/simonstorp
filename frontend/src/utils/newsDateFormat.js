@@ -46,6 +46,15 @@ export function shouldOmitEventTimePlaceholder(d) {
   return hour === 0 || hour === 1 || hour === 2;
 }
 
+/** True when formatted event line includes clock time (same rules as formatEventDatumForDisplay). */
+export function eventDatumShowsTime(datum) {
+  if (!hasDatumValue(datum)) return false;
+  const raw = typeof datum === 'string' ? datum.trim() : datum;
+  const d = new Date(raw);
+  if (Number.isNaN(d.getTime())) return false;
+  return !shouldOmitEventTimePlaceholder(d);
+}
+
 /** Händelsedatum (Strapi datetime) — tid bara om den är “riktigt” angiven */
 export function formatEventDatumForDisplay(datum) {
   if (!hasDatumValue(datum)) return null;
