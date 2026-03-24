@@ -5,11 +5,18 @@ import remarkBreaks from 'remark-breaks';
 import { Link } from 'react-router-dom';
 
 import ImageSlider from '../components/ImageSlider';
-import NewsMetaDates from '../components/NewsMetaDates';
 import useFetch from '../hooks/useFetch';
+import useWindowDimensions from '../hooks/getWindowDimensions';
 import apiBaseUrl from '../config/apiBaseUrl';
 import { getOptimizedDisplayUrl } from '../utils/strapiMedia';
 import { getNyhetSlug } from '../utils/utils';
+import {
+  formatEventDatumShort,
+  formatPublishedForDisplay,
+  getPlatsText,
+  getPublishedTimestamp,
+  hasDatumValue,
+} from '../utils/newsDateFormat';
 
 /** Latest two by publish time — never the full nyhets list */
 const HOME_NEWS_URL = `${apiBaseUrl}/api/nyhets?populate=%2A&sort=publishedAt:desc&pagination[page]=1&pagination[pageSize]=2`;
@@ -56,11 +63,20 @@ const introMarkdown =
 const newsSection = 'mt-0 flex flex-col gap-0';
 
 const aktuelltHeadingWrap =
-  `${headingRow} gap-2 border-[#b0b0b0] p-0`;
+  `${headingRow} w-full items-end gap-2 border-0 p-0 ` +
+  'max-[800px]:items-center max-[800px]:justify-center max-[800px]:gap-3';
 
-const aktuelltHeadingIcon = 'mb-0.5 h-5 w-5 shrink-0 self-end text-[#131313] opacity-90';
+/** Black lines beside “Aktuellt” — only rendered when viewport ≤800px (see Homepage) */
+const aktuelltHeadingRule = 'h-px min-w-0 flex-1 bg-[var(--divider-color)] self-center';
 
-const aktuelltHeading = 'm-0 self-end text-lg font-light leading-tight text-[#131313]';
+const aktuelltHeadingCluster =
+  'flex flex-1 items-end gap-2 max-[800px]:flex-none max-[800px]:shrink-0 max-[800px]:items-center max-[800px]:gap-2';
+
+const aktuelltHeadingIcon =
+  'mb-0.5 h-5 w-5 shrink-0 self-end text-[#131313] opacity-90 max-[800px]:mb-0 max-[800px]:self-center';
+
+const aktuelltHeading =
+  'm-0 self-end text-lg font-light leading-tight text-[#131313] max-[800px]:self-center';
 
 /** Page-load fade only on the outer Link — avoids transition-delay slowing hover */
 const newsCardLink =
@@ -68,20 +84,23 @@ const newsCardLink =
 
 /** Hover lives here so it isn’t delayed by the entrance `transitionDelay` on the Link */
 const newsCardBase =
-  'flex min-h-28 w-full flex-row items-stretch overflow-hidden rounded-lg bg-[#f9f9f9] ' +
+  'flex min-h-36 w-full flex-row items-stretch overflow-hidden rounded-lg bg-[#f9f9f9] ' +
   'text-[var(--main-text)] shadow-none transition-[transform,box-shadow] duration-200 ease-out ' +
   'hover:scale-[1.01] hover:shadow-lg';
+
+/** Thumb stays h-28 and sits centered within the taller card */
+const newsThumbCell = 'flex shrink-0 items-center justify-center self-stretch p-1.5';
 
 const newsThumbWrap =
   'relative h-28 w-28 shrink-0 overflow-hidden rounded-sm bg-[var(--bg-white-accent)]';
 
 /** Thin separator between home news cards / before “Se alla” */
-const newsCardDivider = 'my-1.5 h-px w-full shrink-0 bg-black/[0.1]';
+const newsCardDivider = 'my-1.5 h-px w-full shrink-0 bg-[var(--divider-color)]';
 
 const newsThumb = 'absolute inset-0 h-full w-full object-cover';
 
 const newsCardBodyBase =
-  'flex min-h-28 min-w-0 flex-1 flex-col justify-center gap-1 bg-[#f9f9f9] py-2 text-left';
+  'flex min-w-0 flex-1 flex-col justify-center gap-0.5 bg-[#f9f9f9] py-3 text-left';
 
 /** Beside image: inner padding of the text column (after thumb). */
 const newsCardBody = `${newsCardBodyBase} px-4`;
@@ -92,13 +111,21 @@ const newsCardBody = `${newsCardBodyBase} px-4`;
  */
 const newsCardBodyTextOnly = `${newsCardBodyBase} pl-1.5 pr-4`;
 
-const newsCardTitleBlock = 'flex min-w-0 flex-col gap-1 text-[var(--main-text)]';
+/** Title row: title left (wraps freely), event meta right (wraps only if forced) */
+const newsCardTitleRow =
+  'flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-0 text-[var(--main-text)]';
 
-const newsCardTitle = 'm-0 min-w-0 font-normal leading-tight';
+const newsCardTitle = 'm-0 min-w-0 flex-1 font-normal leading-snug';
+
+/** Event date + optional place shown inline to the right of the title */
+const newsCardMeta = 'shrink-0 text-[10px] font-normal leading-snug text-neutral-400';
+
+/** Published date — small muted line below the title row */
+const newsCardPubDate = 'm-0 text-[10px] leading-snug text-neutral-400';
 
 const newsCardExcerpt =
-  'm-0 overflow-hidden pr-1 pb-px text-sm leading-normal text-[#403939] ' +
-  '[display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]';
+  'm-0 mt-1 overflow-hidden pr-1 pb-px text-sm leading-normal text-[#403939] ' +
+  '[display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:3]';
 
 const seeAllWrap =
   'group w-fit px-1 py-0 text-neutral-700 no-underline transition-all duration-700 ease-out ' +
@@ -111,6 +138,8 @@ const seeAllLink =
 export default function Homepage(props) {
   const { data: newsTeaser, loading: newsLoading, error: newsError } = useFetch(HOME_NEWS_URL);
   const homeData = props.homecontent?.data?.data ?? {};
+  const { width: viewportWidth } = useWindowDimensions();
+  const showAktuelltMobileRules = viewportWidth <= 800;
 
   const [contentVisible, setContentVisible] = useState(false);
 
@@ -153,8 +182,12 @@ export default function Homepage(props) {
         >
           <div className={newsSection}>
             <div className={aktuelltHeadingWrap}>
-              <Newspaper className={aktuelltHeadingIcon} strokeWidth={1.75} aria-hidden />
-              <p className={aktuelltHeading}>Aktuellt</p>
+              {showAktuelltMobileRules ? <div className={aktuelltHeadingRule} aria-hidden /> : null}
+              <div className={aktuelltHeadingCluster}>
+                <Newspaper className={aktuelltHeadingIcon} strokeWidth={1.75} aria-hidden />
+                <p className={aktuelltHeading}>Aktuellt</p>
+              </div>
+              {showAktuelltMobileRules ? <div className={aktuelltHeadingRule} aria-hidden /> : null}
             </div>
 
             {newsLoading || newsError
@@ -164,6 +197,12 @@ export default function Homepage(props) {
                   const imgUrl = getOptimizedDisplayUrl(value.Bild) || null;
                   const pathSlug = getNyhetSlug(value);
                   if (!pathSlug) return null;
+                  const eventStr = hasDatumValue(value?.Datum)
+                    ? formatEventDatumShort(value.Datum)
+                    : null;
+                  const platsStr = getPlatsText(value);
+                  const pubStr = formatPublishedForDisplay(getPublishedTimestamp(value));
+
                   return (
                     <Fragment key={value.id}>
                       {index > 0 ? <div className={newsCardDivider} aria-hidden /> : null}
@@ -175,17 +214,26 @@ export default function Homepage(props) {
                       >
                         <div className={newsCardBase}>
                           {imgUrl ? (
-                            <div className="flex shrink-0 items-center justify-center p-1.5">
+                            <div className={newsThumbCell}>
                               <div className={newsThumbWrap}>
                                 <img className={newsThumb} src={imgUrl} alt="" />
                               </div>
                             </div>
                           ) : null}
                           <div className={imgUrl ? newsCardBody : newsCardBodyTextOnly}>
-                            <div className={newsCardTitleBlock}>
+                            <div className={newsCardTitleRow}>
                               <p className={newsCardTitle}>{title}</p>
-                              <NewsMetaDates data={value} variant="teaserCompact" />
+                              {(eventStr || platsStr) ? (
+                                <span className={newsCardMeta}>
+                                  {eventStr ?? ''}
+                                  {eventStr && platsStr ? <span aria-hidden> · </span> : null}
+                                  {platsStr ?? ''}
+                                </span>
+                              ) : null}
                             </div>
+                            {pubStr ? (
+                              <p className={newsCardPubDate}>Publicerad {pubStr}</p>
+                            ) : null}
                             <p className={newsCardExcerpt}>{value.Beskrivning}</p>
                           </div>
                         </div>

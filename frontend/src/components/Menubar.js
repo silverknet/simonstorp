@@ -374,7 +374,12 @@ export default function Menubar({
           ) : null}
 
           <Link to="/">
-            <img className={logoClassName} src={logoUrl} alt="Simonstorp logo" />
+            <img
+              className={logoClassName}
+              src={logoUrl}
+              alt="Simonstorp logo"
+              style={{ filter: 'sepia(0.35) contrast(1.05) drop-shadow(0 1px 3px rgba(0,0,0,0.12))' }}
+            />
           </Link>
 
           <a
