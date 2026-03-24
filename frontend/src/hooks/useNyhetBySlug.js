@@ -36,7 +36,7 @@ export function useNyhetBySlug(slug) {
         const want = normalizeNyhetUrlSegment(slug);
 
         while (true) {
-          const paged = `${apiBaseUrl}/api/nyhets?populate=%2A&sort=publishedAt:desc&pagination[page]=${pageNum}&pagination[pageSize]=${pageSize}`;
+          const paged = `${apiBaseUrl}/api/nyhets?populate=%2A&sort=createdAt:desc&pagination[page]=${pageNum}&pagination[pageSize]=${pageSize}`;
           res = await fetch(paged);
           json = await res.json();
 
