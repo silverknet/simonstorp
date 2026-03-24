@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import remarkBreaks from 'remark-breaks';
 import { Link, useLocation } from 'react-router-dom';
 
 import InfopageImageDisplay from '../components/InfopageImageDisplay';
@@ -89,7 +90,9 @@ export default function Full_news(props) {
                 <h1 className={newsTitleClasses}>{headline}</h1>
                 <NewsMetaDates data={props.page} variant="article" />
                 <div className={newsBodyClasses}>
-                  <ReactMarkdown>{props.page?.Beskrivning}</ReactMarkdown>
+                <ReactMarkdown remarkPlugins={[remarkBreaks]}>
+                  {props.page?.Beskrivning}
+                </ReactMarkdown>
                 </div>
               </div>
             </div>

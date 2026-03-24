@@ -313,7 +313,7 @@ export default function Menubar({
         ? 'h-16 w-full gap-3 px-3.5 py-0'
         : isCompactDesktop
           ? 'w-auto shrink-0 justify-start pl-5 pr-0 py-0'
-          : 'w-full px-5 pt-6 pb-1',
+          : 'h-28 w-full px-5 py-0',
     ]
       .filter(Boolean)
       .join(' ');
@@ -321,7 +321,7 @@ export default function Menubar({
     const logoClassName = [
       'transition-[width,margin,transform] duration-200',
       !isDesktop ? 'm-0 w-[8.75rem]' : '',
-      isDesktop && !isCompactDesktop ? 'mt-2 mb-7 w-52' : '',
+      isDesktop && !isCompactDesktop ? 'm-0 w-40' : '',
       isDesktop && isCompactDesktop ? 'm-0 mr-10 w-28' : '',
       'hover:cursor-pointer',
     ]

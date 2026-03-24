@@ -3,8 +3,11 @@ import useFetch from '../hooks/useFetch'
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react'
 
 import ReactMarkdown from 'react-markdown'
+import remarkBreaks from 'remark-breaks'
+import remarkGfm from 'remark-gfm'
 
 import apiBaseUrl from '../config/apiBaseUrl'
+import { getOptimizedDisplayUrl } from '../utils/strapiMedia'
 
 import ErrorScreen from '../components/ErrorScreen'
 import InfopageImageDisplay from '../components/InfopageImageDisplay'
@@ -31,10 +34,25 @@ const updatedLineClasses =
 const proseMarkdownClasses =
   'text-left font-info-body text-[16px] font-light leading-[180%] tracking-[0.5px] text-[var(--main-text)] antialiased ' +
   '[&_p]:mt-0 [&_p]:mb-[1em] [&_p:last-child]:mb-0 ' +
-  '[&_ul]:mb-[1em] [&_ol]:mb-[1em] [&_ul]:pl-6 [&_ol]:pl-6 [&_li]:my-1 ' +
-  '[&_h1]:mt-5 [&_h2]:mt-5 [&_h3]:mt-5 [&_h4]:mt-5 [&_h1]:mb-2 [&_h2]:mb-2 [&_h3]:mb-2 [&_h4]:mb-2 ' +
-  '[&_h1]:font-medium [&_h2]:font-medium [&_h3]:font-medium [&_h4]:font-medium ' +
+  '[&_ul]:mb-[1em] [&_ol]:mb-[1em] [&_ul]:pl-6 [&_ol]:pl-6 [&_li]:my-1 [&_li>p]:mb-0 ' +
+  '[&_ul]:list-disc [&_ol]:list-decimal [&_ul_ul]:list-circle ' +
+  '[&_h1]:mt-7 [&_h2]:mt-6 [&_h3]:mt-5 [&_h4]:mt-5 [&_h1]:mb-3 [&_h2]:mb-2.5 [&_h3]:mb-2 [&_h4]:mb-2 ' +
+  '[&_h1]:font-info-title [&_h2]:font-info-title [&_h3]:font-info-title [&_h4]:font-info-title ' +
+  '[&_h1]:text-[2rem] [&_h2]:text-[1.55rem] [&_h3]:text-[1.22rem] [&_h4]:text-[1.08rem] ' +
+  '[&_h1]:font-normal [&_h2]:font-normal [&_h3]:font-medium [&_h4]:font-medium ' +
+  '[&_h1]:leading-[1.2] [&_h2]:leading-[1.25] [&_h3]:leading-[1.32] [&_h4]:leading-[1.35] ' +
+  '[&_h1]:tracking-[0.03rem] [&_h2]:tracking-[0.025rem] [&_h3]:tracking-[0.02rem] [&_h4]:tracking-[0.02rem] ' +
+  '[&_h1]:text-[var(--grey-text)] [&_h2]:text-[var(--grey-text)] [&_h3]:text-[var(--grey-text)] [&_h4]:text-[var(--grey-text)] ' +
   '[&_h1:first-child]:mt-0 [&_h2:first-child]:mt-0 [&_h3:first-child]:mt-0 [&_h4:first-child]:mt-0 ' +
+  '[&_a]:text-[var(--accent-one)] [&_a]:underline [&_a]:decoration-[var(--accent-one)]/35 [&_a]:underline-offset-2 hover:[&_a]:decoration-[var(--accent-one)] ' +
+  '[&_strong]:font-medium [&_em]:italic [&_hr]:my-8 [&_hr]:border-0 [&_hr]:border-t [&_hr]:border-black/[0.1] ' +
+  '[&_blockquote]:my-5 [&_blockquote]:border-l-[3px] [&_blockquote]:border-[var(--accent-one)]/35 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-[var(--grey-text)] ' +
+  '[&_code]:rounded-[4px] [&_code]:bg-black/[0.05] [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[0.95em] ' +
+  '[&_pre]:my-5 [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:bg-black/[0.04] [&_pre]:p-4 ' +
+  '[&_pre_code]:bg-transparent [&_pre_code]:p-0 ' +
+  '[&_table]:my-6 [&_table]:w-full [&_table]:border-collapse [&_table]:text-sm ' +
+  '[&_thead]:border-b [&_thead]:border-black/[0.12] [&_tbody_tr]:border-b [&_tbody_tr]:border-black/[0.08] ' +
+  '[&_th]:px-3 [&_th]:py-2 [&_th]:text-left [&_th]:font-medium [&_td]:px-3 [&_td]:py-2 ' +
   'max-[800px]:m-0 max-[800px]:text-[17px]'
 
 const styrelseSectionClasses =
@@ -48,6 +66,13 @@ const styrelseIntroClasses =
 const styrelseCardClasses =
   'rounded-xl border border-black/[0.08] bg-[var(--bg-white-accent)] px-4 py-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)] ' +
   'transition-shadow hover:shadow-[0_4px_14px_rgba(0,0,0,0.06)]'
+
+const styrelseCardBodyClasses = 'flex items-start gap-3'
+
+const styrelseAvatarClasses =
+  'h-16 w-16 shrink-0 rounded-lg object-cover bg-white/60 border border-black/[0.06]'
+
+const styrelseTextClasses = 'min-w-0 flex-1'
 
 const styrelseNameClasses =
   'm-0 font-info-body text-[17px] font-medium leading-snug tracking-[1px] text-[var(--main-text)]'
@@ -81,7 +106,7 @@ export default function Infopage(props) {
 
   const membersUrl =
     pageData?.title === 'Styrelsen'
-      ? apiBaseUrl + '/api/styrelsemedlems?sort=rank:asc'
+      ? apiBaseUrl + '/api/styrelsemedlems?populate=%2A&sort=rank:asc'
       : null
 
   const { loading: membersLoading, error: membersError, data: members } =
@@ -117,6 +142,30 @@ export default function Infopage(props) {
     [imageDims]
   )
 
+  const images = getStrapiItems(pageData?.img)
+  const hasImages = !centerFormat && images && images.length > 0
+  const isStyrelse = pageData?.title === 'Styrelsen'
+  const shouldDistributeImages = hasImages && images.length > 1 && !isNarrowGrid
+
+  const gridStyle =
+    hasImages && !isNarrowGrid
+      ? {
+          '--info-media-col': `${mediaColPercent}%`,
+          gridTemplateColumns: 'var(--info-media-col) minmax(0, 1fr)',
+        }
+      : hasImages && isNarrowGrid
+        ? { gridTemplateColumns: '1fr' }
+        : undefined
+
+  const updatedLabel = formatSwedishUpdatedAt(pageData?.updatedAt)
+  const titleClasses = updatedLabel ? titleWithMeta : titleSolo
+  const imageColumnClasses = shouldDistributeImages
+    ? 'grid min-w-0 w-full self-stretch'
+    : 'flex min-w-0 w-full flex-col gap-6'
+  const imageColumnStyle = shouldDistributeImages
+    ? { gridTemplateRows: `repeat(${images.length}, minmax(0, 1fr))` }
+    : undefined
+
   if (error) {
     return (
       <ErrorScreen
@@ -148,26 +197,11 @@ export default function Infopage(props) {
     );
   }
 
-  const images = getStrapiItems(pageData?.img)
-  const hasImages = !centerFormat && images && images.length > 0
-  const isStyrelse = pageData?.title === 'Styrelsen'
-
-  const gridStyle =
-    hasImages && !isNarrowGrid
-      ? {
-          '--info-media-col': `${mediaColPercent}%`,
-          gridTemplateColumns: 'var(--info-media-col) minmax(0, 1fr)',
-        }
-      : hasImages && isNarrowGrid
-        ? { gridTemplateColumns: '1fr' }
-        : undefined
-
-  const updatedLabel = formatSwedishUpdatedAt(pageData?.updatedAt)
-  const titleClasses = updatedLabel ? titleWithMeta : titleSolo
-
   const proseBlock = (
     <div className={proseMarkdownClasses} lang="sv">
-      <ReactMarkdown>{pageData?.Huvudtext}</ReactMarkdown>
+      <ReactMarkdown remarkPlugins={[remarkBreaks, remarkGfm]}>
+        {pageData?.Huvudtext}
+      </ReactMarkdown>
     </div>
   )
 
@@ -183,18 +217,19 @@ export default function Infopage(props) {
           {hasImages ? (
             <div
               className={
-                'grid w-full max-w-full items-start gap-x-[clamp(1.5rem,4vw,2.5rem)] gap-y-6 ' +
+                'grid w-full max-w-full gap-x-[clamp(1.5rem,4vw,2.5rem)] gap-y-6 ' +
                 'max-[960px]:grid-cols-1 max-[960px]:gap-6'
               }
               style={gridStyle}
             >
-              <div className="flex min-w-0 w-full flex-col gap-6">
+              <div className={imageColumnClasses} style={imageColumnStyle}>
                 {images.map((value) => (
-                  <InfopageImageDisplay
-                    key={value.id}
-                    media={value}
-                    onDimensions={onImageDimensions}
-                  />
+                  <div key={value.id} className={shouldDistributeImages ? 'self-start' : ''}>
+                    <InfopageImageDisplay
+                      media={value}
+                      onDimensions={onImageDimensions}
+                    />
+                  </div>
                 ))}
               </div>
               <div className={`${proseColumnClasses} mx-auto`}>
@@ -230,20 +265,37 @@ export default function Infopage(props) {
                   const role = value.Roll ?? ''
                   const emailRaw = (value.Mejladress ?? '').trim()
                   const emailIsMail = emailRaw.includes('@')
+                  const avatarUrl =
+                    getOptimizedDisplayUrl(value.avatar) ||
+                    getOptimizedDisplayUrl(value.Avatar) ||
+                    getOptimizedDisplayUrl(value.Bild) ||
+                    ''
 
                   return (
                     <li key={value.id} className={styrelseCardClasses}>
-                      {name ? <p className={styrelseNameClasses}>{name}</p> : null}
-                      {role ? <p className={styrelseRoleClasses}>{role}</p> : null}
-                      {emailRaw ? (
-                        emailIsMail ? (
-                          <a href={`mailto:${emailRaw}`} className={styrelseEmailClasses}>
-                            {emailRaw}
-                          </a>
-                        ) : (
-                          <p className={`${styrelseRoleClasses} mt-2`}>{emailRaw}</p>
-                        )
-                      ) : null}
+                      <div className={styrelseCardBodyClasses}>
+                        {avatarUrl ? (
+                          <img
+                            src={avatarUrl}
+                            alt={name ? `Porträtt av ${name}` : 'Styrelsemedlem'}
+                            className={styrelseAvatarClasses}
+                            loading="lazy"
+                          />
+                        ) : null}
+                        <div className={styrelseTextClasses}>
+                          {name ? <p className={styrelseNameClasses}>{name}</p> : null}
+                          {role ? <p className={styrelseRoleClasses}>{role}</p> : null}
+                          {emailRaw ? (
+                            emailIsMail ? (
+                              <a href={`mailto:${emailRaw}`} className={styrelseEmailClasses}>
+                                {emailRaw}
+                              </a>
+                            ) : (
+                              <p className={`${styrelseRoleClasses} mt-2`}>{emailRaw}</p>
+                            )
+                          ) : null}
+                        </div>
+                      </div>
                     </li>
                   )
                 })}
