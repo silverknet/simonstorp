@@ -19,7 +19,7 @@ import {
 } from '../utils/newsDateFormat';
 
 /** Latest two by publish time — never the full nyhets list */
-const HOME_NEWS_URL = `${apiBaseUrl}/api/nyhets?populate=%2A&sort=publishedAt:desc&pagination[page]=1&pagination[pageSize]=2`;
+const HOME_NEWS_URL = `${apiBaseUrl}/api/nyhets?populate=%2A&sort=createdAt:desc&pagination[page]=1&pagination[pageSize]=2`;
 
 /* -------------------------------------------------------------------------- */
 /*  Layout — two columns below hero; wraps at lg (matches old max-[1200px])   */

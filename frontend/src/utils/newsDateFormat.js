@@ -5,10 +5,14 @@ export function hasDatumValue(datum) {
   return true;
 }
 
-/** Prefer `publishedAt` when Draft & Publish is on */
+/**
+ * Datum som visas som “Publicerad …”.
+ * `createdAt` ändras inte när en nyhet redigeras; Strapi uppdaterar ofta `publishedAt`
+ * vid ny publicering, vilket flyttar nyheten överst och visar dagens datum felaktigt.
+ */
 export function getPublishedTimestamp(attributes) {
   if (!attributes) return null;
-  return attributes.publishedAt ?? attributes.createdAt ?? null;
+  return attributes.createdAt ?? attributes.publishedAt ?? null;
 }
 
 /** Small, neutral line for “Publicerad …” */

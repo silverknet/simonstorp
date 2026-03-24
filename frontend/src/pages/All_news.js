@@ -17,7 +17,7 @@ const PAGE_SIZE = 4;
 
 function buildNyheterUrl(page) {
   return (
-    `${apiBaseUrl}/api/nyhets?populate=%2A&sort=publishedAt:desc&pagination[page]=${page}&pagination[pageSize]=${PAGE_SIZE}`
+    `${apiBaseUrl}/api/nyhets?populate=%2A&sort=createdAt:desc&pagination[page]=${page}&pagination[pageSize]=${PAGE_SIZE}`
   );
 }
 

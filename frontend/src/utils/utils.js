@@ -32,7 +32,7 @@ export function normalizeNyhetUrlSegment(input) {
 }
 
 function getNyhetDateSlugPart(data) {
-  const raw = data?.Datum ?? data?.publishedAt ?? data?.createdAt ?? null;
+  const raw = data?.Datum ?? data?.createdAt ?? data?.publishedAt ?? null;
   if (!raw) return '';
 
   const date = new Date(raw);
