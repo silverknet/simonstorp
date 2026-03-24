@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Newspaper } from 'lucide-react';
+import remarkBreaks from 'remark-breaks';
 import { Link } from 'react-router-dom';
 
 import ImageSlider from '../components/ImageSlider';
@@ -34,7 +35,13 @@ const columnNews = `${columnShell} font-['Heebo',sans-serif] max-[800px]:m-2.5`;
 /* -------------------------------------------------------------------------- */
 
 const introTitle =
-  'mb-4 text-3xl font-light max-[800px]:mx-8 max-[800px]:mt-12 max-[800px]:text-center max-[800px]:leading-snug';
+  'm-0 text-3xl font-light leading-tight max-[800px]:text-center max-[800px]:leading-snug';
+
+/** Shared heading row contract: both heading texts are pinned to identical container bottoms */
+const headingRow =
+  'mb-4 flex h-12 items-end max-[800px]:h-auto max-[800px]:mb-4';
+
+const introHeadingRow = `${headingRow} max-[800px]:mx-8 max-[800px]:mt-12`;
 
 const introMarkdown =
   'text-left font-["Lato",sans-serif] text-base leading-relaxed tracking-wide text-[var(--main-text)] ' +
@@ -46,11 +53,14 @@ const introMarkdown =
 /* -------------------------------------------------------------------------- */
 
 /** Stack: heading, cards, “Se alla” — tight gap under Aktuellt; compact gap between cards */
-const newsSection = 'mt-0 flex flex-col gap-2';
+const newsSection = 'mt-0 flex flex-col gap-0';
 
-const aktuelltHeadingWrap = 'border-[#b0b0b0] p-0 pb-1';
+const aktuelltHeadingWrap =
+  `${headingRow} gap-2 border-[#b0b0b0] p-0`;
 
-const aktuelltHeading = '-m-0.5 ml-1 text-lg font-light text-[#131313]';
+const aktuelltHeadingIcon = 'mb-0.5 h-5 w-5 shrink-0 self-end text-[#131313] opacity-90';
+
+const aktuelltHeading = 'm-0 self-end text-lg font-light leading-tight text-[#131313]';
 
 /** Page-load fade only on the outer Link — avoids transition-delay slowing hover */
 const newsCardLink =
@@ -63,12 +73,24 @@ const newsCardBase =
   'hover:scale-[1.01] hover:shadow-lg';
 
 const newsThumbWrap =
-  'relative h-28 w-28 shrink-0 overflow-hidden rounded-md bg-[var(--bg-white-accent)]';
+  'relative h-28 w-28 shrink-0 overflow-hidden rounded-sm bg-[var(--bg-white-accent)]';
+
+/** Thin separator between home news cards / before “Se alla” */
+const newsCardDivider = 'my-1.5 h-px w-full shrink-0 bg-black/[0.1]';
 
 const newsThumb = 'absolute inset-0 h-full w-full object-cover';
 
-const newsCardBody =
-  'flex min-h-28 min-w-0 flex-1 flex-col justify-center gap-1 bg-[#f9f9f9] px-4 py-2';
+const newsCardBodyBase =
+  'flex min-h-28 min-w-0 flex-1 flex-col justify-center gap-1 bg-[#f9f9f9] py-2 text-left';
+
+/** Beside image: inner padding of the text column (after thumb). */
+const newsCardBody = `${newsCardBodyBase} px-4`;
+
+/**
+ * No image: full-width text — use same left inset as the image row (`p-1.5` around thumb),
+ * not `px-4`, or the title sits further right than the image on other cards.
+ */
+const newsCardBodyTextOnly = `${newsCardBodyBase} pl-1.5 pr-4`;
 
 const newsCardTitleBlock = 'flex min-w-0 flex-col gap-1 text-[var(--main-text)]';
 
@@ -83,7 +105,7 @@ const seeAllWrap =
   'hover:cursor-pointer hover:bg-[#f9f9f9] hover:text-neutral-800';
 
 const seeAllLink =
-  'm-0 inline-flex w-fit items-center gap-1.5 text-neutral-600 no-underline transition-colors duration-300 ' +
+  'm-0 inline-flex w-fit items-center gap-1.5 text-sm text-neutral-600 no-underline transition-colors duration-300 ' +
   'group-hover:border-l-2 group-hover:border-[var(--accent-one)] group-hover:pl-1.5';
 
 export default function Homepage(props) {
@@ -116,8 +138,10 @@ export default function Homepage(props) {
           className={`${columnIntro} ${introFade}`}
           style={{ transitionDelay: '140ms' }}
         >
-          <h1 className={introTitle}>{homeData.upper}</h1>
-          <ReactMarkdown className={introMarkdown}>
+          <div className={introHeadingRow}>
+            <h1 className={introTitle}>{homeData.upper}</h1>
+          </div>
+          <ReactMarkdown className={introMarkdown} remarkPlugins={[remarkBreaks]}>
             {homeData.Huvudtext}
           </ReactMarkdown>
         </div>
@@ -129,6 +153,7 @@ export default function Homepage(props) {
         >
           <div className={newsSection}>
             <div className={aktuelltHeadingWrap}>
+              <Newspaper className={aktuelltHeadingIcon} strokeWidth={1.75} aria-hidden />
               <p className={aktuelltHeading}>Aktuellt</p>
             </div>
 
@@ -140,32 +165,38 @@ export default function Homepage(props) {
                   const pathSlug = getNyhetSlug(value);
                   if (!pathSlug) return null;
                   return (
-                    <Link
-                      key={value.id}
-                      className={`${newsCardLink} ${newsCardFade}`}
-                      style={{ transitionDelay: `${340 + index * 140}ms` }}
-                      to={'/' + pathSlug}
-                      state={{ newsFrom: 'home' }}
-                    >
-                      <div className={newsCardBase}>
-                        {imgUrl ? (
-                          <div className="flex shrink-0 items-center justify-center p-1.5">
-                            <div className={newsThumbWrap}>
-                              <img className={newsThumb} src={imgUrl} alt="" />
+                    <Fragment key={value.id}>
+                      {index > 0 ? <div className={newsCardDivider} aria-hidden /> : null}
+                      <Link
+                        className={`${newsCardLink} ${newsCardFade}`}
+                        style={{ transitionDelay: `${340 + index * 140}ms` }}
+                        to={'/' + pathSlug}
+                        state={{ newsFrom: 'home' }}
+                      >
+                        <div className={newsCardBase}>
+                          {imgUrl ? (
+                            <div className="flex shrink-0 items-center justify-center p-1.5">
+                              <div className={newsThumbWrap}>
+                                <img className={newsThumb} src={imgUrl} alt="" />
+                              </div>
                             </div>
+                          ) : null}
+                          <div className={imgUrl ? newsCardBody : newsCardBodyTextOnly}>
+                            <div className={newsCardTitleBlock}>
+                              <p className={newsCardTitle}>{title}</p>
+                              <NewsMetaDates data={value} variant="teaserCompact" />
+                            </div>
+                            <p className={newsCardExcerpt}>{value.Beskrivning}</p>
                           </div>
-                        ) : null}
-                        <div className={newsCardBody}>
-                          <div className={newsCardTitleBlock}>
-                            <p className={newsCardTitle}>{title}</p>
-                            <NewsMetaDates data={value} variant="teaserCompact" />
-                          </div>
-                          <p className={newsCardExcerpt}>{value.Beskrivning}</p>
                         </div>
-                      </div>
-                    </Link>
+                      </Link>
+                    </Fragment>
                   );
                 })}
+
+            {!newsLoading && !newsError && Array.isArray(newsTeaser?.data) && newsTeaser.data.length > 0 ? (
+              <div className={newsCardDivider} aria-hidden />
+            ) : null}
 
             <div
               className={`${seeAllWrap} ${seeAllFade}`}

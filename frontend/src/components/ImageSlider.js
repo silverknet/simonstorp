@@ -12,8 +12,8 @@ const SLIDE_INTERVAL_MS = 12000;
 const FADE_DURATION_MS = 1800;
 const sliderAnimationStyles = `
   @keyframes sliderProgressFill {
-    from { width: 0%; opacity: 0.85; }
-    to { width: 100%; opacity: 1; }
+    from { transform: scaleX(0); opacity: 0.85; }
+    to { transform: scaleX(1); opacity: 1; }
   }
 
   @keyframes heroKenBurnsLeft {
@@ -192,7 +192,7 @@ export default function ImageSlider(props) {
                 <>
                   <span
                     key={`progress-${active}-${cycleToken}`}
-                    className="absolute left-0 top-0 h-full rounded-full bg-white/70"
+                    className="absolute left-0 top-0 h-full w-full origin-left transform-gpu rounded-full bg-white/70 will-change-transform"
                     style={{
                       animation: `sliderProgressFill ${SLIDE_INTERVAL_MS}ms linear forwards`,
                     }}
