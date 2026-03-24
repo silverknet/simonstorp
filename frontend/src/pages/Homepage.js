@@ -44,9 +44,9 @@ const columnNews = `${columnShell} font-['Heebo',sans-serif] max-[800px]:m-2.5`;
 const introTitle =
   'm-0 text-3xl font-light leading-tight max-[800px]:text-center max-[800px]:leading-snug';
 
-/** Shared heading row contract: both heading texts are pinned to identical container bottoms */
+/** Shared heading row contract: both headings use items-start; Aktuellt adds pt-[15px] offset */
 const headingRow =
-  'mb-4 flex h-12 items-end max-[800px]:h-auto max-[800px]:mb-4';
+  'mb-4 flex items-start max-[800px]:mb-4';
 
 const introHeadingRow = `${headingRow} max-[800px]:mx-8 max-[800px]:mt-12`;
 
@@ -63,8 +63,8 @@ const introMarkdown =
 const newsSection = 'mt-0 flex flex-col gap-0';
 
 const aktuelltHeadingWrap =
-  `${headingRow} w-full items-end gap-2 border-0 p-0 ` +
-  'max-[800px]:items-center max-[800px]:justify-center max-[800px]:gap-3';
+  `${headingRow} w-full items-start pt-[15px] gap-2 border-0 p-0 ` +
+  'max-[800px]:items-center max-[800px]:justify-center max-[800px]:gap-3 max-[800px]:pt-0';
 
 /** Black lines beside “Aktuellt” — only rendered when viewport ≤800px (see Homepage) */
 const aktuelltHeadingRule = 'h-px min-w-0 flex-1 bg-[var(--divider-color)] self-center';
