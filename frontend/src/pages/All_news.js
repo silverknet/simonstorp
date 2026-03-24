@@ -12,6 +12,7 @@ import {
   getPublishedTimestamp,
   hasDatumValue,
 } from '../utils/newsDateFormat';
+import { plainNewsTeaserText } from '../utils/newsPlainExcerpt';
 
 const PAGE_SIZE = 4;
 
@@ -159,7 +160,7 @@ export default function All_news() {
                     {pubStr ? (
                       <p className={cardPubDate}>Publicerad {pubStr}</p>
                     ) : null}
-                    <p className={cardExcerpt}>{value.Beskrivning}</p>
+                    <p className={cardExcerpt}>{plainNewsTeaserText(value.Beskrivning)}</p>
                   </div>
                 </Link>
               </li>
