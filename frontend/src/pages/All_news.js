@@ -1,13 +1,19 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import ErrorScreen from '../components/ErrorScreen';
-import NewsMetaDates from '../components/NewsMetaDates';
 import useFetch from '../hooks/useFetch';
 import apiBaseUrl from '../config/apiBaseUrl';
 import { getOptimizedDisplayUrl } from '../utils/strapiMedia';
 import { getNyhetSlug } from '../utils/utils';
+import {
+  formatEventDatumShort,
+  formatPublishedForDisplay,
+  getPlatsText,
+  getPublishedTimestamp,
+  hasDatumValue,
+} from '../utils/newsDateFormat';
 
-const PAGE_SIZE = 6;
+const PAGE_SIZE = 4;
 
 function buildNyheterUrl(page) {
   return (
@@ -15,44 +21,61 @@ function buildNyheterUrl(page) {
   );
 }
 
-function listImageUrl(item) {
-  return getOptimizedDisplayUrl(item?.Bild);
-}
-
 const pageTitleClasses =
   'mb-8 w-full text-center font-[\'Lato\',sans-serif] text-[25px] font-normal leading-[1.28] tracking-[0.04rem] text-[var(--grey-text)] antialiased ' +
   'max-[800px]:mb-6 max-[800px]:text-[29px] max-[800px]:font-light';
 
-const cardClassesBase =
-  'flex w-full overflow-hidden rounded-lg border border-black/[0.08] bg-[var(--bg-white-accent)] p-4 text-left shadow-[0_1px_2px_rgba(0,0,0,0.04)] ' +
-  'transition-[transform,box-shadow] duration-200 ease-out no-underline text-inherit ' +
-  'hover:scale-[1.005] hover:shadow-[0_4px_14px_rgba(0,0,0,0.06)]';
+/* -------------------------------------------------------------------------- */
+/*  Card — matches Homepage news card design                                   */
+/* -------------------------------------------------------------------------- */
 
-const cardClassesWithImage =
-  `${cardClassesBase} flex-col gap-4 sm:flex-row sm:items-stretch sm:gap-4`;
+const cardBase =
+  'flex min-h-[11rem] w-full flex-row items-stretch overflow-hidden rounded-lg bg-[#f9f9f9] ' +
+  'no-underline text-inherit shadow-none ' +
+  'transition-[transform,box-shadow] duration-200 ease-out ' +
+  'hover:scale-[1.01] hover:shadow-lg';
 
-const cardClassesTextOnly = `${cardClassesBase} flex-col gap-2`;
+/** p-3 = 12px all sides; image fills full height of cell so top/bottom align with text */
+const thumbCell = 'flex shrink-0 self-stretch p-3';
 
-const cardMediaWrap =
-  'relative w-full shrink-0 overflow-hidden rounded-md min-h-[10rem] sm:min-h-0 sm:w-48 sm:max-w-[12rem] sm:self-stretch';
+/** h-full fills the cell height minus padding → image top/bottom align with text */
+const thumbWrap =
+  'relative h-full w-52 shrink-0 overflow-hidden rounded-sm bg-[var(--bg-white-accent)]';
 
-const cardImgCover = 'absolute inset-0 h-full w-full object-cover';
+const thumbImg = 'absolute inset-0 h-full w-full object-cover';
 
-const cardTitleClasses =
-  'm-0 font-[\'Lato\',sans-serif] text-[17px] font-medium leading-snug tracking-[1px] text-[var(--main-text)]';
+const cardBodyBase =
+  'flex min-w-0 flex-1 flex-col justify-center gap-0.5 bg-[#f9f9f9] py-3 text-left';
 
-const cardExcerptClasses =
-  'm-0 mt-2 overflow-hidden font-[\'Lato\',sans-serif] text-[15px] font-light leading-[180%] tracking-[0.5px] text-[var(--main-text)] ' +
-  '[display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:3]';
+/** thumbCell already provides 12px right gap via p-3; no extra left padding needed */
+const cardBody = `${cardBodyBase} pl-0 pr-4`;
+
+const cardBodyTextOnly = `${cardBodyBase} pl-3 pr-4`;
+
+const cardTitleRow =
+  'flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-0 text-[var(--main-text)]';
+
+const cardTitle =
+  "m-0 min-w-0 flex-1 font-['Lato',sans-serif] text-[17px] font-medium leading-snug tracking-[0.5px] text-[var(--main-text)]";
+
+const cardMeta = 'shrink-0 text-[10px] font-normal leading-snug text-neutral-400';
+
+const cardPubDate = 'm-0 text-[10px] leading-snug text-neutral-400';
+
+const cardExcerpt =
+  "m-0 mt-1 overflow-hidden font-['Lato',sans-serif] text-[15px] font-light leading-[180%] text-[var(--main-text)] " +
+  '[display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:5]';
+
+/* -------------------------------------------------------------------------- */
 
 const paginationWrapClasses =
   'mt-10 flex flex-col items-center justify-center gap-4 border-t border-black/[0.08] pt-8 max-[800px]:mt-8 max-[800px]:pt-6';
 
 const paginationInfoClasses =
-  'm-0 font-[\'Lato\',sans-serif] text-sm font-light tracking-[1px] text-[var(--grey-text)]';
+  "m-0 font-['Lato',sans-serif] text-sm font-light tracking-[1px] text-[var(--grey-text)]";
 
 const pageBtnClasses =
-  'inline-flex min-w-[7rem] items-center justify-center rounded-md border border-black/[0.12] bg-white px-4 py-2 font-[\'Lato\',sans-serif] text-sm font-light ' +
+  "inline-flex min-w-[7rem] items-center justify-center rounded-md border border-black/[0.12] bg-white px-4 py-2 font-['Lato',sans-serif] text-sm font-light " +
   'text-[var(--main-text)] transition-colors hover:border-[var(--accent-one)]/40 hover:bg-[var(--bg-white-accent)] disabled:cursor-not-allowed disabled:opacity-40';
 
 export default function All_news() {
@@ -95,30 +118,48 @@ export default function All_news() {
       <div className="mx-auto flex w-full max-w-[900px] flex-col items-stretch px-4 pt-5 max-[800px]:pt-4">
         <h1 className={pageTitleClasses}>Alla nyheter i Simonstorp</h1>
 
-        <ul className="m-0 flex list-none flex-col gap-4 p-0">
+        <ul className="m-0 flex list-none flex-col gap-3 p-0">
           {items.map((value) => {
-            const img = listImageUrl(value);
+            const img = getOptimizedDisplayUrl(value?.Bild) || null;
             const title = value.title ?? value.Rubrik ?? '';
             const pathSlug = getNyhetSlug(value);
-            if (!pathSlug) {
-              return null;
-            }
+            if (!pathSlug) return null;
+
+            const eventStr = hasDatumValue(value?.Datum)
+              ? formatEventDatumShort(value.Datum)
+              : null;
+            const platsStr = getPlatsText(value);
+            const pubStr = formatPublishedForDisplay(getPublishedTimestamp(value));
+
             return (
               <li key={value.id}>
                 <Link
-                  className={img ? cardClassesWithImage : cardClassesTextOnly}
+                  className={cardBase}
                   to={`/${pathSlug}`}
                   state={{ newsFrom: 'list' }}
                 >
                   {img ? (
-                    <div className={cardMediaWrap}>
-                      <img className={cardImgCover} src={img} alt="" />
+                    <div className={thumbCell}>
+                      <div className={thumbWrap}>
+                        <img className={thumbImg} src={img} alt="" />
+                      </div>
                     </div>
                   ) : null}
-                  <div className="flex min-w-0 flex-1 flex-col justify-center gap-0.5">
-                    <p className={cardTitleClasses}>{title}</p>
-                    <NewsMetaDates data={value} variant="listCompact" />
-                    <p className={cardExcerptClasses}>{value.Beskrivning}</p>
+                  <div className={img ? cardBody : cardBodyTextOnly}>
+                    <div className={cardTitleRow}>
+                      <p className={cardTitle}>{title}</p>
+                      {(eventStr || platsStr) ? (
+                        <span className={cardMeta}>
+                          {eventStr ?? ''}
+                          {eventStr && platsStr ? <span aria-hidden> · </span> : null}
+                          {platsStr ?? ''}
+                        </span>
+                      ) : null}
+                    </div>
+                    {pubStr ? (
+                      <p className={cardPubDate}>Publicerad {pubStr}</p>
+                    ) : null}
+                    <p className={cardExcerpt}>{value.Beskrivning}</p>
                   </div>
                 </Link>
               </li>
