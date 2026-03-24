@@ -30,28 +30,38 @@ const pageTitleClasses =
 /*  Card — matches Homepage news card design                                   */
 /* -------------------------------------------------------------------------- */
 
+/**
+ * ≤800px: column, image on top.
+ * ≥801px: row, image height = text column height (stretch), fixed width w-52, even p-3.
+ */
 const cardBase =
-  'flex min-h-[11rem] w-full flex-row items-stretch overflow-hidden rounded-lg bg-[#f9f9f9] ' +
+  'flex w-full flex-col items-stretch overflow-hidden rounded-lg bg-[#f9f9f9] ' +
   'no-underline text-inherit shadow-none ' +
   'transition-[transform,box-shadow] duration-200 ease-out ' +
-  'hover:scale-[1.01] hover:shadow-lg';
+  'hover:scale-[1.01] hover:shadow-lg ' +
+  'min-[801px]:flex-row min-[801px]:items-stretch';
 
-/** p-3 = 12px all sides; image fills full height of cell so top/bottom align with text */
-const thumbCell = 'flex shrink-0 self-stretch p-3';
+const thumbCell =
+  'flex w-full shrink-0 p-3 max-[800px]:pb-0 ' +
+  'min-[801px]:w-auto min-[801px]:self-stretch min-[801px]:p-3';
 
-/** h-full fills the cell height minus padding → image top/bottom align with text */
+/** Mobile: hero strip. Desktop: full row height, fixed width (landscape crop via object-cover). */
 const thumbWrap =
-  'relative h-full w-52 shrink-0 overflow-hidden rounded-sm bg-[var(--bg-white-accent)]';
+  'relative w-full shrink-0 overflow-hidden rounded-sm bg-[var(--bg-white-accent)] ' +
+  'aspect-[16/10] min-h-[11rem] max-h-56 ' +
+  'min-[801px]:aspect-auto min-[801px]:h-full min-[801px]:w-52 min-[801px]:min-h-0 min-[801px]:max-h-none';
 
 const thumbImg = 'absolute inset-0 h-full w-full object-cover';
 
+/** Desktop: same as pre–mobile-stack (py-3 pr-4 + pl-0 / pl-3). Mobile: padded block under image. */
 const cardBodyBase =
-  'flex min-w-0 flex-1 flex-col justify-center gap-0.5 bg-[#f9f9f9] py-3 text-left';
+  'flex min-w-0 flex-1 flex-col justify-start gap-0.5 bg-[#f9f9f9] text-left ' +
+  'max-[800px]:px-3 max-[800px]:py-3 ' +
+  'min-[801px]:py-3 min-[801px]:pr-4';
 
-/** thumbCell already provides 12px right gap via p-3; no extra left padding needed */
-const cardBody = `${cardBodyBase} pl-0 pr-4`;
+const cardBody = `${cardBodyBase} min-[801px]:pl-0`;
 
-const cardBodyTextOnly = `${cardBodyBase} pl-3 pr-4`;
+const cardBodyTextOnly = `${cardBodyBase} min-[801px]:pl-3`;
 
 const cardTitleRow =
   'flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-0 text-[var(--main-text)]';

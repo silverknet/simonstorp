@@ -1,7 +1,8 @@
 import React from 'react';
-import { MapPin } from 'lucide-react';
+import { CalendarClock, MapPin } from 'lucide-react';
 
 import {
+  eventDatumShowsTime,
   formatEventDatumForDisplay,
   formatEventDatumShort,
   formatPublishedForDisplay,
@@ -52,12 +53,13 @@ const article = {
   wrap: 'mb-6 mt-0 flex w-full flex-col gap-3',
   pub:
     'm-0 text-left font-[\'Lato\',sans-serif] text-[0.75rem] font-light leading-[160%] tracking-[0.04em] text-[rgba(34,34,34,0.45)] antialiased max-[800px]:text-[0.8rem]',
+  /** Same shell + typography as platsBlock (border card, not green sidebar) */
   eventBlock:
-    'flex flex-col gap-0.5 rounded-md border-l-[3px] border-[var(--accent-one)] bg-[#829460]/[0.09] px-3 py-2.5 max-[800px]:px-2.5 max-[800px]:py-2',
+    'flex flex-col gap-0.5 rounded-md border border-black/[0.1] bg-[var(--bg-white-accent)] px-3 py-2 max-[800px]:px-2.5',
   eventLabel:
-    'font-[\'Lato\',sans-serif] text-xs font-semibold uppercase tracking-[0.08em] text-[var(--accent-one)]',
+    'font-[\'Lato\',sans-serif] text-xs font-semibold uppercase tracking-[0.08em] text-[var(--grey-text)]',
   eventValue:
-    'font-[\'Lato\',sans-serif] text-base font-medium leading-snug tracking-[0.02em] text-[var(--main-text)] max-[800px]:text-[15px]',
+    'font-[\'Lato\',sans-serif] text-[15px] font-medium leading-snug text-[var(--main-text)] max-[800px]:text-sm',
   platsBlock:
     'flex flex-col gap-0.5 rounded-md border border-black/[0.1] bg-[var(--bg-white-accent)] px-3 py-2 max-[800px]:px-2.5',
   platsLabel:
@@ -124,6 +126,39 @@ function PlatsBlock({ v, platsStr, variant }) {
   );
 }
 
+/** Full article: datum/händelse — same layout as PlatsBlock (icon + label + value). */
+function ArticleEventBlock({ v, eventStr, datumIso }) {
+  if (!eventStr) return null;
+  const dt =
+    typeof datumIso === 'string' && datumIso.trim() !== '' ? datumIso.trim() : undefined;
+  const showsTime = eventDatumShowsTime(datumIso);
+  const headingLabel = showsTime ? 'Datum & tid' : 'Datum';
+  const label = (
+    <>
+      <span className={v.eventLabel}>{headingLabel}</span>
+      {dt ? (
+        <time className={`${v.eventValue} block`} dateTime={dt}>
+          {eventStr}
+        </time>
+      ) : (
+        <span className={`${v.eventValue} block`}>{eventStr}</span>
+      )}
+    </>
+  );
+  return (
+    <div className={v.eventBlock}>
+      <div className="flex items-start gap-2.5">
+        <CalendarClock
+          className="mt-0.5 h-[1.05rem] w-[1.05rem] shrink-0 text-[var(--accent-one)]"
+          strokeWidth={2.25}
+          aria-hidden
+        />
+        <div className="flex min-w-0 flex-col gap-0.5">{label}</div>
+      </div>
+    </div>
+  );
+}
+
 /**
  * Published + optional händelsedatum + optional plats (efter händelsedatum).
  */
@@ -151,9 +186,13 @@ export default function NewsMetaDates({ data, variant = 'teaser' }) {
         </p>
       ) : null}
       {eventStr ? (
-        <div className={v.eventBlock}>
-          <span className={v.eventValue}>{eventStr}</span>
-        </div>
+        variant === 'article' ? (
+          <ArticleEventBlock v={v} eventStr={eventStr} datumIso={data?.Datum} />
+        ) : (
+          <div className={v.eventBlock}>
+            <span className={v.eventValue}>{eventStr}</span>
+          </div>
+        )
       ) : null}
       <PlatsBlock v={v} platsStr={platsStr} variant={variant} />
     </div>

@@ -34,9 +34,11 @@ const columnShell =
   'box-border w-1/2 min-w-96 max-w-3xl font-light leading-relaxed tracking-wide transition-all duration-700 ease-out ' +
   'm-4 p-8 max-[1200px]:w-auto max-[800px]:m-0 max-[800px]:min-w-0 max-[800px]:w-full max-[800px]:max-w-none max-[800px]:p-0';
 
-const columnIntro = `${columnShell} font-['Lato',sans-serif] max-[800px]:pb-12`;
+const columnIntro =
+  `${columnShell} font-['Lato',sans-serif] max-[800px]:px-[var(--mobile-side)] max-[800px]:pb-12`;
 
-const columnNews = `${columnShell} font-['Heebo',sans-serif] max-[800px]:m-2.5`;
+/** Same horizontal inset as intro — replaces m-2.5 (10px) so both columns use --mobile-side */
+const columnNews = `${columnShell} font-['Heebo',sans-serif] max-[800px]:px-[var(--mobile-side)]`;
 
 /* -------------------------------------------------------------------------- */
 /*  Intro column — title + markdown                                           */
@@ -49,12 +51,12 @@ const introTitle =
 const headingRow =
   'mb-4 flex items-start max-[800px]:mb-4';
 
-const introHeadingRow = `${headingRow} max-[800px]:mx-[var(--mobile-side)] max-[800px]:mt-12`;
+const introHeadingRow = `${headingRow} max-[800px]:mt-12`;
 
 const introMarkdown =
   'text-left font-["Lato",sans-serif] text-base leading-relaxed tracking-wide text-[var(--main-text)] ' +
   '[&_p]:m-0 [&_a]:text-[var(--accent-one)] [&_strong]:font-semibold ' +
-  'max-[800px]:px-[var(--mobile-side)] max-[800px]:mt-0 max-[800px]:text-lg';
+  'max-[800px]:mt-0 max-[800px]:text-lg';
 
 /* -------------------------------------------------------------------------- */
 /*  News column — “Aktuellt” + cards + “Se alla”                                */
@@ -122,7 +124,8 @@ const newsCardExcerpt =
 
 const seeAllWrap =
   'group w-fit px-1 py-0 text-neutral-700 no-underline transition-all duration-700 ease-out ' +
-  'hover:cursor-pointer hover:bg-[#f9f9f9] hover:text-neutral-800';
+  'hover:cursor-pointer hover:bg-[#f9f9f9] hover:text-neutral-800 ' +
+  'max-[800px]:pl-0 max-[800px]:pr-0';
 
 const seeAllLink =
   'm-0 inline-flex w-fit items-center gap-1.5 text-sm text-neutral-600 no-underline transition-colors duration-300 ' +
