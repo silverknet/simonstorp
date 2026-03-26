@@ -108,12 +108,14 @@ const newsCardBodyTextOnly = `${newsCardBodyBase} pl-2 pr-4`;
 
 /** Title row: title left (wraps freely), event meta right (wraps only if forced) */
 const newsCardTitleRow =
-  'flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-0 text-[var(--main-text)]';
+  'grid min-w-0 grid-cols-[minmax(8.5rem,1fr)_minmax(0,45%)] items-start gap-x-2 text-[var(--main-text)]';
 
-const newsCardTitle = 'm-0 min-w-0 flex-1 font-normal leading-snug';
+const newsCardTitle =
+  'm-0 min-w-0 overflow-hidden font-normal leading-snug [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]';
 
 /** Event date + optional place shown inline to the right of the title */
-const newsCardMeta = 'shrink-0 text-[10px] font-normal leading-snug text-neutral-400';
+const newsCardMeta =
+  'min-w-0 justify-self-end overflow-hidden text-right text-[10px] font-normal leading-snug text-neutral-400 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]';
 
 /** Published date — small muted line below the title row */
 const newsCardPubDate = 'm-0 text-[10px] leading-snug text-neutral-400';
