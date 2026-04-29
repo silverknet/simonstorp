@@ -82,12 +82,12 @@ const newsCardLink =
 
 /** Hover lives here so it isn’t delayed by the entrance `transitionDelay` on the Link */
 const newsCardBase =
-  'flex min-h-36 w-full flex-row items-stretch overflow-hidden rounded-lg bg-[#f9f9f9] ' +
+  'flex w-full flex-row items-stretch overflow-hidden rounded-lg bg-[#f9f9f9] ' +
   'text-[var(--main-text)] shadow-none transition-[transform,box-shadow] duration-200 ease-out ' +
   'hover:scale-[1.01] hover:shadow-lg';
 
-/** Thumb stays h-28 and sits centered within the taller card */
-const newsThumbCell = 'flex shrink-0 items-center justify-center self-stretch p-2';
+/** Image top-aligned to text; padding matches newsCardBody py-2 horizontally */
+const newsThumbCell = 'flex shrink-0 items-start justify-center self-stretch p-2';
 
 const newsThumbWrap =
   'relative h-28 w-28 shrink-0 overflow-hidden rounded-sm bg-[var(--bg-white-accent)]';
@@ -97,29 +97,39 @@ const newsCardDivider = 'my-1.5 h-px w-full shrink-0 bg-[var(--divider-color)]';
 
 const newsThumb = 'absolute inset-0 h-full w-full object-cover';
 
+/** py-2 matches thumb outer p-2 — tops/bottoms line up beside the thumbnail */
 const newsCardBodyBase =
-  'flex min-w-0 flex-1 flex-col justify-center gap-0.5 bg-[#f9f9f9] py-3 text-left';
+  'flex min-w-0 flex-1 flex-col bg-[#f9f9f9] py-2 text-left';
 
-/** Beside image: inner padding of the text column (after thumb). */
-const newsCardBody = `${newsCardBodyBase} pl-2 pr-4`;
+/** With image: min-h-32 matches thumb (h-28 + p-2). Excerpt gets mt-auto to align with band bottom. */
+const newsCardBody = `${newsCardBodyBase} min-h-32 pl-2 pr-4`;
 
-/** No image: full-width text — left inset matches image left edge (p-2 = 8px). */
-const newsCardBodyTextOnly = `${newsCardBodyBase} pl-2 pr-4`;
+/** No image: single column with comfortable stack gap */
+const newsCardBodyTextOnly = `${newsCardBodyBase} justify-start gap-1 pl-2 pr-4`;
 
-/** Title row: title left (wraps freely), event meta right (wraps only if forced) */
+/** Title + dates above excerpt when thumbnail present */
+const newsCardLeadBlock = 'flex min-w-0 flex-col gap-0.5';
+
+/**
+ * Title + event date/place: always vertical in this compact card. Side-by-side with the
+ * thumbnail, the text column is too narrow for a title row + meta column — date/place
+ * must sit on its own line under the title so nothing overlaps.
+ */
 const newsCardTitleRow =
-  'flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-0 text-[var(--main-text)]';
+  'flex w-full min-w-0 flex-col gap-0.5 text-[var(--main-text)]';
 
-const newsCardTitle = 'm-0 min-w-0 flex-1 font-normal leading-snug';
+const newsCardTitle =
+  'm-0 w-full min-w-0 overflow-hidden font-normal leading-snug [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]';
 
-/** Event date + optional place shown inline to the right of the title */
-const newsCardMeta = 'shrink-0 text-[10px] font-normal leading-snug text-neutral-400';
+/** Date/time + place — full width under title; block text (no -webkit-box) avoids overlap bugs beside clamped title */
+const newsCardMeta =
+  'm-0 block w-full min-w-0 break-words text-left text-[10px] font-normal leading-snug text-neutral-400';
 
 /** Published date — small muted line below the title row */
 const newsCardPubDate = 'm-0 text-[10px] leading-snug text-neutral-400';
 
 const newsCardExcerpt =
-  'm-0 mt-1 overflow-hidden pr-1 pb-px text-sm leading-normal text-[#403939] ' +
+  'm-0 overflow-hidden pr-1 pb-px text-sm leading-normal text-[#403939] ' +
   '[display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:3]';
 
 const seeAllWrap =
@@ -218,20 +228,30 @@ export default function Homepage(props) {
                             </div>
                           ) : null}
                           <div className={imgUrl ? newsCardBody : newsCardBodyTextOnly}>
-                            <div className={newsCardTitleRow}>
-                              <p className={newsCardTitle}>{title}</p>
-                              {(eventStr || platsStr) ? (
-                                <span className={newsCardMeta}>
-                                  {eventStr ?? ''}
-                                  {eventStr && platsStr ? <span aria-hidden> · </span> : null}
-                                  {platsStr ?? ''}
-                                </span>
+                            <div className={newsCardLeadBlock}>
+                              <div className={newsCardTitleRow}>
+                                <p className={newsCardTitle}>{title}</p>
+                                {(eventStr || platsStr) ? (
+                                  <span className={newsCardMeta}>
+                                    {eventStr ?? ''}
+                                    {eventStr && platsStr ? <span aria-hidden> · </span> : null}
+                                    {platsStr ?? ''}
+                                  </span>
+                                ) : null}
+                              </div>
+                              {pubStr ? (
+                                <p className={newsCardPubDate}>Publicerad {pubStr}</p>
                               ) : null}
                             </div>
-                            {pubStr ? (
-                              <p className={newsCardPubDate}>Publicerad {pubStr}</p>
-                            ) : null}
-                            <p className={newsCardExcerpt}>{plainNewsTeaserText(value.Beskrivning)}</p>
+                            <p
+                              className={
+                                imgUrl
+                                  ? `${newsCardExcerpt} mt-auto shrink-0`
+                                  : newsCardExcerpt
+                              }
+                            >
+                              {plainNewsTeaserText(value.Beskrivning)}
+                            </p>
                           </div>
                         </div>
                       </Link>

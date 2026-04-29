@@ -373,12 +373,29 @@ export default function Menubar({
             <span className="invisible block h-7 w-7" aria-hidden />
           ) : null}
 
-          <Link to="/">
+          <Link to="/" className="relative block">
+            <img
+              className={`${logoClassName} pointer-events-none absolute inset-0 select-none`}
+              src={logoUrl}
+              alt=""
+              aria-hidden
+              style={{
+                filter: 'brightness(0) blur(1.45px) opacity(0.23)',
+                transform: 'translateY(1.9px) translateX(0.25px)',
+                WebkitMaskImage:
+                  'linear-gradient(90deg, rgba(0,0,0,0.0) 0%, rgba(0,0,0,0.58) 28%, rgba(0,0,0,0.04) 39%, rgba(0,0,0,0.00) 46%, rgba(0,0,0,0.62) 58%, rgba(0,0,0,0.48) 100%)',
+                maskImage:
+                  'linear-gradient(90deg, rgba(0,0,0,0.0) 0%, rgba(0,0,0,0.58) 28%, rgba(0,0,0,0.04) 39%, rgba(0,0,0,0.00) 46%, rgba(0,0,0,0.62) 58%, rgba(0,0,0,0.48) 100%)',
+              }}
+            />
             <img
               className={logoClassName}
               src={logoUrl}
               alt="Simonstorp logo"
-              style={{ filter: 'sepia(0.35) contrast(1.05) drop-shadow(0 1px 3px rgba(0,0,0,0.12))' }}
+              style={{
+                filter:
+                  'sepia(0.18) contrast(1.02) drop-shadow(0 0.6px 0.8px rgba(0,0,0,0.085)) drop-shadow(1.4px 0.8px 1.2px rgba(0,0,0,0.065))',
+              }}
             />
           </Link>
 
