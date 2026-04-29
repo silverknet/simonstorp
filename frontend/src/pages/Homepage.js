@@ -106,16 +106,20 @@ const newsCardBody = `${newsCardBodyBase} pl-2 pr-4`;
 /** No image: full-width text — left inset matches image left edge (p-2 = 8px). */
 const newsCardBodyTextOnly = `${newsCardBodyBase} pl-2 pr-4`;
 
-/** Title row: title left (wraps freely), event meta right (wraps only if forced) */
+/**
+ * Title + event date/place: always vertical in this compact card. Side-by-side with the
+ * thumbnail, the text column is too narrow for a title row + meta column — date/place
+ * must sit on its own line under the title so nothing overlaps.
+ */
 const newsCardTitleRow =
-  'grid min-w-0 grid-cols-[minmax(8.5rem,1fr)_minmax(0,45%)] items-start gap-x-2 text-[var(--main-text)]';
+  'flex w-full min-w-0 flex-col gap-1 text-[var(--main-text)]';
 
 const newsCardTitle =
-  'm-0 min-w-0 overflow-hidden font-normal leading-snug [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]';
+  'm-0 w-full min-w-0 overflow-hidden font-normal leading-snug [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]';
 
-/** Event date + optional place shown inline to the right of the title */
+/** Date/time + place — full width under title; block text (no -webkit-box) avoids overlap bugs beside clamped title */
 const newsCardMeta =
-  'min-w-0 justify-self-end overflow-hidden text-right text-[10px] font-normal leading-snug text-neutral-400 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]';
+  'm-0 block w-full min-w-0 break-words text-left text-[10px] font-normal leading-snug text-neutral-400';
 
 /** Published date — small muted line below the title row */
 const newsCardPubDate = 'm-0 text-[10px] leading-snug text-neutral-400';
