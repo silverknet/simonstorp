@@ -177,6 +177,19 @@ export async function setProfileOnBoard(boardId, onBoard) {
   return true;
 }
 
+export async function linkAliasToDestination(alias, destination) {
+  const token = getAdminToken();
+  const res = await fetch(`${apiBaseUrl}/api/site-admin/mail/link`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ alias, destination }),
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data?.error?.message || 'Kunde inte koppla adressen.');
+  return data;
+}
+
 export async function resendMailVerification(destination) {
   const token = getAdminToken();
   const res = await fetch(`${apiBaseUrl}/api/site-admin/mail/resend`, {

@@ -21,6 +21,7 @@ import {
   createAdminInvite,
   fetchAdminMe,
   fetchPeople,
+  linkAliasToDestination,
   removeBoardMember,
   resendMailVerification,
   setBoardMember,
@@ -205,7 +206,17 @@ function Field({ label, children }) {
 }
 
 /** Everything that would otherwise clutter the row: aliases, status, and the actions. */
-function PersonDialog({ entry, accounts, busy, onClose, onInvite, onLink, onResend, onMove }) {
+function PersonDialog({
+  entry,
+  accounts,
+  busy,
+  onClose,
+  onInvite,
+  onLink,
+  onResend,
+  onMove,
+  onLinkAlias,
+}) {
   const mail = entry.mail ? MAIL_STATES[entry.mail.state] : null;
   const MailIcon = mail?.icon;
 
@@ -256,6 +267,12 @@ function PersonDialog({ entry, accounts, busy, onClose, onInvite, onLink, onRese
                 </option>
               ))}
             </select>
+          ) : null}
+
+          {entry.mail?.ruleMissing && entry.board?.email && entry.mail.forwardsTo ? (
+            <button type="button" className={ghostButton} disabled={busy} onClick={onLinkAlias}>
+              Koppla {entry.board.email} → {entry.mail.forwardsTo}
+            </button>
           ) : null}
 
           {entry.mail?.state === 'unverified' && entry.mail.forwardsTo ? (
@@ -460,6 +477,28 @@ export default function AdminPage() {
       })
       .catch((err) => setUsersError(err.message));
   }, []);
+
+  /** Creates the routing rule, or parks it until the destination is confirmed. */
+  async function connectAlias(entry) {
+    setBusyId(entry.userId ?? entry.boardId);
+    setUsersError('');
+
+    try {
+      const result = await linkAliasToDestination(entry.board.email, entry.mail.forwardsTo);
+
+      if (result.pending) {
+        setUsersError(
+          `${entry.board.email} kopplas så snart ${entry.mail.forwardsTo} har bekräftats.`
+        );
+      }
+
+      loadUsers();
+    } catch (err) {
+      setUsersError(err.message);
+    } finally {
+      setBusyId(null);
+    }
+  }
 
   async function resendVerification(entry) {
     setBusyId(entry.userId ?? entry.boardId);
@@ -679,6 +718,11 @@ export default function AdminPage() {
               const target = detail;
               setDetail(null);
               moveMember(target);
+            }}
+            onLinkAlias={() => {
+              const target = detail;
+              setDetail(null);
+              connectAlias(target);
             }}
           />
         ) : null}
