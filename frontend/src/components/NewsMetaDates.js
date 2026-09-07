@@ -53,15 +53,15 @@ const article = {
   wrap: 'mb-6 mt-0 flex w-full flex-col gap-3',
   pub:
     'm-0 text-left font-[\'Lato\',sans-serif] text-[0.75rem] font-light leading-[160%] tracking-[0.04em] text-[rgba(34,34,34,0.45)] antialiased max-[800px]:text-[0.8rem]',
-  /** Same shell + typography as platsBlock (border card, not green sidebar) */
+  /** Same shell + typography as platsBlock (borderless tinted card, not green sidebar) */
   eventBlock:
-    'flex flex-col gap-0.5 rounded-md border border-black/[0.1] bg-[var(--bg-white-accent)] px-3 py-2 max-[800px]:px-2.5',
+    'flex flex-col gap-0.5 rounded-md bg-[var(--bg-white-accent)] px-3 py-2 max-[800px]:px-2.5',
   eventLabel:
     'font-[\'Lato\',sans-serif] text-xs font-semibold uppercase tracking-[0.08em] text-[var(--grey-text)]',
   eventValue:
     'font-[\'Lato\',sans-serif] text-[15px] font-medium leading-snug text-[var(--main-text)] max-[800px]:text-sm',
   platsBlock:
-    'flex flex-col gap-0.5 rounded-md border border-black/[0.1] bg-[var(--bg-white-accent)] px-3 py-2 max-[800px]:px-2.5',
+    'flex flex-col gap-0.5 rounded-md bg-[var(--bg-white-accent)] px-3 py-2 max-[800px]:px-2.5',
   platsLabel:
     'font-[\'Lato\',sans-serif] text-xs font-semibold uppercase tracking-[0.08em] text-[var(--grey-text)]',
   platsValue:
@@ -111,9 +111,9 @@ function PlatsBlock({ v, platsStr, variant }) {
   return (
     <div className={shell}>
       {isArticle ? (
-        <div className="flex items-start gap-2.5">
+        <div className="flex items-center gap-2.5">
           <MapPin
-            className="mt-0.5 h-[1.05rem] w-[1.05rem] shrink-0 text-[var(--accent-one)]"
+            className="h-[1.05rem] w-[1.05rem] shrink-0 text-[var(--accent-one)]"
             strokeWidth={2.25}
             aria-hidden
           />
@@ -147,9 +147,9 @@ function ArticleEventBlock({ v, eventStr, datumIso }) {
   );
   return (
     <div className={v.eventBlock}>
-      <div className="flex items-start gap-2.5">
+      <div className="flex items-center gap-2.5">
         <CalendarClock
-          className="mt-0.5 h-[1.05rem] w-[1.05rem] shrink-0 text-[var(--accent-one)]"
+          className="h-[1.05rem] w-[1.05rem] shrink-0 text-[var(--accent-one)]"
           strokeWidth={2.25}
           aria-hidden
         />
