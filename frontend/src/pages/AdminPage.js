@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 
 import apiBaseUrl from '../config/apiBaseUrl';
+import { usePageMeta } from '../utils/pageMeta';
 import {
   adminLogin,
   adminLogout,
@@ -248,6 +249,8 @@ function InviteDialog({ onClose, onCreated, prefill }) {
 }
 
 export default function AdminPage() {
+  usePageMeta({ title: 'Administration', noIndex: true });
+
   const [user, setUser] = useState(null);
   const [checking, setChecking] = useState(true);
   const [people, setPeople] = useState([]);

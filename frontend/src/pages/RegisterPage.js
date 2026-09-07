@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 
 import { completeInvite, readInvite } from '../utils/adminAuth';
+import { usePageMeta } from '../utils/pageMeta';
 
 const shell = 'mx-auto flex w-full max-w-[36rem] flex-col px-4 py-10';
 const heading = 'mb-2 text-[1.75rem] font-normal leading-tight text-[var(--main-text)]';
@@ -17,6 +18,8 @@ const errorBox = 'mb-4 rounded-md bg-[#b3261e]/10 px-3 py-2 text-base text-[#b32
 const card = 'mb-6 rounded-md bg-[var(--bg-white-accent)] px-4 py-3 text-base';
 
 export default function RegisterPage() {
+  usePageMeta({ title: 'Skapa konto', noIndex: true });
+
   const [params] = useSearchParams();
   const token = params.get('token') || '';
 

@@ -7,6 +7,7 @@ import remarkBreaks from 'remark-breaks'
 import remarkGfm from 'remark-gfm'
 
 import apiBaseUrl from '../config/apiBaseUrl'
+import { metaExcerpt, usePageMeta } from '../utils/pageMeta'
 import { getOptimizedDisplayUrl } from '../utils/strapiMedia'
 
 import ErrorScreen from '../components/ErrorScreen'
@@ -111,6 +112,11 @@ export default function Infopage(props) {
 
   const { loading: membersLoading, error: membersError, data: members } =
     useFetch(membersUrl)
+
+  usePageMeta({
+    title: pageData?.title,
+    description: metaExcerpt(pageData?.Huvudtext),
+  })
 
   const [centerFormat, setCenterFormat] = useState(false)
   const [imageDims, setImageDims] = useState({})

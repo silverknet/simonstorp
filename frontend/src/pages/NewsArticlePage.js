@@ -4,6 +4,8 @@ import { useParams } from 'react-router-dom';
 
 import ErrorScreen from '../components/ErrorScreen';
 import { useNyhetBySlug } from '../hooks/useNyhetBySlug';
+import { metaExcerpt, usePageMeta } from '../utils/pageMeta';
+import { getOptimizedDisplayUrl } from '../utils/strapiMedia';
 import FullNews from './Full_news';
 
 const loadingClasses =
@@ -16,6 +18,12 @@ const loadingClasses =
 export default function NewsArticlePage() {
   const { slug } = useParams();
   const { page, loading, error } = useNyhetBySlug(slug);
+
+  usePageMeta({
+    title: page?.title ?? page?.Rubrik,
+    description: metaExcerpt(page?.Beskrivning),
+    image: getOptimizedDisplayUrl(page?.Bild) || null,
+  });
 
   if (loading) {
     return (

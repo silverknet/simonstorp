@@ -13,6 +13,7 @@ import {
   hasDatumValue,
 } from '../utils/newsDateFormat';
 import { plainNewsTeaserText } from '../utils/newsPlainExcerpt';
+import { usePageMeta } from '../utils/pageMeta';
 
 const PAGE_SIZE = 4;
 
@@ -90,6 +91,12 @@ const pageBtnClasses =
   'text-[var(--main-text)] transition-colors hover:border-[var(--accent-one)]/40 hover:bg-[var(--bg-white-accent)] disabled:cursor-not-allowed disabled:opacity-40';
 
 export default function All_news() {
+  usePageMeta({
+    title: 'Alla nyheter',
+    description: 'Nyheter och evenemang från Simonstorp och föreningen Simonstorparna.',
+    path: '/allanyheter',
+  });
+
   const [page, setPage] = useState(1);
   const listUrl = useMemo(() => buildNyheterUrl(page), [page]);
   const { loading, error, data } = useFetch(listUrl);

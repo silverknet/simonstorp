@@ -8,6 +8,7 @@ import ImageSlider from '../components/ImageSlider';
 import useFetch from '../hooks/useFetch';
 import useWindowDimensions from '../hooks/getWindowDimensions';
 import apiBaseUrl from '../config/apiBaseUrl';
+import { usePageMeta } from '../utils/pageMeta';
 import { getOptimizedDisplayUrl } from '../utils/strapiMedia';
 import { getNyhetSlug } from '../utils/utils';
 import {
@@ -142,6 +143,13 @@ const seeAllLink =
   'group-hover:border-l-2 group-hover:border-[var(--accent-one)] group-hover:pl-1.5';
 
 export default function Homepage(props) {
+  usePageMeta({
+    title: null,
+    description:
+      'Simonstorp i Kolmården — nyheter, evenemang, föreningar, boende och naturupplevelser i socknen.',
+    path: '/',
+  });
+
   const { data: newsTeaser, loading: newsLoading, error: newsError } = useFetch(HOME_NEWS_URL);
   const homeData = props.homecontent?.data?.data ?? {};
   const { width: viewportWidth } = useWindowDimensions();
