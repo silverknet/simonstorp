@@ -380,12 +380,12 @@ export default function Menubar({
               alt=""
               aria-hidden
               style={{
-                filter: 'brightness(0) blur(1.45px) opacity(0.23)',
-                transform: 'translateY(1.9px) translateX(0.25px)',
+                filter: 'brightness(0) blur(1.2px) opacity(0.14)',
+                transform: 'translateY(1.3px) translateX(0.2px)',
                 WebkitMaskImage:
-                  'linear-gradient(90deg, rgba(0,0,0,0.0) 0%, rgba(0,0,0,0.58) 28%, rgba(0,0,0,0.04) 39%, rgba(0,0,0,0.00) 46%, rgba(0,0,0,0.62) 58%, rgba(0,0,0,0.48) 100%)',
+                  'linear-gradient(90deg, rgba(0,0,0,0.0) 0%, rgba(0,0,0,0.40) 28%, rgba(0,0,0,0.03) 39%, rgba(0,0,0,0.00) 46%, rgba(0,0,0,0.43) 58%, rgba(0,0,0,0.33) 100%)',
                 maskImage:
-                  'linear-gradient(90deg, rgba(0,0,0,0.0) 0%, rgba(0,0,0,0.58) 28%, rgba(0,0,0,0.04) 39%, rgba(0,0,0,0.00) 46%, rgba(0,0,0,0.62) 58%, rgba(0,0,0,0.48) 100%)',
+                  'linear-gradient(90deg, rgba(0,0,0,0.0) 0%, rgba(0,0,0,0.40) 28%, rgba(0,0,0,0.03) 39%, rgba(0,0,0,0.00) 46%, rgba(0,0,0,0.43) 58%, rgba(0,0,0,0.33) 100%)',
               }}
             />
             <img
@@ -394,7 +394,7 @@ export default function Menubar({
               alt="Simonstorp logo"
               style={{
                 filter:
-                  'sepia(0.18) contrast(1.02) drop-shadow(0 0.6px 0.8px rgba(0,0,0,0.085)) drop-shadow(1.4px 0.8px 1.2px rgba(0,0,0,0.065))',
+                  'sepia(0.11) contrast(1.01) drop-shadow(0 0.5px 0.7px rgba(0,0,0,0.055)) drop-shadow(1.1px 0.6px 1px rgba(0,0,0,0.042))',
               }}
             />
           </Link>

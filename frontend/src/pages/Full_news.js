@@ -40,8 +40,13 @@ const gridWithImageClasses =
 
 const gridNoImageClasses = 'grid w-full grid-cols-1 justify-items-center';
 
+/**
+ * lg:w-full (not a fixed 360px) so the image shrinks with its grid track. A fixed width
+ * overflows the track when the text column is squeezed just past the lg breakpoint,
+ * swallowing the column gap and running the text under the image.
+ */
 const imageColClasses =
-  'w-full max-w-[54ch] shrink-0 justify-self-center lg:w-[360px] lg:max-w-[360px] lg:justify-self-start';
+  'w-full max-w-[54ch] shrink-0 justify-self-center lg:w-full lg:max-w-[360px] lg:justify-self-start';
 
 export default function Full_news(props) {
   const location = useLocation();

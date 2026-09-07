@@ -99,13 +99,13 @@ const newsThumb = 'absolute inset-0 h-full w-full object-cover';
 
 /** py-2 matches thumb outer p-2 — tops/bottoms line up beside the thumbnail */
 const newsCardBodyBase =
-  'flex min-w-0 flex-1 flex-col bg-[#f9f9f9] py-2 text-left';
+  'flex min-w-0 flex-1 flex-col justify-start gap-0.5 bg-[#f9f9f9] py-2 text-left';
 
-/** With image: min-h-32 matches thumb (h-28 + p-2). Excerpt gets mt-auto to align with band bottom. */
-const newsCardBody = `${newsCardBodyBase} min-h-32 pl-2 pr-4`;
+/** With image: h-32 pins the body to the thumb band (h-28 + p-2); overflow-hidden keeps text inside it. */
+const newsCardBody = `${newsCardBodyBase} h-32 overflow-hidden pl-2 pr-4`;
 
-/** No image: single column with comfortable stack gap */
-const newsCardBodyTextOnly = `${newsCardBodyBase} justify-start gap-1 pl-2 pr-4`;
+/** No image: same stack, free to grow since there is no thumbnail to match */
+const newsCardBodyTextOnly = `${newsCardBodyBase} pl-2 pr-4`;
 
 /** Title + dates above excerpt when thumbnail present */
 const newsCardLeadBlock = 'flex min-w-0 flex-col gap-0.5';
@@ -123,13 +123,13 @@ const newsCardTitle =
 
 /** Date/time + place — full width under title; block text (no -webkit-box) avoids overlap bugs beside clamped title */
 const newsCardMeta =
-  'm-0 block w-full min-w-0 break-words text-left text-[10px] font-normal leading-snug text-neutral-400';
+  'm-0 block w-full min-w-0 break-words text-left text-[10px] font-normal leading-tight text-neutral-400';
 
 /** Published date — small muted line below the title row */
-const newsCardPubDate = 'm-0 text-[10px] leading-snug text-neutral-400';
+const newsCardPubDate = 'm-0 text-[10px] leading-tight text-neutral-400';
 
 const newsCardExcerpt =
-  'm-0 overflow-hidden pr-1 pb-px text-sm leading-normal text-[#403939] ' +
+  'm-0 min-h-0 overflow-hidden pr-1 text-sm leading-snug text-[#403939] ' +
   '[display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:3]';
 
 const seeAllWrap =
@@ -243,13 +243,7 @@ export default function Homepage(props) {
                                 <p className={newsCardPubDate}>Publicerad {pubStr}</p>
                               ) : null}
                             </div>
-                            <p
-                              className={
-                                imgUrl
-                                  ? `${newsCardExcerpt} mt-auto shrink-0`
-                                  : newsCardExcerpt
-                              }
-                            >
+                            <p className={newsCardExcerpt}>
                               {plainNewsTeaserText(value.Beskrivning)}
                             </p>
                           </div>
