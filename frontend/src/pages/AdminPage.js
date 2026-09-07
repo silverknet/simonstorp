@@ -6,6 +6,8 @@ import {
   Copy,
   MailCheck,
   MailX,
+  UserCheck,
+  UserX,
   SquarePen,
   UserPlus,
   X,
@@ -379,9 +381,27 @@ export default function AdminPage() {
 
                     <span className="text-sm text-[var(--grey-text)]">
                       {entry.userId ? roleText(entry.roles) : 'Inget konto'}
-                      {entry.userId && !entry.isActive ? ' · inaktiverad' : ''}
                       {entry.board ? ` · Styrelse: ${entry.board.roll}` : ''}
                     </span>
+
+                    {entry.userId ? (
+                      <span
+                        className={`mt-1 flex items-center gap-2 text-sm ${
+                          entry.hasLoggedIn ? 'text-[var(--accent-one)]' : 'text-[#b26b00]'
+                        }`}
+                      >
+                        {entry.hasLoggedIn ? (
+                          <UserCheck className="h-4 w-4 shrink-0" aria-hidden />
+                        ) : (
+                          <UserX className="h-4 w-4 shrink-0" aria-hidden />
+                        )}
+                        {entry.hasLoggedIn
+                          ? 'Har loggat in'
+                          : entry.isActive
+                            ? 'Har aldrig loggat in'
+                            : 'Inbjuden – har inte skapat konto än'}
+                      </span>
+                    ) : null}
 
                     {mail ? (
                       <span className="mt-1 flex flex-col gap-1">
