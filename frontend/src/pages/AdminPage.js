@@ -283,6 +283,21 @@ export default function AdminPage() {
     }
   }
 
+  /** Manual fallback for when Cloudflare has no rule to derive the match from. */
+  async function linkToAccount(entry, userId) {
+    setBusyId(entry.boardId);
+    setUsersError('');
+
+    try {
+      await setBoardMember(userId, { boardId: entry.board.id });
+      loadUsers();
+    } catch (err) {
+      setUsersError(err.message);
+    } finally {
+      setBusyId(null);
+    }
+  }
+
   /** Confirms a Cloudflare-derived match, merging a board profile into an account row. */
   async function linkExisting(entry) {
     setBusyId(entry.boardId);
@@ -365,6 +380,8 @@ export default function AdminPage() {
       </div>
     );
   }
+
+  const accounts = people.filter((p) => p.userId && !p.board);
 
   if (user) {
     return (
@@ -472,13 +489,34 @@ export default function AdminPage() {
                           <span className="text-sm text-[var(--grey-text)]">
                             Styrelseprofil utan konto.
                           </span>
-                          <button
-                            type="button"
-                            className={ghostButton + ' self-start py-2'}
-                            onClick={() => setInviteOpen({ name: entry.name, email: entry.email })}
-                          >
-                            Bjud in {entry.name.split(' ')[0]}
-                          </button>
+
+                          <span className="flex flex-wrap items-center gap-2">
+                            <button
+                              type="button"
+                              className={ghostButton + ' py-2'}
+                              onClick={() => setInviteOpen({ name: entry.name, email: entry.email })}
+                            >
+                              Bjud in {entry.name.split(' ')[0]}
+                            </button>
+
+                            {accounts.length ? (
+                              <select
+                                className="rounded-md border border-black/20 bg-white px-3 py-2 text-sm"
+                                value=""
+                                disabled={busyId === entry.boardId}
+                                onChange={(e) =>
+                                  e.target.value && linkToAccount(entry, Number(e.target.value))
+                                }
+                              >
+                                <option value="">Koppla till befintligt konto…</option>
+                                {accounts.map((a) => (
+                                  <option key={a.userId} value={a.userId}>
+                                    {a.name} ({a.email})
+                                  </option>
+                                ))}
+                              </select>
+                            ) : null}
+                          </span>
                         </span>
                       )
                     )}

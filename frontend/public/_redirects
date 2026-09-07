@@ -1,2 +1,11 @@
-http://simonstorp.net/* https://simonstorp.se/:splat 301!
+# simonstorp.net is kept registered only so its Google ranking transfers to .se.
+# Both schemes must be listed: without the https rule the old domain served a
+# full 200 and Google indexed it as a separate, competing site.
+http://simonstorp.net/*       https://simonstorp.se/:splat  301!
+https://simonstorp.net/*      https://simonstorp.se/:splat  301!
+http://www.simonstorp.net/*   https://simonstorp.se/:splat  301!
+https://www.simonstorp.net/*  https://simonstorp.se/:splat  301!
+http://www.simonstorp.se/*    https://simonstorp.se/:splat  301!
+https://www.simonstorp.se/*   https://simonstorp.se/:splat  301!
+
 /* /index.html 200
