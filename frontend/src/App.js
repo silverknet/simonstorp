@@ -4,6 +4,8 @@ import useFetch from './hooks/useFetch'
 import Infopage from './pages/Infopage'
 import Homepage from './pages/Homepage'
 import AllNews from './pages/All_news'
+import AdminPage from './pages/AdminPage'
+import RegisterPage from './pages/RegisterPage'
 import NewsArticlePage from './pages/NewsArticlePage'
 import Menubar from './components/Menubar'
 import Footer from './components/Footer'
@@ -57,6 +59,10 @@ function AppLayout({
               element={<Infopage documentId={page.documentId} />}
             ></Route>
           ))}
+          <Route exact path="/admin" element={<AdminPage />}></Route>
+
+          <Route exact path="/registrera" element={<RegisterPage />}></Route>
+
           <Route path=":slug" element={<NewsArticlePage />}></Route>
         </Routes>
       </div>
