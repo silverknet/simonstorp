@@ -156,72 +156,81 @@ function PersonRow({ entry, onOpen }) {
   );
 }
 
-/** Everything that would otherwise clutter the row: aliases, status, and the actions. */
-function PersonDialog({ entry, accounts, busy, onClose, onInvite, onLink, onResend, onMove }) {
-  const mail = entry.mail ? MAIL_STATES[entry.mail.state] : null;
+/**
+ * Shared shell so both dialogs close the same way — clicking the backdrop or pressing
+ * Escape, which is what people try first.
+ */
+function Dialog({ title, onClose, children, footer }) {
+  useEffect(() => {
+    const onKey = (e) => e.key === 'Escape' && onClose();
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [onClose]);
 
   return (
-    <div className={dialogBackdrop} role="dialog" aria-modal="true">
-      <div className={dialogBox}>
-        <div className="mb-4 flex items-start justify-between gap-4">
-          <h2 className={dialogTitle}>{entry.name}</h2>
-          <button type="button" onClick={onClose} aria-label="Stäng" className="p-1">
+    <div
+      className={dialogBackdrop}
+      role="presentation"
+      onMouseDown={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div className={dialogBox} role="dialog" aria-modal="true" aria-label={title}>
+        <div className="mb-5 flex items-start justify-between gap-4">
+          <h2 className={dialogTitle}>{title}</h2>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Stäng"
+            className="-m-1 rounded-md p-1 text-[var(--grey-text)] hover:bg-black/5"
+          >
             <X className="h-6 w-6" aria-hidden />
           </button>
         </div>
 
-        <p className="m-0 mb-1 text-base text-[var(--grey-text)]">{entry.email}</p>
-        <p className="m-0 mb-4 text-base text-[var(--grey-text)]">
-          {entry.userId ? roleText(entry.roles) : 'Inget konto'}
-          {entry.board ? ` · Styrelse: ${entry.board.roll}` : ''}
-        </p>
+        {children}
 
-        {entry.userId ? (
-          <p className="m-0 mb-4 text-base">
-            {entry.isActive
-              ? `Konto klart${
-                  entry.hasUsedSite ? ` · besökte sidan ${formatSeen(entry.lastSeenAt)}` : ''
-                }`
-              : 'Inbjuden – har inte valt lösenord än'}
-          </p>
-        ) : null}
+        {footer ? <div className="mt-6 flex flex-col gap-2">{footer}</div> : null}
+      </div>
+    </div>
+  );
+}
 
-        <h3 className="mb-2 text-base font-medium text-[var(--main-text)]">E-postadresser</h3>
+/** A labelled line in the dialog's summary block. */
+function Field({ label, children }) {
+  return (
+    <div className="flex flex-col gap-0.5 border-b border-black/5 py-2 last:border-b-0">
+      <span className="text-xs uppercase tracking-[0.06em] text-[var(--grey-text)]">{label}</span>
+      <span className="text-base text-[var(--main-text)]">{children}</span>
+    </div>
+  );
+}
 
-        {entry.aliases?.length ? (
-          <ul className="m-0 mb-4 flex list-none flex-col gap-1 p-0">
-            {entry.aliases.map((a) => (
-              <li key={a.alias} className="text-sm">
-                <strong>{a.alias}</strong>
-                {a.forwardsTo ? ` → ${a.forwardsTo}` : ''}
-                {a.verified ? '' : ' · väntar på bekräftelse'}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className={`m-0 mb-4 text-sm ${mail ? mail.tone : 'text-[var(--grey-text)]'}`}>
-            {mail ? mail.text : 'Ingen @simonstorp.se-adress'}
-          </p>
-        )}
+/** Everything that would otherwise clutter the row: aliases, status, and the actions. */
+function PersonDialog({ entry, accounts, busy, onClose, onInvite, onLink, onResend, onMove }) {
+  const mail = entry.mail ? MAIL_STATES[entry.mail.state] : null;
+  const MailIcon = mail?.icon;
 
-        <div className="flex flex-wrap gap-3">
+  const status = !entry.userId
+    ? 'Inget konto'
+    : entry.isActive
+      ? `Konto klart${entry.hasUsedSite ? ` · besökte sidan ${formatSeen(entry.lastSeenAt)}` : ''}`
+      : 'Inbjuden – har inte valt lösenord än';
+
+  return (
+    <Dialog
+      title={entry.name}
+      onClose={onClose}
+      footer={
+        <>
           <button type="button" className={smallButton} disabled={busy} onClick={onMove}>
             {entry.board ? 'Flytta till Övriga' : 'Flytta till Styrelsen'}
           </button>
 
-          {entry.mail?.state === 'unverified' && entry.mail.forwardsTo ? (
-            <button type="button" className={ghostButton} disabled={busy} onClick={onResend}>
-              Skicka bekräftelse igen
-            </button>
-          ) : null}
-
           {!entry.userId && entry.suggested ? (
             <button
               type="button"
-              className={smallButton}
+              className={ghostButton}
               disabled={busy}
               onClick={() => onLink(entry.suggested.userId)}
-              title={`${entry.email} vidarebefordras till ${entry.suggested.email}`}
             >
               Koppla ihop med {entry.suggested.email}
             </button>
@@ -235,7 +244,7 @@ function PersonDialog({ entry, accounts, busy, onClose, onInvite, onLink, onRese
 
           {!entry.userId && accounts.length ? (
             <select
-              className="rounded-md border border-black/20 bg-white px-3 py-2 text-sm"
+              className="w-full rounded-md border border-black/20 bg-white px-3 py-3 text-base"
               value=""
               disabled={busy}
               onChange={(e) => e.target.value && onLink(Number(e.target.value))}
@@ -249,12 +258,54 @@ function PersonDialog({ entry, accounts, busy, onClose, onInvite, onLink, onRese
             </select>
           ) : null}
 
-          <button type="button" className={ghostButton} onClick={onClose}>
-            Stäng
-          </button>
-        </div>
+          {entry.mail?.state === 'unverified' && entry.mail.forwardsTo ? (
+            <button type="button" className={ghostButton} disabled={busy} onClick={onResend}>
+              Skicka bekräftelse igen
+            </button>
+          ) : null}
+        </>
+      }
+    >
+      <div className="flex flex-col">
+        <Field label={entry.userId ? 'Inloggning' : 'E-post'}>{entry.email}</Field>
+
+        {/* Without an account, behörighet and status would both just read "Inget konto". */}
+        {entry.userId ? (
+          <>
+            <Field label="Behörighet">{roleText(entry.roles)}</Field>
+            <Field label="Status">{status}</Field>
+          </>
+        ) : (
+          <Field label="Konto">Inget konto än</Field>
+        )}
+
+        <Field label="Styrelsen">
+          {entry.board ? entry.board.roll : 'Sitter inte i styrelsen'}
+        </Field>
+        <Field label="E-postadresser">
+          {entry.aliases?.length ? (
+            <span className="flex flex-col gap-1">
+              {entry.aliases.map((a) => (
+                <span key={a.alias} className="flex flex-wrap items-baseline gap-x-2">
+                  <span>{a.alias}</span>
+                  {a.forwardsTo ? (
+                    <span className="text-sm text-[var(--grey-text)]">→ {a.forwardsTo}</span>
+                  ) : null}
+                  {a.verified ? null : (
+                    <span className="text-sm text-[#b26b00]">väntar på bekräftelse</span>
+                  )}
+                </span>
+              ))}
+            </span>
+          ) : (
+            <span className={`flex items-center gap-2 ${mail ? mail.tone : ''}`}>
+              {MailIcon ? <MailIcon className="h-4 w-4 shrink-0" aria-hidden /> : null}
+              {mail ? mail.text : 'Ingen @simonstorp.se-adress'}
+            </span>
+          )}
+        </Field>
       </div>
-    </div>
+    </Dialog>
   );
 }
 
@@ -306,17 +357,8 @@ function InviteDialog({ onClose, onCreated, prefill }) {
   }
 
   return (
-    <div className={dialogBackdrop} role="dialog" aria-modal="true">
-      <div className={dialogBox}>
-        <div className="mb-4 flex items-start justify-between gap-4">
-          <h2 className={dialogTitle}>
-            {inviteUrl ? 'Inbjudan är klar' : 'Lägg till ny medlem'}
-          </h2>
-          <button type="button" onClick={onClose} aria-label="Stäng" className="p-1">
-            <X className="h-6 w-6" aria-hidden />
-          </button>
-        </div>
-
+    <Dialog title={inviteUrl ? 'Inbjudan är klar' : 'Lägg till ny medlem'} onClose={onClose}>
+      <div>
         {inviteUrl ? (
           <>
             <p className="mb-3 text-base leading-relaxed text-[var(--grey-text)]">
@@ -390,7 +432,7 @@ function InviteDialog({ onClose, onCreated, prefill }) {
           </form>
         )}
       </div>
-    </div>
+    </Dialog>
   );
 }
 
