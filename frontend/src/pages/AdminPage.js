@@ -63,25 +63,21 @@ const linkBox =
   'mb-3 w-full break-all rounded-md bg-[var(--bg-white-accent)] px-3 py-3 text-sm text-[var(--main-text)]';
 
 /** Two columns on a wide screen, stacked on anything narrower. */
-const splitGrid = 'grid w-full grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-0';
-const leftCol = 'min-w-0 lg:pr-10';
-const rightCol =
-  'min-w-0 border-t border-black/10 pt-8 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-0';
+const splitGrid = 'grid w-full grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-10';
+const listCol = 'min-w-0';
 
-const userRow = 'flex flex-col rounded-md px-3 py-3';
-const userRowSelf = `${userRow} bg-[var(--bg-white-accent)]`;
+/** Fixed height so the two lists line up and nothing jumps as statuses change. */
+const rowBase =
+  'flex h-[4.25rem] items-center gap-3 rounded-md px-3 text-left';
+const userRow = rowBase;
+const userRowSelf = `${rowBase} bg-[var(--bg-white-accent)]`;
 
-/** One line per person telling you whether their @simonstorp.se address actually works. */
-const MAIL_STATES = {
-  ok: { icon: MailCheck, text: 'E-post fungerar', tone: 'text-[var(--accent-one)]' },
-  unverified: {
-    icon: AlertTriangle,
-    text: 'Väntar på bekräftelse',
-    tone: 'text-[#b26b00]',
-  },
-  disabled: { icon: MailX, text: 'Vidarebefordran avstängd', tone: 'text-[#b3261e]' },
-  missing: { icon: MailX, text: 'Ingen vidarebefordran', tone: 'text-[#b3261e]' },
-};
+const rowName = 'truncate text-base text-[var(--main-text)]';
+const rowSub = 'truncate text-xs text-[var(--grey-text)]';
+const iconBtn =
+  'shrink-0 rounded-md border border-black/15 bg-white px-3 py-2 text-sm text-[var(--main-text)] ' +
+  'transition-colors hover:bg-black/5 disabled:opacity-50';
+const emptyNote = 'px-3 py-4 text-sm text-[var(--grey-text)]';
 
 const ROLE_LABELS = {
   'strapi-super-admin': 'Superadmin',
@@ -110,6 +106,159 @@ function displayName(user) {
 function roleText(roles) {
   if (!roles?.length) return 'Ingen behörighet';
   return roles.map((code) => ROLE_LABELS[code] ?? code).join(', ');
+}
+
+/** Whether an @simonstorp.se address actually reaches the person. */
+const MAIL_STATES = {
+  ok: { icon: MailCheck, text: 'E-post fungerar', tone: 'text-[var(--accent-one)]' },
+  unverified: { icon: AlertTriangle, text: 'Väntar på bekräftelse', tone: 'text-[#b26b00]' },
+  disabled: { icon: MailX, text: 'Vidarebefordran avstängd', tone: 'text-[#b3261e]' },
+  missing: { icon: MailX, text: 'Ingen vidarebefordran', tone: 'text-[#b3261e]' },
+};
+
+/** One person, fixed height: identity plus at-a-glance status. Detail lives in a dialog. */
+function PersonRow({ entry, busy, onOpen, onMove, moveLabel }) {
+  const mail = entry.mail ? MAIL_STATES[entry.mail.state] : null;
+  const MailIcon = mail?.icon;
+  const hasAccount = Boolean(entry.userId);
+
+  return (
+    <li className={entry.isSelf ? userRowSelf : userRow}>
+      <button
+        type="button"
+        onClick={onOpen}
+        className="flex min-w-0 flex-1 flex-col text-left"
+        title="Visa detaljer"
+      >
+        <span className={rowName}>
+          <strong>{entry.name}</strong>
+          {entry.isSelf ? ' (du)' : ''}
+        </span>
+        <span className={rowSub}>{entry.email}</span>
+      </button>
+
+      <span className="flex shrink-0 items-center gap-2">
+        {hasAccount ? (
+          <UserCheck
+            className={`h-4 w-4 ${
+              entry.isActive ? 'text-[var(--accent-one)]' : 'text-[#b26b00]'
+            }`}
+            aria-label={entry.isActive ? 'Konto klart' : 'Har inte valt lösenord'}
+          >
+            <title>{entry.isActive ? 'Konto klart' : 'Har inte valt lösenord'}</title>
+          </UserCheck>
+        ) : (
+          <UserX className="h-4 w-4 text-[var(--grey-text)]" aria-label="Inget konto" />
+        )}
+
+        {mail ? <MailIcon className={`h-4 w-4 ${mail.tone}`} aria-label={mail.text} /> : null}
+      </span>
+
+      {hasAccount ? (
+        <button type="button" className={iconBtn} disabled={busy} onClick={onMove}>
+          {moveLabel}
+        </button>
+      ) : null}
+    </li>
+  );
+}
+
+/** Everything that would otherwise clutter the row: aliases, status, and the actions. */
+function PersonDialog({ entry, accounts, busy, onClose, onInvite, onLink, onResend }) {
+  const mail = entry.mail ? MAIL_STATES[entry.mail.state] : null;
+
+  return (
+    <div className={dialogBackdrop} role="dialog" aria-modal="true">
+      <div className={dialogBox}>
+        <div className="mb-4 flex items-start justify-between gap-4">
+          <h2 className={dialogTitle}>{entry.name}</h2>
+          <button type="button" onClick={onClose} aria-label="Stäng" className="p-1">
+            <X className="h-6 w-6" aria-hidden />
+          </button>
+        </div>
+
+        <p className="m-0 mb-1 text-base text-[var(--grey-text)]">{entry.email}</p>
+        <p className="m-0 mb-4 text-base text-[var(--grey-text)]">
+          {entry.userId ? roleText(entry.roles) : 'Inget konto'}
+          {entry.board ? ` · Styrelse: ${entry.board.roll}` : ''}
+        </p>
+
+        {entry.userId ? (
+          <p className="m-0 mb-4 text-base">
+            {entry.isActive
+              ? `Konto klart${
+                  entry.hasUsedSite ? ` · besökte sidan ${formatSeen(entry.lastSeenAt)}` : ''
+                }`
+              : 'Inbjuden – har inte valt lösenord än'}
+          </p>
+        ) : null}
+
+        <h3 className="mb-2 text-base font-medium text-[var(--main-text)]">E-postadresser</h3>
+
+        {entry.aliases?.length ? (
+          <ul className="m-0 mb-4 flex list-none flex-col gap-1 p-0">
+            {entry.aliases.map((a) => (
+              <li key={a.alias} className="text-sm">
+                <strong>{a.alias}</strong>
+                {a.forwardsTo ? ` → ${a.forwardsTo}` : ''}
+                {a.verified ? '' : ' · väntar på bekräftelse'}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className={`m-0 mb-4 text-sm ${mail ? mail.tone : 'text-[var(--grey-text)]'}`}>
+            {mail ? mail.text : 'Ingen @simonstorp.se-adress'}
+          </p>
+        )}
+
+        <div className="flex flex-wrap gap-3">
+          {entry.mail?.state === 'unverified' && entry.mail.forwardsTo ? (
+            <button type="button" className={ghostButton} disabled={busy} onClick={onResend}>
+              Skicka bekräftelse igen
+            </button>
+          ) : null}
+
+          {!entry.userId && entry.suggested ? (
+            <button
+              type="button"
+              className={smallButton}
+              disabled={busy}
+              onClick={() => onLink(entry.suggested.userId)}
+              title={`${entry.email} vidarebefordras till ${entry.suggested.email}`}
+            >
+              Koppla ihop med {entry.suggested.email}
+            </button>
+          ) : null}
+
+          {!entry.userId ? (
+            <button type="button" className={ghostButton} onClick={onInvite}>
+              Bjud in {entry.name.split(' ')[0]}
+            </button>
+          ) : null}
+
+          {!entry.userId && accounts.length ? (
+            <select
+              className="rounded-md border border-black/20 bg-white px-3 py-2 text-sm"
+              value=""
+              disabled={busy}
+              onChange={(e) => e.target.value && onLink(Number(e.target.value))}
+            >
+              <option value="">Koppla till befintligt konto…</option>
+              {accounts.map((a) => (
+                <option key={a.userId} value={a.userId}>
+                  {a.name} ({a.email})
+                </option>
+              ))}
+            </select>
+          ) : null}
+
+          <button type="button" className={ghostButton} onClick={onClose}>
+            Stäng
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function InviteDialog({ onClose, onCreated, prefill }) {
@@ -262,6 +411,7 @@ export default function AdminPage() {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [inviteOpen, setInviteOpen] = useState(null);
+  const [detail, setDetail] = useState(null);
 
   const loadUsers = useCallback(() => {
     fetchPeople()
@@ -293,21 +443,6 @@ export default function AdminPage() {
 
     try {
       await setBoardMember(userId, { boardId: entry.board.id });
-      loadUsers();
-    } catch (err) {
-      setUsersError(err.message);
-    } finally {
-      setBusyId(null);
-    }
-  }
-
-  /** Confirms a Cloudflare-derived match, merging a board profile into an account row. */
-  async function linkExisting(entry) {
-    setBusyId(entry.boardId);
-    setUsersError('');
-
-    try {
-      await setBoardMember(entry.suggested.userId, { boardId: entry.board.id });
       loadUsers();
     } catch (err) {
       setUsersError(err.message);
@@ -385,6 +520,8 @@ export default function AdminPage() {
   }
 
   const accounts = people.filter((p) => p.userId && !p.board);
+  const styrelsen = people.filter((p) => p.board);
+  const ovriga = people.filter((p) => !p.board);
 
   if (user) {
     return (
@@ -394,172 +531,92 @@ export default function AdminPage() {
           Inloggad som {displayName(user)} ({roleText(user.roles)}).
         </p>
 
-        <div className={splitGrid}>
-          <section className={leftCol}>
-            <h2 className={sectionTitle}>Användare</h2>
+        <a className={primaryLink} href={`${apiBaseUrl}/admin`}>
+          <SquarePen className="h-10 w-10 shrink-0" strokeWidth={1.75} aria-hidden />
+          <span className="min-w-0 flex-1">
+            <span className="block text-[1.25rem] font-semibold leading-tight">
+              Innehållshanteraren
+            </span>
+            <span className="block text-base leading-snug opacity-95">Redigera innehåll</span>
+          </span>
+          <ArrowRight className="h-7 w-7 shrink-0" strokeWidth={2} aria-hidden />
+        </a>
 
-            {usersError ? <p className={errorBox}>{usersError}</p> : null}
+        {usersError ? <p className={`${errorBox} mt-6`}>{usersError}</p> : null}
 
-            <ul className="m-0 flex list-none flex-col gap-1 p-0">
-              {people.map((entry) => {
-                const key = entry.userId ? `u${entry.userId}` : `b${entry.boardId}`;
-                const mail = entry.mail ? MAIL_STATES[entry.mail.state] : null;
-                const MailIcon = mail?.icon;
+        <div className={`${splitGrid} mt-8`}>
+          <section className={listCol}>
+            <h2 className={sectionTitle}>Styrelsen</h2>
 
-                return (
-                  <li key={key} className={entry.isSelf ? userRowSelf : userRow}>
-                    <span className="text-base text-[var(--main-text)]">
-                      <strong>{entry.name}</strong>
-                      {entry.isSelf ? ' (du)' : ''}
-                    </span>
-                    <span className="text-sm text-[var(--grey-text)]">{entry.email}</span>
-
-                    <span className="text-sm text-[var(--grey-text)]">
-                      {entry.userId ? roleText(entry.roles) : 'Inget konto'}
-                      {entry.board ? ` · Styrelse: ${entry.board.roll}` : ''}
-                    </span>
-
-                    {entry.userId ? (
-                      <span
-                        className={`mt-1 flex items-center gap-2 text-sm ${
-                          entry.isActive ? 'text-[var(--accent-one)]' : 'text-[#b26b00]'
-                        }`}
-                      >
-                        {entry.isActive ? (
-                          <UserCheck className="h-4 w-4 shrink-0" aria-hidden />
-                        ) : (
-                          <UserX className="h-4 w-4 shrink-0" aria-hidden />
-                        )}
-                        {entry.isActive
-                          ? `Konto klart${
-                              entry.hasUsedSite ? ` · besökte sidan ${formatSeen(entry.lastSeenAt)}` : ''
-                            }`
-                          : 'Inbjuden – har inte valt lösenord än'}
-                      </span>
-                    ) : null}
-
-                    {mail ? (
-                      <span className="mt-1 flex flex-col gap-1">
-                        <span className={`flex items-center gap-2 text-sm ${mail.tone}`}>
-                          <MailIcon className="h-4 w-4 shrink-0" aria-hidden />
-                          {mail.text}
-                          {entry.mail.forwardsTo ? ` → ${entry.mail.forwardsTo}` : ''}
-                        </span>
-
-                        {entry.mail.state === 'unverified' && entry.mail.forwardsTo ? (
-                          <button
-                            type="button"
-                            className={ghostButton + ' self-start py-2 text-sm'}
-                            disabled={busyId === (entry.userId ?? entry.boardId)}
-                            onClick={() => resendVerification(entry)}
-                          >
-                            Skicka bekräftelsemejl igen
-                          </button>
-                        ) : null}
-                      </span>
-                    ) : null}
-
-                    {entry.userId ? (
-                      <label className="mt-2 flex items-center gap-2 text-sm text-[var(--main-text)]">
-                        <input
-                          type="checkbox"
-                          className="h-5 w-5 accent-[var(--accent-one)]"
-                          checked={Boolean(entry.board)}
-                          disabled={busyId === entry.userId}
-                          onChange={(e) => toggleBoard(entry, e.target.checked)}
-                        />
-                        Sitter i styrelsen
-                      </label>
-                    ) : (
-                      entry.suggested ? (
-                        <span className="mt-2 flex flex-col gap-2">
-                          <span className="text-sm text-[var(--grey-text)]">
-                            Samma person som kontot <strong>{entry.suggested.email}</strong>?
-                            <br />
-                            {entry.email} vidarebefordras dit.
-                          </span>
-                          <button
-                            type="button"
-                            className={ghostButton + ' self-start py-2'}
-                            disabled={busyId === entry.boardId}
-                            onClick={() => linkExisting(entry)}
-                          >
-                            Koppla ihop
-                          </button>
-                        </span>
-                      ) : (
-                        <span className="mt-2 flex flex-col gap-2">
-                          <span className="text-sm text-[var(--grey-text)]">
-                            Styrelseprofil utan konto.
-                          </span>
-
-                          <span className="flex flex-wrap items-center gap-2">
-                            <button
-                              type="button"
-                              className={ghostButton + ' py-2'}
-                              onClick={() => setInviteOpen({ name: entry.name, email: entry.email })}
-                            >
-                              Bjud in {entry.name.split(' ')[0]}
-                            </button>
-
-                            {accounts.length ? (
-                              <select
-                                className="rounded-md border border-black/20 bg-white px-3 py-2 text-sm"
-                                value=""
-                                disabled={busyId === entry.boardId}
-                                onChange={(e) =>
-                                  e.target.value && linkToAccount(entry, Number(e.target.value))
-                                }
-                              >
-                                <option value="">Koppla till befintligt konto…</option>
-                                {accounts.map((a) => (
-                                  <option key={a.userId} value={a.userId}>
-                                    {a.name} ({a.email})
-                                  </option>
-                                ))}
-                              </select>
-                            ) : null}
-                          </span>
-                        </span>
-                      )
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-
-            <button type="button" className={addButton} onClick={() => setInviteOpen({})}>
-              <UserPlus className="h-7 w-7" strokeWidth={1.75} aria-hidden />
-              Lägg till ny medlem
-            </button>
+            {styrelsen.length ? (
+              <ul className="m-0 flex list-none flex-col p-0">
+                {styrelsen.map((entry) => (
+                  <PersonRow
+                    key={entry.userId ? `u${entry.userId}` : `b${entry.boardId}`}
+                    entry={entry}
+                    busy={busyId === (entry.userId ?? entry.boardId)}
+                    onOpen={() => setDetail(entry)}
+                    onMove={() => entry.userId && toggleBoard(entry, false)}
+                    moveLabel="Ta bort"
+                  />
+                ))}
+              </ul>
+            ) : (
+              <p className={emptyNote}>Ingen är markerad som styrelsemedlem än.</p>
+            )}
           </section>
 
-          <section className={rightCol}>
-            <h2 className={sectionTitle}>Innehåll</h2>
-            <p className="mb-5 text-base leading-relaxed text-[var(--grey-text)]">
-              Här redigerar du nyheter, sidor och bilder. Klicka på den gröna rutan.
-            </p>
+          <section className={listCol}>
+            <h2 className={sectionTitle}>Övriga</h2>
 
-            <a className={primaryLink} href={`${apiBaseUrl}/admin`}>
-              <SquarePen className="h-12 w-12 shrink-0" strokeWidth={1.75} aria-hidden />
-              <span className="min-w-0 flex-1">
-                <span className="block text-[1.4rem] font-semibold leading-tight">
-                  Innehållshanteraren
-                </span>
-                <span className="block text-lg leading-snug opacity-95">Redigera innehåll</span>
-              </span>
-              <ArrowRight className="h-8 w-8 shrink-0" strokeWidth={2} aria-hidden />
-            </a>
+            {ovriga.length ? (
+              <ul className="m-0 flex list-none flex-col p-0">
+                {ovriga.map((entry) => (
+                  <PersonRow
+                    key={entry.userId ? `u${entry.userId}` : `b${entry.boardId}`}
+                    entry={entry}
+                    busy={busyId === (entry.userId ?? entry.boardId)}
+                    onOpen={() => setDetail(entry)}
+                    onMove={() => entry.userId && toggleBoard(entry, true)}
+                    moveLabel="Till styrelsen"
+                  />
+                ))}
+              </ul>
+            ) : (
+              <p className={emptyNote}>Alla med konto sitter i styrelsen.</p>
+            )}
 
-            <p className="mt-3 text-base leading-relaxed text-[var(--grey-text)]">
-              Öppnas i samma fönster. Du kan behöva logga in en gång till.
-            </p>
+            <button type="button" className={addButton} onClick={() => setInviteOpen({})}>
+              <UserPlus className="h-6 w-6" strokeWidth={1.75} aria-hidden />
+              Lägg till ny medlem
+            </button>
           </section>
         </div>
 
         <button type="button" className={linkButton} onClick={handleLogout}>
           Logga ut
         </button>
+
+        {detail ? (
+          <PersonDialog
+            entry={detail}
+            accounts={accounts}
+            busy={busyId === (detail.userId ?? detail.boardId)}
+            onClose={() => setDetail(null)}
+            onInvite={() => {
+              setDetail(null);
+              setInviteOpen({ name: detail.name, email: detail.email });
+            }}
+            onLink={(userId) => {
+              setDetail(null);
+              linkToAccount(detail, userId);
+            }}
+            onResend={() => {
+              setDetail(null);
+              resendVerification(detail);
+            }}
+          />
+        ) : null}
 
         {inviteOpen ? (
           <InviteDialog
