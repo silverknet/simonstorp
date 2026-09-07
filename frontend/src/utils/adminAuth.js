@@ -165,6 +165,18 @@ export async function removeBoardMember(userId) {
   return true;
 }
 
+export async function setProfileOnBoard(boardId, onBoard) {
+  const token = getAdminToken();
+  const res = await fetch(`${apiBaseUrl}/api/site-admin/board/${boardId}`, {
+    method: onBoard ? 'POST' : 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data?.error?.message || 'Kunde inte flytta personen.');
+  return true;
+}
+
 export async function resendMailVerification(destination) {
   const token = getAdminToken();
   const res = await fetch(`${apiBaseUrl}/api/site-admin/mail/resend`, {

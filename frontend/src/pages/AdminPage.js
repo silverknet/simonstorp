@@ -24,6 +24,7 @@ import {
   removeBoardMember,
   resendMailVerification,
   setBoardMember,
+  setProfileOnBoard,
 } from '../utils/adminAuth';
 
 /* Deliberately large, high-contrast and plain: the people using this are elderly. */
@@ -74,9 +75,6 @@ const userRowSelf = `${rowBase} bg-[var(--bg-white-accent)]`;
 
 const rowName = 'truncate text-base text-[var(--main-text)]';
 const rowSub = 'truncate text-xs text-[var(--grey-text)]';
-const iconBtn =
-  'shrink-0 rounded-md border border-black/15 bg-white px-3 py-2 text-sm text-[var(--main-text)] ' +
-  'transition-colors hover:bg-black/5 disabled:opacity-50';
 const emptyNote = 'px-3 py-4 text-sm text-[var(--grey-text)]';
 
 const ROLE_LABELS = {
@@ -117,7 +115,7 @@ const MAIL_STATES = {
 };
 
 /** One person, fixed height: identity plus at-a-glance status. Detail lives in a dialog. */
-function PersonRow({ entry, busy, onOpen, onMove, moveLabel }) {
+function PersonRow({ entry, onOpen }) {
   const mail = entry.mail ? MAIL_STATES[entry.mail.state] : null;
   const MailIcon = mail?.icon;
   const hasAccount = Boolean(entry.userId);
@@ -154,17 +152,12 @@ function PersonRow({ entry, busy, onOpen, onMove, moveLabel }) {
         {mail ? <MailIcon className={`h-4 w-4 ${mail.tone}`} aria-label={mail.text} /> : null}
       </span>
 
-      {hasAccount ? (
-        <button type="button" className={iconBtn} disabled={busy} onClick={onMove}>
-          {moveLabel}
-        </button>
-      ) : null}
     </li>
   );
 }
 
 /** Everything that would otherwise clutter the row: aliases, status, and the actions. */
-function PersonDialog({ entry, accounts, busy, onClose, onInvite, onLink, onResend }) {
+function PersonDialog({ entry, accounts, busy, onClose, onInvite, onLink, onResend, onMove }) {
   const mail = entry.mail ? MAIL_STATES[entry.mail.state] : null;
 
   return (
@@ -212,6 +205,10 @@ function PersonDialog({ entry, accounts, busy, onClose, onInvite, onLink, onRese
         )}
 
         <div className="flex flex-wrap gap-3">
+          <button type="button" className={smallButton} disabled={busy} onClick={onMove}>
+            {entry.board ? 'Flytta till Övriga' : 'Flytta till Styrelsen'}
+          </button>
+
           {entry.mail?.state === 'unverified' && entry.mail.forwardsTo ? (
             <button type="button" className={ghostButton} disabled={busy} onClick={onResend}>
               Skicka bekräftelse igen
@@ -451,11 +448,37 @@ export default function AdminPage() {
     }
   }
 
-  async function toggleBoard(entry, checked) {
+  /**
+   * Works for everyone: with an account the profile is created or unpublished, and
+   * without one the existing profile is simply published or unpublished — otherwise
+   * board members with no login could never be moved.
+   */
+  async function moveMember(entry) {
+    const toBoard = !entry.board;
+    setBusyId(entry.userId ?? entry.boardId);
+    setUsersError('');
+
+    try {
+      if (entry.userId) {
+        await toggleBoard(entry, toBoard, { silent: true });
+      } else {
+        await setProfileOnBoard(entry.board?.id ?? entry.formerBoardId ?? entry.boardId, toBoard);
+        loadUsers();
+      }
+    } catch (err) {
+      setUsersError(err.message);
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function toggleBoard(entry, checked, { silent = false } = {}) {
     if (!entry.userId) return;
 
-    setBusyId(entry.userId);
-    setUsersError('');
+    if (!silent) {
+      setBusyId(entry.userId);
+      setUsersError('');
+    }
 
     try {
       if (checked) {
@@ -468,9 +491,10 @@ export default function AdminPage() {
 
       loadUsers();
     } catch (err) {
+      if (silent) throw err;
       setUsersError(err.message);
     } finally {
-      setBusyId(null);
+      if (!silent) setBusyId(null);
     }
   }
 
@@ -554,10 +578,7 @@ export default function AdminPage() {
                   <PersonRow
                     key={entry.userId ? `u${entry.userId}` : `b${entry.boardId}`}
                     entry={entry}
-                    busy={busyId === (entry.userId ?? entry.boardId)}
                     onOpen={() => setDetail(entry)}
-                    onMove={() => entry.userId && toggleBoard(entry, false)}
-                    moveLabel="Ta bort"
                   />
                 ))}
               </ul>
@@ -575,10 +596,7 @@ export default function AdminPage() {
                   <PersonRow
                     key={entry.userId ? `u${entry.userId}` : `b${entry.boardId}`}
                     entry={entry}
-                    busy={busyId === (entry.userId ?? entry.boardId)}
                     onOpen={() => setDetail(entry)}
-                    onMove={() => entry.userId && toggleBoard(entry, true)}
-                    moveLabel="Till styrelsen"
                   />
                 ))}
               </ul>
@@ -614,6 +632,11 @@ export default function AdminPage() {
             onResend={() => {
               setDetail(null);
               resendVerification(detail);
+            }}
+            onMove={() => {
+              const target = detail;
+              setDetail(null);
+              moveMember(target);
             }}
           />
         ) : null}
