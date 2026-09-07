@@ -270,7 +270,7 @@ function PersonDialog({
 
           {entry.mail?.state === 'unverified' && entry.mail.forwardsTo ? (
             <button type="button" className={ghostButton} disabled={busy} onClick={onFixMail}>
-              Få {entry.board?.email ?? 'e-postadressen'} att fungera
+              Skicka bekräftelse till {entry.name.split(' ')[0]}
             </button>
           ) : null}
         </>
