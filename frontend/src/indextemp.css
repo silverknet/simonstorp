@@ -1527,3 +1527,82 @@ strong{
   }
   
 }
+
+/* ---------------------------------------------------------------
+   Liquid glass — used by the compact (scrolled) menubar.
+   Blur + saturation on the backdrop, with a fractal-noise grain
+   and a specular sheen layered on top so the panel reads as glass
+   instead of flat frosted white.
+   --------------------------------------------------------------- */
+.liquid-glass {
+  position: relative;
+  isolation: isolate;
+  background-color: rgba(249, 249, 249, 0.55);
+  -webkit-backdrop-filter: blur(20px) saturate(180%) brightness(1.06);
+  backdrop-filter: blur(20px) saturate(180%) brightness(1.06);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.28),
+    0 8px 26px rgba(0, 0, 0, 0.07);
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .liquid-glass {
+    background-color: rgba(249, 249, 249, 0.42);
+  }
+}
+
+/* Fractal noise grain — feTurbulence baked into a data URI so it tiles
+   without an extra network request. */
+.liquid-glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.4;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+/* Specular sheen — bright along the top edge, falling off downwards,
+   with a soft highlight drifting in from the upper left. */
+.liquid-glass::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 48%),
+    radial-gradient(120% 80% at 12% -30%, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 62%),
+    linear-gradient(0deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 22%);
+}
+
+/* Dropdown panels sit over body copy, so they stay closer to opaque. */
+.liquid-glass--panel {
+  background-color: rgba(255, 255, 255, 0.86);
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .liquid-glass--panel {
+    background-color: rgba(255, 255, 255, 0.72);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .liquid-glass {
+    background-color: rgba(249, 249, 249, 0.94);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .liquid-glass--panel {
+    background-color: rgba(255, 255, 255, 0.97);
+  }
+  .liquid-glass::before {
+    display: none;
+  }
+}

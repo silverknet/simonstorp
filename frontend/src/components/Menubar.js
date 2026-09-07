@@ -282,11 +282,9 @@ export default function Menubar({
     // Homepage only: match .App column — var(--width), e.g. 70% desktop; 100% @max-width 800px in CSS
     isHome ? (isDesktop ? 'mx-auto box-border w-[var(--width)]' : 'mx-auto box-border w-full') : '',
     'transition-[background-color,box-shadow,border-color,backdrop-filter] duration-300 ease-out',
-    (!isDesktop || isInfo) ? 'bg-[var(--bg-white)]' : '',
+    (!isDesktop || (isInfo && !isCompactDesktop)) ? 'bg-[var(--bg-white)]' : '',
     !isDesktop ? 'border-b border-black/10 shadow-[0_4px_18px_rgba(0,0,0,0.06)]' : '',
-    isCompactDesktop
-      ? 'shadow-sm backdrop-blur-lg bg-white/75 supports-[backdrop-filter]:bg-white/65'
-      : '',
+    isCompactDesktop ? 'liquid-glass' : '',
     isDesktop && isInfo && !isCompactDesktop ? 'border-b border-neutral-200' : '',
   ]
     .filter(Boolean)
@@ -336,7 +334,7 @@ export default function Menubar({
       'transition-[margin,max-height,opacity] duration-300 ease-out',
       isDesktop
         ? `${isCompactDesktop ? 'flex-1 pr-5' : 'w-full'} min-w-0 flex-row flex-wrap justify-center gap-0`
-        : 'absolute left-0 top-full z-[2] w-full flex-col flex-nowrap rounded-b-2xl border-t border-black/10 bg-white/95 shadow-[0_16px_32px_rgba(0,0,0,0.08)] backdrop-blur-md',
+        : 'liquid-glass liquid-glass--panel absolute left-0 top-full z-[2] w-full flex-col flex-nowrap rounded-b-2xl border-t border-black/10 shadow-[0_16px_32px_rgba(0,0,0,0.08)]',
       !isDesktop && !menuDown ? 'invisible max-h-0 overflow-hidden opacity-0' : '',
       !isDesktop && menuDown ? 'visible max-h-[calc(100vh-4.75rem)] overflow-y-auto opacity-100' : '',
     ]
