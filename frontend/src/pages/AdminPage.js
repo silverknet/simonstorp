@@ -88,6 +88,20 @@ const ROLE_LABELS = {
   'strapi-author': 'Skribent',
 };
 
+/** "idag" / "igår" / a date — precise enough without a timestamp nobody reads. */
+function formatSeen(value) {
+  if (!value) return '';
+
+  const then = new Date(value);
+  const days = Math.floor((Date.now() - then.getTime()) / 86400000);
+
+  if (days <= 0) return 'idag';
+  if (days === 1) return 'igår';
+  if (days < 30) return `för ${days} dagar sedan`;
+
+  return then.toLocaleDateString('sv-SE');
+}
+
 function displayName(user) {
   return [user.firstname, user.lastname].filter(Boolean).join(' ') || user.email;
 }
@@ -97,10 +111,11 @@ function roleText(roles) {
   return roles.map((code) => ROLE_LABELS[code] ?? code).join(', ');
 }
 
-function InviteDialog({ onClose, onCreated }) {
-  const [firstname, setFirstname] = useState('');
-  const [lastname, setLastname] = useState('');
-  const [email, setEmail] = useState('');
+function InviteDialog({ onClose, onCreated, prefill }) {
+  const [first = '', ...rest] = String(prefill?.name ?? '').trim().split(/\s+/);
+  const [firstname, setFirstname] = useState(first);
+  const [lastname, setLastname] = useState(rest.join(' '));
+  const [email, setEmail] = useState(prefill?.email ?? '');
   const [inviteUrl, setInviteUrl] = useState('');
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState('');
@@ -243,7 +258,7 @@ export default function AdminPage() {
   const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [inviteOpen, setInviteOpen] = useState(false);
+  const [inviteOpen, setInviteOpen] = useState(null);
 
   const loadUsers = useCallback(() => {
     fetchPeople()
@@ -387,19 +402,19 @@ export default function AdminPage() {
                     {entry.userId ? (
                       <span
                         className={`mt-1 flex items-center gap-2 text-sm ${
-                          entry.hasLoggedIn ? 'text-[var(--accent-one)]' : 'text-[#b26b00]'
+                          entry.isActive ? 'text-[var(--accent-one)]' : 'text-[#b26b00]'
                         }`}
                       >
-                        {entry.hasLoggedIn ? (
+                        {entry.isActive ? (
                           <UserCheck className="h-4 w-4 shrink-0" aria-hidden />
                         ) : (
                           <UserX className="h-4 w-4 shrink-0" aria-hidden />
                         )}
-                        {entry.hasLoggedIn
-                          ? 'Har loggat in'
-                          : entry.isActive
-                            ? 'Har aldrig loggat in'
-                            : 'Inbjuden – har inte skapat konto än'}
+                        {entry.isActive
+                          ? `Konto klart${
+                              entry.hasUsedSite ? ` · besökte sidan ${formatSeen(entry.lastSeenAt)}` : ''
+                            }`
+                          : 'Inbjuden – har inte valt lösenord än'}
                       </span>
                     ) : null}
 
@@ -453,8 +468,17 @@ export default function AdminPage() {
                           </button>
                         </span>
                       ) : (
-                        <span className="mt-2 text-sm text-[var(--grey-text)]">
-                          Styrelseprofil utan konto — bjud in personen för att koppla ihop dem.
+                        <span className="mt-2 flex flex-col gap-2">
+                          <span className="text-sm text-[var(--grey-text)]">
+                            Styrelseprofil utan konto.
+                          </span>
+                          <button
+                            type="button"
+                            className={ghostButton + ' self-start py-2'}
+                            onClick={() => setInviteOpen({ name: entry.name, email: entry.email })}
+                          >
+                            Bjud in {entry.name.split(' ')[0]}
+                          </button>
                         </span>
                       )
                     )}
@@ -463,7 +487,7 @@ export default function AdminPage() {
               })}
             </ul>
 
-            <button type="button" className={addButton} onClick={() => setInviteOpen(true)}>
+            <button type="button" className={addButton} onClick={() => setInviteOpen({})}>
               <UserPlus className="h-7 w-7" strokeWidth={1.75} aria-hidden />
               Lägg till ny medlem
             </button>
@@ -497,7 +521,11 @@ export default function AdminPage() {
         </button>
 
         {inviteOpen ? (
-          <InviteDialog onClose={() => setInviteOpen(false)} onCreated={loadUsers} />
+          <InviteDialog
+            prefill={inviteOpen}
+            onClose={() => setInviteOpen(null)}
+            onCreated={loadUsers}
+          />
         ) : null}
       </div>
     );
