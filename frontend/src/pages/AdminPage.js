@@ -20,10 +20,9 @@ import {
   adminLogout,
   createAdminInvite,
   fetchAdminMe,
+  activateMail,
   fetchPeople,
-  linkAliasToDestination,
   removeBoardMember,
-  resendMailVerification,
   setBoardMember,
   setProfileOnBoard,
 } from '../utils/adminAuth';
@@ -215,7 +214,7 @@ function PersonDialog({
   onLink,
   onResend,
   onMove,
-  onLinkAlias,
+  onFixMail,
 }) {
   const mail = entry.mail ? MAIL_STATES[entry.mail.state] : null;
   const MailIcon = mail?.icon;
@@ -269,15 +268,9 @@ function PersonDialog({
             </select>
           ) : null}
 
-          {entry.mail?.ruleMissing && entry.board?.email && entry.mail.forwardsTo ? (
-            <button type="button" className={ghostButton} disabled={busy} onClick={onLinkAlias}>
-              Koppla {entry.board.email} → {entry.mail.forwardsTo}
-            </button>
-          ) : null}
-
           {entry.mail?.state === 'unverified' && entry.mail.forwardsTo ? (
-            <button type="button" className={ghostButton} disabled={busy} onClick={onResend}>
-              Skicka bekräftelse igen
+            <button type="button" className={ghostButton} disabled={busy} onClick={onFixMail}>
+              Få {entry.board?.email ?? 'e-postadressen'} att fungera
             </button>
           ) : null}
         </>
@@ -468,6 +461,7 @@ export default function AdminPage() {
   const [submitting, setSubmitting] = useState(false);
   const [inviteOpen, setInviteOpen] = useState(null);
   const [detail, setDetail] = useState(null);
+  const [notice, setNotice] = useState('');
 
   const loadUsers = useCallback(() => {
     fetchPeople()
@@ -478,34 +472,18 @@ export default function AdminPage() {
       .catch((err) => setUsersError(err.message));
   }, []);
 
-  /** Creates the routing rule, or parks it until the destination is confirmed. */
-  async function connectAlias(entry) {
+  /**
+   * "Make this address work" — connects the alias and sends the confirmation the person
+   * has to click. Splitting these was a distinction only the API cared about.
+   */
+  async function fixMail(entry) {
     setBusyId(entry.userId ?? entry.boardId);
     setUsersError('');
+    setNotice('');
 
     try {
-      const result = await linkAliasToDestination(entry.board.email, entry.mail.forwardsTo);
-
-      if (result.pending) {
-        setUsersError(
-          `${entry.board.email} kopplas så snart ${entry.mail.forwardsTo} har bekräftats.`
-        );
-      }
-
-      loadUsers();
-    } catch (err) {
-      setUsersError(err.message);
-    } finally {
-      setBusyId(null);
-    }
-  }
-
-  async function resendVerification(entry) {
-    setBusyId(entry.userId ?? entry.boardId);
-    setUsersError('');
-
-    try {
-      await resendMailVerification(entry.mail.forwardsTo);
+      const result = await activateMail(entry.board?.email ?? null, entry.mail.forwardsTo);
+      setNotice(result.message);
       loadUsers();
     } catch (err) {
       setUsersError(err.message);
@@ -648,6 +626,11 @@ export default function AdminPage() {
         </a>
 
         {usersError ? <p className={`${errorBox} mt-6`}>{usersError}</p> : null}
+        {notice ? (
+          <p className="mt-6 rounded-md bg-[var(--bg-white-accent)] px-3 py-2 text-base">
+            {notice}
+          </p>
+        ) : null}
 
         <div className={`${splitGrid} mt-8`}>
           <section className={listCol}>
@@ -710,19 +693,15 @@ export default function AdminPage() {
               setDetail(null);
               linkToAccount(detail, userId);
             }}
-            onResend={() => {
-              setDetail(null);
-              resendVerification(detail);
-            }}
             onMove={() => {
               const target = detail;
               setDetail(null);
               moveMember(target);
             }}
-            onLinkAlias={() => {
+            onFixMail={() => {
               const target = detail;
               setDetail(null);
-              connectAlias(target);
+              fixMail(target);
             }}
           />
         ) : null}
