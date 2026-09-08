@@ -88,9 +88,9 @@ const emptyNote = 'px-3 py-4 text-sm text-[var(--grey-text)]';
  * A live green light. Deliberately a vivid signal green rather than the muted brand
  * green, so it reads as a lit indicator instead of another decorative element.
  */
-const readyDot = 'relative flex h-2 w-2 shrink-0';
+const readyDot = 'relative flex h-4 w-4 shrink-0 items-center justify-center';
 const readyPing =
-  'absolute inline-flex h-full w-full animate-ping rounded-full bg-[#22c55e] opacity-75';
+  'absolute inline-flex h-2 w-2 animate-ping rounded-full bg-[#22c55e] opacity-75';
 const readyCore = 'relative inline-flex h-2 w-2 rounded-full bg-[#22c55e]';
 
 const checkBar = 'mt-4 flex flex-wrap items-center gap-3 text-sm text-[var(--grey-text)]';
@@ -134,7 +134,7 @@ function roleText(roles) {
 
 /** Whether an @simonstorp.se address actually reaches the person. */
 const MAIL_STATES = {
-  ok: { icon: MailCheck, text: 'E-post fungerar', tone: 'text-[var(--accent-one)]' },
+  ok: { icon: MailCheck, text: 'E-post fungerar', tone: 'text-[#22c55e]' },
   unverified: { icon: AlertTriangle, text: 'Väntar på bekräftelse', tone: 'text-[#b26b00]' },
   disabled: { icon: MailX, text: 'Vidarebefordran avstängd', tone: 'text-[#b3261e]' },
   missing: { icon: MailX, text: 'Ingen vidarebefordran', tone: 'text-[#b3261e]' },
@@ -171,9 +171,7 @@ function PersonRow({ entry, onOpen }) {
 
         {hasAccount ? (
           <UserCheck
-            className={`h-4 w-4 ${
-              entry.isActive ? 'text-[var(--accent-one)]' : 'text-[#b26b00]'
-            }`}
+            className={`h-4 w-4 ${entry.isActive ? 'text-[#22c55e]' : 'text-[#b26b00]'}`}
             aria-label={entry.isActive ? 'Konto klart' : 'Har inte valt lösenord'}
           >
             <title>{entry.isActive ? 'Konto klart' : 'Har inte valt lösenord'}</title>
@@ -664,7 +662,7 @@ export default function AdminPage() {
         ) : null}
 
         <div className={pageGrid}>
-          <div className="min-w-0">
+          <div className="min-w-0 lg:pr-10">
             <div className={splitGrid}>
           <section className={listCol}>
             <h2 className={sectionTitle}>Styrelsen</h2>
