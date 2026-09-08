@@ -20,43 +20,28 @@ import {
 } from '../utils/newsDateFormat';
 import { plainNewsTeaserText } from '../utils/newsPlainExcerpt';
 
-/** Latest two by publish time — never the full nyhets list */
-const HOME_NEWS_URL = `${apiBaseUrl}/api/nyhets?populate=%2A&sort=createdAt:desc&pagination[page]=1&pagination[pageSize]=2`;
 
-/* -------------------------------------------------------------------------- */
-/*  Layout — two columns below hero; wraps at lg (matches old max-[1200px])   */
-/* -------------------------------------------------------------------------- */
-
-const twoColumnRow =
-  'flex flex-row flex-nowrap justify-evenly max-[1200px]:flex-wrap max-[800px]:mt-0 max-[800px]:p-0';
-
-/** Shared “home_B” column shell: half width desktop, full width mobile */
-const columnShell =
-  'box-border w-1/2 min-w-96 max-w-3xl font-light leading-relaxed tracking-wide transition-all duration-700 ease-out ' +
-  'm-4 p-8 max-[1200px]:w-auto max-[800px]:m-0 max-[800px]:min-w-0 max-[800px]:w-full max-[800px]:max-w-none max-[800px]:p-0';
-
-const columnIntro =
-  `${columnShell} font-['Lato',sans-serif] max-[800px]:px-[var(--mobile-side)] max-[800px]:pb-12`;
-
-/** Same horizontal inset as intro — replaces m-2.5 (10px) so both columns use --mobile-side */
-const columnNews = `${columnShell} font-['Heebo',sans-serif] max-[800px]:px-[var(--mobile-side)]`;
-
-/* -------------------------------------------------------------------------- */
-/*  Intro column — title + markdown                                           */
-/* -------------------------------------------------------------------------- */
-
+const HOME_NEWS_URL = `${apiBaseUrl}/api/nyhets?populate=%2A&sort=createdAt:desc&pagination[page]=1&pagination[pageSize]=4`;
 
 /** Shared heading row contract: both headings use items-start; Aktuellt adds pt-[15px] offset */
 const headingRow =
   'mb-4 flex items-start max-[800px]:mb-4';
 
+const singleColumnRow = 'mt-4 flex w-full flex-col max-[800px]:mt-0 max-[800px]:p-0';
 
-const introMarkdown =
-  'text-left font-["Lato",sans-serif] text-base leading-relaxed tracking-wide text-[var(--main-text)] ' +
-  // m-0 keeps the block flush with the heading; a following paragraph still needs the
-  // blank line the author typed in Strapi to survive as visible space.
-  '[&_p]:m-0 [&_p+p]:mt-4 [&_a]:text-[var(--accent-one)] [&_strong]:font-semibold ' +
-  'max-[800px]:mt-0 max-[800px]:text-lg';
+/** The news column, now spanning the width the intro used to share. */
+const columnNewsWide =
+  "box-border mx-auto w-full max-w-[56rem] font-['Heebo',sans-serif] font-light leading-relaxed tracking-wide " +
+  'transition-all duration-700 ease-out m-0 px-4 pb-10 pt-4 ' +
+  'max-[800px]:px-[var(--mobile-side)] max-[800px]:pt-0';
+
+/** Intro set over the photograph: white, kept to a readable column. */
+const introOnImage =
+  // text-white on the wrapper is not enough: the global stylesheet sets a colour on <p>
+  // itself, which wins over inheritance.
+  '[&_p]:m-0 [&_p]:text-white [&_p+p]:mt-3 [&_a]:text-white [&_a]:underline [&_strong]:font-semibold';
+
+
 
 /* -------------------------------------------------------------------------- */
 /*  News column — “Aktuellt” + cards + “Se alla”                                */
@@ -82,15 +67,16 @@ const newsCardLink =
 
 /** Hover lives here so it isn’t delayed by the entrance `transitionDelay` on the Link */
 const newsCardBase =
-  'flex w-full flex-row items-stretch overflow-hidden rounded-lg bg-[#f9f9f9] ' +
-  'text-[var(--main-text)] shadow-none transition-[transform,box-shadow] duration-200 ease-out ' +
-  'hover:scale-[1.01] hover:shadow-lg';
+  'flex w-full flex-row items-stretch overflow-hidden rounded-lg ' +
+  'text-[var(--main-text)] shadow-none transition-colors duration-200 ease-out ' +
+  'hover:bg-black/[0.03]';
 
 /** Image top-aligned to text; padding matches newsCardBody py-2 horizontally */
 const newsThumbCell = 'flex shrink-0 items-start justify-center self-stretch p-2';
 
 const newsThumbWrap =
-  'relative h-28 w-28 shrink-0 overflow-hidden rounded-sm bg-[var(--bg-white-accent)]';
+  'relative h-36 w-52 shrink-0 overflow-hidden rounded-md bg-[var(--bg-white-accent)] ' +
+  'max-[800px]:h-24 max-[800px]:w-28';
 
 /** Thin separator between home news cards / before “Se alla” */
 const newsCardDivider = 'my-1.5 h-px w-full shrink-0 bg-[var(--divider-color)]';
@@ -99,10 +85,10 @@ const newsThumb = 'absolute inset-0 h-full w-full object-cover';
 
 /** py-2 matches thumb outer p-2 — tops/bottoms line up beside the thumbnail */
 const newsCardBodyBase =
-  'flex min-w-0 flex-1 flex-col justify-start gap-0.5 bg-[#f9f9f9] py-2 text-left';
+  'flex min-w-0 flex-1 flex-col justify-start gap-0.5 py-2 text-left';
 
 /** With image: h-32 pins the body to the thumb band (h-28 + p-2); overflow-hidden keeps text inside it. */
-const newsCardBody = `${newsCardBodyBase} h-32 overflow-hidden pl-2 pr-4`;
+const newsCardBody = `${newsCardBodyBase} h-40 overflow-hidden pl-4 pr-4 max-[800px]:h-28 max-[800px]:pl-2`;
 
 /** No image: same stack, free to grow since there is no thumbnail to match */
 const newsCardBodyTextOnly = `${newsCardBodyBase} pl-2 pr-4`;
@@ -130,7 +116,7 @@ const newsCardPubDate = 'm-0 text-[10px] leading-tight text-neutral-400';
 
 const newsCardExcerpt =
   'm-0 min-h-0 overflow-hidden pr-1 text-sm leading-snug text-[#403939] ' +
-  '[display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:3]';
+  '[display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:4]';
 
 const seeAllWrap =
   'group w-fit px-1 py-0 text-neutral-700 no-underline transition-all duration-700 ease-out ' +
@@ -163,7 +149,6 @@ export default function Homepage(props) {
     return () => window.cancelAnimationFrame(frame);
   }, []);
 
-  const introFade = contentVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0';
   const newsColFade = contentVisible ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0';
   const newsCardFade = contentVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0';
   const seeAllFade = contentVisible ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0';
@@ -171,30 +156,29 @@ export default function Homepage(props) {
   return (
     <div className="min-h-[calc(100vh-437px)] pb-0">
       <div className="box-border w-full">
-        <ImageSlider home={props.homecontent} eyebrow="Välkommen till" title="Simonstorp" />
+        <ImageSlider
+          home={props.homecontent}
+          eyebrow="Välkommen till"
+          title="Simonstorp"
+          body={
+            <ReactMarkdown className={introOnImage} remarkPlugins={[remarkBreaks]}>
+              {homeData.Huvudtext}
+            </ReactMarkdown>
+          }
+        />
       </div>
 
-      <div className={twoColumnRow}>
-        {/* Left: site intro */}
+      <div className={singleColumnRow}>
+        {/* News now owns the full width below the photograph */}
         <div
-          className={`${columnIntro} ${introFade}`}
-          style={{ transitionDelay: '140ms' }}
-        >
-          <ReactMarkdown className={introMarkdown} remarkPlugins={[remarkBreaks]}>
-            {homeData.Huvudtext}
-          </ReactMarkdown>
-        </div>
-
-        {/* Right: news teaser */}
-        <div
-          className={`${columnNews} ${newsColFade}`}
+          className={`${columnNewsWide} ${newsColFade}`}
           style={{ transitionDelay: '260ms' }}
         >
           <div className={newsSection}>
             <div className={aktuelltHeadingWrap}>
               <div className={aktuelltHeadingCluster}>
                 <Newspaper className={aktuelltHeadingIcon} strokeWidth={1.75} aria-hidden />
-                <p className={aktuelltHeading}>Aktuellt</p>
+                <p className={aktuelltHeading}>Händer i Simonstorp</p>
               </div>
             </div>
             {showAktuelltMobileRules ? (

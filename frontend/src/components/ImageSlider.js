@@ -46,7 +46,7 @@ const getSlideTransform = (index, progress) => {
  * does not compete with fixed nav (z-index: 2) on mobile.
  * Timings match .slideimgActive (5s) / .slideimg (1s) in indextemp.css.
  */
-export default function ImageSlider({ eyebrow, title, ...props }) {
+export default function ImageSlider({ eyebrow, title, body, ...props }) {
   const homeData = props.home?.data?.data;
   const images = getHomepageHeaderImages(homeData);
   const { width } = useWindowDimensions();
@@ -106,7 +106,7 @@ export default function ImageSlider({ eyebrow, title, ...props }) {
   }, [length]);
 
   if (!length) {
-    return <div className="relative isolate z-0 h-[50vh] w-full bg-[#d8d8d8]" />;
+    return <div className="relative isolate z-0 h-[min(56vh,600px)] w-full bg-[#d8d8d8]" />;
   }
 
   const active = ((activeIndex % length) + length) % length;
@@ -147,7 +147,7 @@ export default function ImageSlider({ eyebrow, title, ...props }) {
         />
       </div>
 
-    <div className="relative isolate z-[1] h-[50vh] w-full overflow-hidden bg-[#d8d8d8] rounded-md">
+    <div className="relative isolate z-[1] h-[min(56vh,600px)] w-full overflow-hidden bg-[#d8d8d8] rounded-md">
       <style>{sliderAnimationStyles}</style>
       {images.map((img, index) => {
         const isActive = index === active;
@@ -172,7 +172,7 @@ export default function ImageSlider({ eyebrow, title, ...props }) {
             aria-label={isActive ? 'Visa bild i full storlek' : undefined}
           >
             <LazyLoadImage
-              className={`block h-[50vh] w-full transform-gpu bg-[#272926] object-cover will-change-transform transition-[filter,opacity] duration-[1800ms] ease-out ${
+              className={`block h-full w-full transform-gpu bg-[#272926] object-cover will-change-transform transition-[filter,opacity] duration-[1800ms] ease-out ${
                 isActive ? 'opacity-[0.94] blur-0' : 'opacity-[0.86] blur-[1px]'
               }`}
               loading={index === 0 ? 'eager' : 'lazy'}
@@ -238,7 +238,12 @@ export default function ImageSlider({ eyebrow, title, ...props }) {
             aria-hidden
             style={{
               backgroundImage:
-                'radial-gradient(58% 52% at 24% 88%, rgba(10,12,8,0.62) 0%, rgba(10,12,8,0.40) 40%, rgba(10,12,8,0.14) 68%, transparent 88%)',
+                [
+                  // Sized to the text block, not the image: an ellipse for the words plus
+                  // a shallow foot so a paragraph never sits half on and half off it.
+                  'radial-gradient(62% 78% at 22% 82%, rgba(8,10,7,0.88) 0%, rgba(8,10,7,0.68) 32%, rgba(8,10,7,0.26) 62%, transparent 84%)',
+                  'linear-gradient(to top, rgba(8,10,7,0.34) 0%, rgba(8,10,7,0.12) 28%, transparent 52%)',
+                ].join(', '),
             }}
           />
 
@@ -258,6 +263,15 @@ export default function ImageSlider({ eyebrow, title, ...props }) {
             >
               {title}
             </p>
+
+            {body ? (
+              <div
+                className="mt-4 max-w-[40ch] text-[0.95rem] leading-[1.7] text-white md:mt-5 md:text-base"
+                style={{ textShadow: '0 1px 14px rgba(0,0,0,0.55)' }}
+              >
+                {body}
+              </div>
+            ) : null}
           </div>
         </>
       ) : null}
