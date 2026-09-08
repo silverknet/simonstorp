@@ -21,11 +21,28 @@ const sliderAnimationStyles = `
     to { transform: scale(1.08) translate3d(-1.2%, -0.35%, 0); }
   }
 
+  @keyframes heroLineIn {
+    from { opacity: 0; transform: translate3d(0, 8px, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
+  }
+
   @keyframes heroKenBurnsRight {
     from { transform: scale(1.04) translate3d(0, 0, 0); }
     to { transform: scale(1.08) translate3d(1.2%, 0.35%, 0); }
   }
 `;
+
+/**
+ * The introduction, one sentence at a time.
+ *
+ * Split on sentence endings rather than on line breaks: the text is written as prose in
+ * Strapi, and whoever writes it should not have to think about where the slides fall.
+ */
+const splitSentences = (text) =>
+  String(text ?? '')
+    .split(/(?<=[.!?])\s+/)
+    .map((part) => part.trim())
+    .filter(Boolean);
 
 const clampProgress = (value) => Math.max(0, Math.min(value, 1));
 const getCurrentProgress = (cycleStart) =>
@@ -46,7 +63,7 @@ const getSlideTransform = (index, progress) => {
  * does not compete with fixed nav (z-index: 2) on mobile.
  * Timings match .slideimgActive (5s) / .slideimg (1s) in indextemp.css.
  */
-export default function ImageSlider({ eyebrow, title, body, ...props }) {
+export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
   const homeData = props.home?.data?.data;
   const images = getHomepageHeaderImages(homeData);
   const { width } = useWindowDimensions();
@@ -122,6 +139,9 @@ export default function ImageSlider({ eyebrow, title, body, ...props }) {
   };
 
   const glowSrc = getHeroDisplayUrl(activeImage, { preferOriginal: false });
+  const sentences = splitSentences(bodyText);
+  // Sentences and images cycle independently; whichever list is shorter simply repeats.
+  const sentence = sentences.length ? sentences[active % sentences.length] : null;
 
   return (
     <div className="relative w-full">
@@ -264,13 +284,17 @@ export default function ImageSlider({ eyebrow, title, body, ...props }) {
               {title}
             </p>
 
-            {body ? (
-              <div
-                className="mt-4 max-w-[56ch] text-[0.95rem] leading-[1.7] text-white md:mt-5 md:text-base"
-                style={{ textShadow: '0 1px 14px rgba(0,0,0,0.55)' }}
+            {sentence ? (
+              <p
+                key={`${active}-${cycleToken}`}
+                className="m-0 mt-4 h-[5.1rem] max-w-[56ch] overflow-hidden text-[0.95rem] leading-[1.7] text-white md:mt-5 md:h-[5.4rem] md:text-base"
+                style={{
+                  textShadow: '0 1px 14px rgba(0,0,0,0.55)',
+                  animation: 'heroLineIn 900ms ease-out both',
+                }}
               >
-                {body}
-              </div>
+                {sentence}
+              </p>
             ) : null}
           </div>
         </>

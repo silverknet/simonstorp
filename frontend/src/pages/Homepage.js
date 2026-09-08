@@ -1,7 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import { ArrowRight, Newspaper } from 'lucide-react';
-import remarkBreaks from 'remark-breaks';
+import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 import ImageSlider from '../components/ImageSlider';
@@ -23,9 +21,6 @@ import { plainNewsTeaserText } from '../utils/newsPlainExcerpt';
 
 const HOME_NEWS_URL = `${apiBaseUrl}/api/nyhets?populate=%2A&sort=createdAt:desc&pagination[page]=1&pagination[pageSize]=4`;
 
-/** Shared heading row contract: both headings use items-start; Aktuellt adds pt-[15px] offset */
-const headingRow =
-  'mb-4 flex items-start max-[800px]:mb-4';
 
 const singleColumnRow = 'mt-4 flex w-full flex-col max-[800px]:mt-0 max-[800px]:p-0';
 
@@ -35,11 +30,6 @@ const columnNewsWide =
   'transition-all duration-700 ease-out m-0 px-4 pb-10 pt-4 ' +
   'max-[800px]:px-[var(--mobile-side)] max-[800px]:pt-0';
 
-/** Intro set over the photograph: white, kept to a readable column. */
-const introOnImage =
-  // text-white on the wrapper is not enough: the global stylesheet sets a colour on <p>
-  // itself, which wins over inheritance.
-  '[&_p]:m-0 [&_p]:text-white [&_p+p]:mt-3 [&_a]:text-white [&_a]:underline [&_strong]:font-semibold';
 
 
 
@@ -50,16 +40,9 @@ const introOnImage =
 /** Stack: heading, cards, “Se alla” — tight gap under Aktuellt; compact gap between cards */
 const newsSection = 'mt-0 flex flex-col gap-0';
 
-const aktuelltHeadingWrap =
-  `${headingRow} w-full items-start pt-[15px] gap-2 border-0 p-0 max-[800px]:pt-0 max-[800px]:mb-1`;
 
-const aktuelltHeadingCluster = 'flex flex-1 items-end gap-2';
 
-const aktuelltHeadingIcon =
-  'mb-0.5 h-5 w-5 shrink-0 self-end text-[#131313] opacity-90';
 
-const aktuelltHeading =
-  'm-0 self-end text-lg font-light leading-tight text-[#131313]';
 
 /** Page-load fade only on the outer Link — avoids transition-delay slowing hover */
 const newsCardLink =
@@ -192,11 +175,7 @@ export default function Homepage(props) {
           home={props.homecontent}
           eyebrow="Välkommen till"
           title="Simonstorp"
-          body={
-            <ReactMarkdown className={introOnImage} remarkPlugins={[remarkBreaks]}>
-              {homeData.Huvudtext}
-            </ReactMarkdown>
-          }
+          bodyText={homeData.Huvudtext}
         />
       </div>
 
@@ -207,12 +186,6 @@ export default function Homepage(props) {
           style={{ transitionDelay: '260ms' }}
         >
           <div className={newsSection}>
-            <div className={aktuelltHeadingWrap}>
-              <div className={aktuelltHeadingCluster}>
-                <Newspaper className={aktuelltHeadingIcon} strokeWidth={1.75} aria-hidden />
-                <p className={aktuelltHeading}>Händer i Simonstorp</p>
-              </div>
-            </div>
             {showAktuelltMobileRules ? (
               <div className={newsCardDivider} aria-hidden />
             ) : null}
