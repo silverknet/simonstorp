@@ -21,7 +21,7 @@ const sortByRank = (pages = []) =>
  * updating (menu toggle, compact scroll, resize) or briefly reads low.
  * Phone uses a smaller floor (~collapsed top row); desktop keeps more headroom.
  */
-const MIN_INFO_HEADER_RESERVE_DESKTOP_PX = 168;
+const MIN_INFO_HEADER_RESERVE_DESKTOP_PX = 152;
 const MIN_INFO_HEADER_RESERVE_MOBILE_PX = 64;
 
 export default function Menubar({
@@ -311,7 +311,7 @@ export default function Menubar({
         ? 'h-16 w-full gap-3 px-3.5 py-0'
         : isCompactDesktop
           ? 'w-auto shrink-0 justify-start pl-5 pr-0 py-0'
-          : 'h-28 w-full px-5 py-0',
+          : 'h-24 w-full px-5 py-0',
     ]
       .filter(Boolean)
       .join(' ');

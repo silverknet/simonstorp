@@ -103,11 +103,16 @@ const newsCardExcerpt =
 /* Small, and last: the date and the headline carry the row. */
 const newsThumbCell = 'ml-auto shrink-0 pl-4 max-[800px]:hidden';
 
+/*
+ * White, not the page's own off-white: a mat the same colour as what surrounds it is
+ * not a mat at all. Square corners and a wider board, so it reads as a mounted print
+ * rather than a rounded UI card, with a shadow just heavy enough to lift it off the page.
+ */
 const newsThumbWrap =
-  'relative shrink-0 rounded-lg bg-[var(--bg-white-accent)] p-1 ring-1 ring-black/[0.06] ' +
-  'transition-shadow duration-300 group-hover:shadow-[0_6px_18px_rgba(0,0,0,0.07)]';
+  'relative shrink-0 bg-white p-2.5 shadow-[0_1px_3px_rgba(0,0,0,0.06),0_6px_16px_rgba(0,0,0,0.05)] ' +
+  'transition-shadow duration-300 group-hover:shadow-[0_2px_6px_rgba(0,0,0,0.08),0_10px_26px_rgba(0,0,0,0.08)]';
 
-const newsThumbInner = 'relative h-24 w-32 overflow-hidden rounded-md bg-black/[0.04]';
+const newsThumbInner = 'relative h-24 w-32 overflow-hidden bg-black/[0.04]';
 
 const newsThumbImg =
   'block h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]';
