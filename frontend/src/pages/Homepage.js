@@ -12,7 +12,7 @@ import { usePageMeta } from '../utils/pageMeta';
 import { getOptimizedDisplayUrl } from '../utils/strapiMedia';
 import { getNyhetSlug } from '../utils/utils';
 import {
-  formatEventDatumShort,
+  eventDatumShowsTime,
   formatPublishedForDisplay,
   getPlatsText,
   getPublishedTimestamp,
@@ -74,65 +74,62 @@ const newsCardLink =
  * and it sits at the end of the row rather than opening it.
  */
 /*
- * The picture leads the row at a size worth looking at, but always in the same 3:2
- * frame: whatever somebody photographed — portrait, square, badly framed — crops to
- * the same shape, so the column stays even and no single weak image throws the page
- * off. A story without one keeps its full width rather than leaving a hole.
+ * A dated notice, not a magazine card.
+ *
+ * What people scan this list for is when something happens — valborg, årsmöte, byamöte
+ * — so the date leads, set as a stamp in its own column with a rule beside it. The
+ * empty space that column leaves is where the air comes from, and it demotes the
+ * photograph from the thing carrying the row to a detail beside it, which is what makes
+ * an ordinary snapshot harmless here.
  */
-const newsCardBase = 'flex w-full items-start gap-7 py-8 max-[800px]:gap-4 max-[800px]:py-6';
+const newsCardBase = 'flex w-full items-start gap-6 py-8 max-[800px]:gap-4 max-[800px]:py-6';
 
-const newsThumbCell = 'shrink-0';
+const newsStampCell = 'flex shrink-0 items-stretch gap-6 max-[800px]:gap-4';
 
-/*
- * Mounted like a print rather than dropped straight onto the page: a pale mat, a
- * hairline around it, and the image inset within. The mat does the work a good
- * photograph would otherwise have to do itself — it separates the picture from the
- * page, gives every item the same edge whatever the source looks like, and stops a
- * dark or badly cropped frame bleeding into the text beside it.
- */
-const newsThumbWrap =
-  'relative shrink-0 rounded-xl bg-[var(--bg-white-accent)] p-1.5 ring-1 ring-black/[0.06] ' +
-  'transition-shadow duration-300 group-hover:shadow-[0_6px_20px_rgba(0,0,0,0.07)]';
+const newsStamp = 'w-14 shrink-0 pt-1 text-right max-[800px]:w-11';
 
-/*
- * The picture keeps its own proportions inside the mat rather than being forced into
- * one rectangle — a portrait stays a portrait — which loosens the column and stops the
- * page looking stamped out. Bounded top and bottom so nothing runs away: a very tall
- * photograph is capped, a very wide one still has presence.
- */
-const newsThumbInner =
-  // A floor so the mat reserves its space instead of collapsing to a sliver until the
-  // picture arrives, which would shift the whole row as the page loads.
-  'relative min-h-32 w-56 overflow-hidden rounded-lg bg-black/[0.04] max-[800px]:min-h-20 max-[800px]:w-28';
+const newsStampDay =
+  'm-0 text-[2rem] font-light leading-none tracking-[-0.03em] text-[var(--main-text)] max-[800px]:text-2xl';
 
-const newsThumbImg =
-  'block h-auto max-h-64 w-full object-cover transition-transform duration-500 ease-out ' +
-  'group-hover:scale-[1.03] max-[800px]:max-h-32';
+const newsStampMonth =
+  'm-0 mt-1.5 text-xs uppercase tracking-[0.16em] text-[var(--main-text)]/55';
 
-/* A whisper of correction so wildly different photographs read as one set. */
+const newsStampYear = 'm-0 mt-0.5 text-[11px] tracking-[0.08em] text-[var(--grey-text)]/40';
 
-const newsThumbFilter = { filter: 'saturate(0.94) contrast(1.03)' };
+const newsStampRule = 'w-px self-stretch bg-[var(--divider-color)]';
 
 const newsCardDivider = 'h-px w-full shrink-0 bg-[var(--divider-color)]';
 
 const newsCardBody = 'flex min-w-0 flex-1 flex-col text-left';
 
 const newsCardTitle =
-  'm-0 w-full min-w-0 max-w-[34ch] text-[1.5rem] font-light leading-[1.2] tracking-[-0.015em] ' +
+  'm-0 w-full min-w-0 max-w-[32ch] text-[1.45rem] font-light leading-[1.25] tracking-[-0.015em] ' +
   'transition-colors group-hover:text-[var(--main-text)]/60 max-[800px]:text-lg';
 
-/* Title → meta → text → link all step by the same amount; the two meta values sit
-   together on one line rather than stacking into a second block. */
 const newsCardMeta =
-  'm-0 mt-3 flex w-full min-w-0 flex-wrap items-baseline gap-x-3 gap-y-1 text-left';
+  'm-0 mt-2 flex w-full min-w-0 flex-wrap items-baseline gap-x-3 gap-y-1 text-left';
 
 const newsCardMetaPrimary = 'text-sm leading-snug text-[var(--main-text)]/70';
 
 const newsCardPubDate = 'text-sm leading-snug text-[var(--grey-text)]/55';
 
 const newsCardExcerpt =
-  'm-0 mt-3 max-w-[72ch] overflow-hidden text-[1rem] leading-[1.75] text-[var(--grey-text)] ' +
-  '[display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:3]';
+  'm-0 mt-3 max-w-[68ch] overflow-hidden text-[1rem] leading-[1.75] text-[var(--grey-text)] ' +
+  '[display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]';
+
+/* Small, and last: the date and the headline carry the row. */
+const newsThumbCell = 'ml-auto shrink-0 pl-4 max-[800px]:hidden';
+
+const newsThumbWrap =
+  'relative shrink-0 rounded-lg bg-[var(--bg-white-accent)] p-1 ring-1 ring-black/[0.06] ' +
+  'transition-shadow duration-300 group-hover:shadow-[0_6px_18px_rgba(0,0,0,0.07)]';
+
+const newsThumbInner = 'relative h-24 w-32 overflow-hidden rounded-md bg-black/[0.04]';
+
+const newsThumbImg =
+  'block h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]';
+
+const newsThumbFilter = { filter: 'saturate(0.94) contrast(1.03)' };
 
 const newsReadMore =
   'mt-3 inline-flex items-center gap-2 text-sm text-[var(--main-text)] transition-colors';
@@ -147,6 +144,20 @@ const seeAllWrap =
 const seeAllLink =
   'm-0 inline-flex w-fit items-center gap-1.5 text-sm text-neutral-600 no-underline transition-colors duration-300 ' +
   'group-hover:border-l-2 group-hover:border-[var(--accent-one)] group-hover:pl-1.5';
+
+/** Day and month for the stamp: the event date where there is one, else when it was posted. */
+function stampParts(item) {
+  const iso = hasDatumValue(item?.Datum) ? item.Datum : getPublishedTimestamp(item);
+  const date = iso ? new Date(iso) : null;
+
+  if (!date || Number.isNaN(date.getTime())) return null;
+
+  return {
+    day: new Intl.DateTimeFormat('sv-SE', { day: 'numeric' }).format(date),
+    month: new Intl.DateTimeFormat('sv-SE', { month: 'short' }).format(date).replace('.', ''),
+    year: date.getFullYear(),
+  };
+}
 
 export default function Homepage(props) {
   usePageMeta({
@@ -213,11 +224,20 @@ export default function Homepage(props) {
                   const imgUrl = getOptimizedDisplayUrl(value.Bild) || null;
                   const pathSlug = getNyhetSlug(value);
                   if (!pathSlug) return null;
-                  const eventStr = hasDatumValue(value?.Datum)
-                    ? formatEventDatumShort(value.Datum)
-                    : null;
+                  // The stamp shows the day; this line adds only what it cannot — the
+                  // time and the place — so the date is not printed twice.
+                  const timeStr =
+                    hasDatumValue(value?.Datum) && eventDatumShowsTime(value.Datum)
+                      ? new Intl.DateTimeFormat('sv-SE', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        }).format(new Date(value.Datum))
+                      : null;
                   const platsStr = getPlatsText(value);
                   const pubStr = formatPublishedForDisplay(getPublishedTimestamp(value));
+                  const stamp = stampParts(value);
+                  // Where the stamp is already the publication date, saying it again adds nothing.
+                  const showPublished = Boolean(pubStr) && hasDatumValue(value?.Datum);
 
                   return (
                     <Fragment key={value.id}>
@@ -229,6 +249,44 @@ export default function Homepage(props) {
                         state={{ newsFrom: 'home' }}
                       >
                         <div className={newsCardBase}>
+                          {stamp ? (
+                            <div className={newsStampCell}>
+                              <div className={newsStamp}>
+                                <p className={newsStampDay}>{stamp.day}</p>
+                                <p className={newsStampMonth}>{stamp.month}</p>
+                                {stamp.year !== new Date().getFullYear() ? (
+                                  <p className={newsStampYear}>{stamp.year}</p>
+                                ) : null}
+                              </div>
+                              <div className={newsStampRule} aria-hidden />
+                            </div>
+                          ) : null}
+
+                          <div className={newsCardBody}>
+                            <p className={newsCardTitle}>{title}</p>
+
+                            {timeStr || platsStr || showPublished ? (
+                              <p className={newsCardMeta}>
+                                {timeStr || platsStr ? (
+                                  <span className={newsCardMetaPrimary}>
+                                    {[timeStr, platsStr].filter(Boolean).join(' · ')}
+                                  </span>
+                                ) : null}
+                                {showPublished ? (
+                                  <span className={newsCardPubDate}>Publicerad {pubStr}</span>
+                                ) : null}
+                              </p>
+                            ) : null}
+                            <p className={newsCardExcerpt}>
+                              {plainNewsTeaserText(value.Beskrivning)}
+                            </p>
+
+                            <span className={newsReadMore}>
+                              Läs mer
+                              <ArrowRight className={newsReadMoreIcon} aria-hidden />
+                            </span>
+                          </div>
+
                           {imgUrl ? (
                             <div className={newsThumbCell}>
                               <div className={newsThumbWrap}>
@@ -244,30 +302,6 @@ export default function Homepage(props) {
                               </div>
                             </div>
                           ) : null}
-                          <div className={newsCardBody}>
-                            <p className={newsCardTitle}>{title}</p>
-
-                            {eventStr || platsStr || pubStr ? (
-                              <p className={newsCardMeta}>
-                                {eventStr || platsStr ? (
-                                  <span className={newsCardMetaPrimary}>
-                                    {[eventStr, platsStr].filter(Boolean).join(' · ')}
-                                  </span>
-                                ) : null}
-                                {pubStr ? (
-                                  <span className={newsCardPubDate}>Publicerad {pubStr}</span>
-                                ) : null}
-                              </p>
-                            ) : null}
-                            <p className={newsCardExcerpt}>
-                              {plainNewsTeaserText(value.Beskrivning)}
-                            </p>
-
-                            <span className={newsReadMore}>
-                              Läs mer
-                              <ArrowRight className={newsReadMoreIcon} aria-hidden />
-                            </span>
-                          </div>
                         </div>
                       </Link>
                     </Fragment>
