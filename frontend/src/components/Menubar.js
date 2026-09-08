@@ -436,6 +436,7 @@ export default function Menubar({
               <div
                 key={`measure-${category.id}`}
                 className={desktopCategoryShellClass}
+                data-menuitem="shell"
                 data-desktop-measure-item="true"
                 data-category-id={String(category.id)}
               >
@@ -446,7 +447,7 @@ export default function Menubar({
                 </p>
               </div>
             ))}
-            <div className={desktopCategoryShellClass} data-desktop-more-item="true">
+            <div className={desktopCategoryShellClass} data-menuitem="shell" data-desktop-more-item="true">
               <p data-font="menu" className={desktopCategoryLabelClass}>
                 <span className="inline-flex items-center gap-1.5">
                   <span>Fler</span>
@@ -497,6 +498,7 @@ export default function Menubar({
                 key={category.id}
                 className={itemClassName}
                 data-category-id={categoryIdStr}
+                {...(isDesktop ? { 'data-menuitem': 'shell' } : {})}
                 {...(isDesktop ? { 'data-desktop-nav-item': 'true' } : {})}
                 onClick={() => {
                   if (!isDesktop) {
@@ -585,6 +587,7 @@ export default function Menubar({
               ]
                 .filter(Boolean)
                 .join(' ')}
+              data-menuitem="shell"
             >
               <p data-font="menu" className={desktopCategoryLabelClass}>
                 <span className="inline-flex items-center gap-1.5">

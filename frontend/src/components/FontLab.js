@@ -58,7 +58,15 @@ const IMAGE_CONTROLS = [
   { key: 'contrast', label: 'Kontrast', min: 0.7, max: 1.5, step: 0.02, unit: '', value: 1 },
 ];
 
+/** The desktop nav row: how tall each item is and how much room it claims. */
+const MENU_CONTROLS = [
+  { key: 'height', label: 'Höjd', min: 32, max: 112, step: 1, unit: 'px', value: 64 },
+  { key: 'minWidth', label: 'Minbredd', min: 40, max: 200, step: 2, unit: 'px', value: 112 },
+  { key: 'padding', label: 'Sidpadd.', min: 0, max: 48, step: 1, unit: 'px', value: 20 },
+];
+
 const IMAGE_KEY = 'newsimage';
+const MENUITEM_KEY = 'menuitem';
 
 const TOUCHED_KEY = 'touched';
 
@@ -67,6 +75,7 @@ const defaults = () => ({
     SCOPES.map((s) => [s.key, { font: s.font, weight: s.weight, size: s.size, leading: s.leading }])
   ),
   [IMAGE_KEY]: Object.fromEntries(IMAGE_CONTROLS.map((c) => [c.key, c.value])),
+  [MENUITEM_KEY]: Object.fromEntries(MENU_CONTROLS.map((c) => [c.key, c.value])),
 });
 
 function load() {
@@ -139,7 +148,17 @@ export default function FontLab() {
   filter: saturate(${img.saturate}) contrast(${img.contrast}) !important;
 }`;
 
-    return touched ? `${type}\n${image}` : '';
+    const nav = state[MENUITEM_KEY];
+    const menuitem = `[data-menuitem="shell"] {
+  height: ${nav.height}px !important;
+  min-width: ${nav.minWidth}px !important;
+}
+[data-menuitem="shell"] > p {
+  padding-left: ${nav.padding}px !important;
+  padding-right: ${nav.padding}px !important;
+}`;
+
+    return touched ? `${type}\n${image}\n${menuitem}` : '';
   }, [state, touched]);
 
   useEffect(() => {
@@ -166,6 +185,7 @@ export default function FontLab() {
             },
           ]),
           ['Nyhetsbild', state[IMAGE_KEY]],
+          ['Menyrad', state[MENUITEM_KEY]],
         ]),
         null,
         2
@@ -287,36 +307,41 @@ export default function FontLab() {
             );
           })}
 
-          <div className="mb-4 border-t border-black/10 pt-3">
-            <p className="m-0 mb-2 text-xs font-medium uppercase tracking-wide text-neutral-500">
-              Nyhetsbild
-            </p>
+          {[
+            { key: IMAGE_KEY, label: 'Nyhetsbild', controls: IMAGE_CONTROLS },
+            { key: MENUITEM_KEY, label: 'Menyrad', controls: MENU_CONTROLS },
+          ].map((group) => (
+            <div key={group.key} className="mb-4 border-t border-black/10 pt-3">
+              <p className="m-0 mb-2 text-xs font-medium uppercase tracking-wide text-neutral-500">
+                {group.label}
+              </p>
 
-            {IMAGE_CONTROLS.map((control) => (
-              <div key={control.key} className="mb-2 flex items-center gap-2">
-                <span className="w-[4.5rem] shrink-0 text-xs text-neutral-500">{control.label}</span>
-                <input
-                  type="range"
-                  className="flex-1"
-                  min={control.min}
-                  max={control.max}
-                  step={control.step}
-                  value={state[IMAGE_KEY][control.key]}
-                  onChange={(e) => {
-                    setTouched(true);
-                    setState((prev) => ({
-                      ...prev,
-                      [IMAGE_KEY]: { ...prev[IMAGE_KEY], [control.key]: Number(e.target.value) },
-                    }));
-                  }}
-                />
-                <span className="w-12 shrink-0 text-right text-xs tabular-nums text-neutral-600">
-                  {state[IMAGE_KEY][control.key]}
-                  {control.unit}
-                </span>
-              </div>
-            ))}
-          </div>
+              {group.controls.map((control) => (
+                <div key={control.key} className="mb-2 flex items-center gap-2">
+                  <span className="w-[4.5rem] shrink-0 text-xs text-neutral-500">{control.label}</span>
+                  <input
+                    type="range"
+                    className="flex-1"
+                    min={control.min}
+                    max={control.max}
+                    step={control.step}
+                    value={state[group.key][control.key]}
+                    onChange={(e) => {
+                      setTouched(true);
+                      setState((prev) => ({
+                        ...prev,
+                        [group.key]: { ...prev[group.key], [control.key]: Number(e.target.value) },
+                      }));
+                    }}
+                  />
+                  <span className="w-12 shrink-0 text-right text-xs tabular-nums text-neutral-600">
+                    {state[group.key][control.key]}
+                    {control.unit}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ))}
 
           <button
             type="button"
