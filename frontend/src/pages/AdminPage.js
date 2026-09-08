@@ -224,7 +224,24 @@ function PersonRow({ entry, onOpen }) {
  * Shared shell so both dialogs close the same way — clicking the backdrop or pressing
  * Escape, which is what people try first.
  */
-function Dialog({ title, onClose, children, footer, wide = false }) {
+/**
+ * How much someone has done for the site, as a single dot in their standing's colour.
+ * Deliberately quiet: hovering gives the number and nothing else, and it appears only
+ * here in the dialog — this is for us, not something to rank people with in public.
+ */
+function ContributionMark({ contribution }) {
+  if (!contribution?.level) return null;
+
+  return (
+    <span
+      title={String(contribution.points)}
+      className="mt-[0.6rem] inline-block h-2.5 w-2.5 shrink-0 rounded-full"
+      style={{ backgroundColor: contribution.level.color }}
+    />
+  );
+}
+
+function Dialog({ title, badge = null, onClose, children, footer, wide = false }) {
   useEffect(() => {
     const onKey = (e) => e.key === 'Escape' && onClose();
     document.addEventListener('keydown', onKey);
@@ -244,7 +261,10 @@ function Dialog({ title, onClose, children, footer, wide = false }) {
         aria-label={title}
       >
         <div className="mb-5 flex items-start justify-between gap-4">
-          <h2 className={dialogTitle}>{title}</h2>
+          <div className="flex min-w-0 items-start gap-2">
+            <h2 className={dialogTitle}>{title}</h2>
+            {badge}
+          </div>
           <button
             type="button"
             onClick={onClose}
@@ -300,6 +320,7 @@ function PersonDialog({
   return (
     <Dialog
       title={entry.name}
+      badge={<ContributionMark contribution={entry.contribution} />}
       onClose={onClose}
       footer={
         <>
