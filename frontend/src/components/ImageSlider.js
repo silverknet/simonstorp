@@ -38,6 +38,20 @@ const sliderAnimationStyles = `
  * Split on sentence endings rather than on line breaks: the text is written as prose in
  * Strapi, and whoever writes it should not have to think about where the slides fall.
  */
+/* Gathered around the words and nothing else: wide enough that no edge of it is
+   findable, so the picture simply loses focus where the type sits. */
+const BLUR_MASK =
+  'radial-gradient(115% 105% at 20% 86%, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.62) 34%, ' +
+  'rgba(0,0,0,0.24) 62%, transparent 84%)';
+
+/* The shade is cast by the type rather than laid under it: three shadows, each softer
+   and wider than the last, so it reads as the letters darkening the picture behind
+   them and never as a shape of its own. */
+const TITLE_SHADE =
+  '0 2px 10px rgba(8,10,7,0.40), 0 6px 44px rgba(8,10,7,0.52), 0 0 120px rgba(8,10,7,0.50)';
+const COPY_SHADE =
+  '0 1px 8px rgba(8,10,7,0.48), 0 4px 28px rgba(8,10,7,0.52), 0 0 80px rgba(8,10,7,0.44)';
+
 const splitSentences = (text) =>
   String(text ?? '')
     .split(/(?<=[.!?])\s+/)
@@ -252,19 +266,31 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
 
       {title ? (
         <>
-          {/* Anchored under the type only, fading out well before any edge, so it works
-              on a dark forest and a sunlit meadow alike. */}
+          {/*
+              No pool of darkness in one corner: an even veil over the whole picture to
+              flatten it into the page, then a full-width foot that only ever varies
+              from top to bottom. Nothing here is brighter or darker on one side.
+          */}
+          <div
+            className="pointer-events-none absolute inset-0 z-[2]"
+            aria-hidden
+            style={{ backgroundColor: 'rgba(8,10,7,0.10)' }}
+          />
+
+          {/*
+              The type is lifted by softening what sits under it rather than by dimming
+              it. The blur is masked to fade out well before the middle, so the reader
+              sees a photograph that goes gently out of focus, not a panel laid on top.
+          */}
           <div
             className="pointer-events-none absolute inset-0 z-[2]"
             aria-hidden
             style={{
-              backgroundImage:
-                [
-                  // Sized to the text block, not the image: an ellipse for the words plus
-                  // a shallow foot so a paragraph never sits half on and half off it.
-                  'radial-gradient(76% 78% at 26% 82%, rgba(8,10,7,0.60) 0%, rgba(8,10,7,0.44) 34%, rgba(8,10,7,0.18) 64%, transparent 86%)',
-                  'linear-gradient(to top, rgba(8,10,7,0.24) 0%, rgba(8,10,7,0.08) 28%, transparent 52%)',
-                ].join(', '),
+              backdropFilter: 'blur(10px) saturate(106%)',
+              WebkitBackdropFilter: 'blur(10px) saturate(106%)',
+              maskImage:
+                BLUR_MASK,
+              WebkitMaskImage: BLUR_MASK,
             }}
           />
 
@@ -275,7 +301,7 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
                 className="m-0 mb-2 font-['Source_Serif_4',serif] text-sm tracking-[0.04em] md:text-base"
                 // Set here rather than as a utility: the global stylesheet colours <p>,
                 // and an opacity variant Tailwind has not emitted loses to it silently.
-                style={{ color: 'rgba(255,255,255,0.88)', textShadow: '0 1px 12px rgba(0,0,0,0.55)' }}
+                style={{ color: 'rgba(255,255,255,0.88)', textShadow: COPY_SHADE }}
               >
                 {eyebrow}
               </p>
@@ -284,7 +310,7 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
             <p
               data-font="hero"
               className="m-0 font-['Source_Serif_4',serif] text-[clamp(2rem,5.4vw,4.0625rem)] font-normal leading-[0.85] tracking-[-0.01em] text-white"
-              style={{ textShadow: '0 2px 26px rgba(0,0,0,0.45)' }}
+              style={{ textShadow: TITLE_SHADE }}
             >
               {title}
             </p>
@@ -295,7 +321,7 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
                 data-font="herobody"
                 className="m-0 mt-4 h-[4.6rem] max-w-[62ch] overflow-hidden font-['Source_Serif_4',serif] text-[0.875rem] font-light leading-[1.65] text-white md:mt-5 md:h-[4.8rem]"
                 style={{
-                  textShadow: '0 1px 14px rgba(0,0,0,0.55)',
+                  textShadow: COPY_SHADE,
                   animation: 'heroLineIn 900ms ease-out both',
                 }}
               >
