@@ -46,7 +46,7 @@ const getSlideTransform = (index, progress) => {
  * does not compete with fixed nav (z-index: 2) on mobile.
  * Timings match .slideimgActive (5s) / .slideimg (1s) in indextemp.css.
  */
-export default function ImageSlider(props) {
+export default function ImageSlider({ eyebrow, title, ...props }) {
   const homeData = props.home?.data?.data;
   const images = getHomepageHeaderImages(homeData);
   const { width } = useWindowDimensions();
@@ -121,8 +121,33 @@ export default function ImageSlider(props) {
     beginCycle(nextIndex);
   };
 
+  const glowSrc = getHeroDisplayUrl(activeImage, { preferOriginal: false });
+
   return (
-    <div className="relative isolate z-0 h-[50vh] w-full overflow-hidden bg-[#d8d8d8] rounded-md">
+    <div className="relative w-full">
+      {/*
+        Barely-there backlight: the current photograph, blurred past recognition and
+        pushed just outside the frame, so the picture warms the page around it. Kept
+        faint enough that it reads as light rather than as a second image.
+      */}
+      <div className="pointer-events-none absolute -inset-x-[4%] -inset-y-[8%] z-0" aria-hidden>
+        <img
+          src={glowSrc}
+          alt=""
+          className="h-full w-full scale-105 object-cover opacity-[0.16] transition-opacity duration-[1800ms]"
+          style={{ filter: 'blur(70px) saturate(130%)' }}
+        />
+      </div>
+      <div className="pointer-events-none absolute -inset-x-[9%] -inset-y-[16%] z-0" aria-hidden>
+        <img
+          src={glowSrc}
+          alt=""
+          className="h-full w-full scale-110 object-cover opacity-[0.09] transition-opacity duration-[1800ms]"
+          style={{ filter: 'blur(150px) saturate(120%)' }}
+        />
+      </div>
+
+    <div className="relative isolate z-[1] h-[50vh] w-full overflow-hidden bg-[#d8d8d8] rounded-md">
       <style>{sliderAnimationStyles}</style>
       {images.map((img, index) => {
         const isActive = index === active;
@@ -168,7 +193,7 @@ export default function ImageSlider(props) {
         );
       })}
       <div
-        className="absolute bottom-4 left-1/2 z-[3] flex -translate-x-1/2 items-center gap-2 rounded-full bg-black/20 px-3 py-2 backdrop-blur-sm"
+        className="absolute bottom-4 right-4 z-[3] flex items-center gap-2 rounded-full bg-black/20 px-3 py-2 backdrop-blur-sm"
         onClick={(e) => e.stopPropagation()}
         onKeyDown={(e) => e.stopPropagation()}
       >
@@ -204,6 +229,39 @@ export default function ImageSlider(props) {
         })}
       </div>
 
+      {title ? (
+        <>
+          {/* Anchored under the type only, fading out well before any edge, so it works
+              on a dark forest and a sunlit meadow alike. */}
+          <div
+            className="pointer-events-none absolute inset-0 z-[2]"
+            aria-hidden
+            style={{
+              backgroundImage:
+                'radial-gradient(58% 52% at 24% 88%, rgba(10,12,8,0.62) 0%, rgba(10,12,8,0.40) 40%, rgba(10,12,8,0.14) 68%, transparent 88%)',
+            }}
+          />
+
+          <div className="pointer-events-none absolute bottom-0 left-0 z-[3] p-6 md:p-10">
+            {eyebrow ? (
+              <p
+                className="m-0 mb-2 text-xs uppercase tracking-[0.22em] text-white/90 md:text-sm"
+                style={{ textShadow: '0 1px 12px rgba(0,0,0,0.55)' }}
+              >
+                {eyebrow}
+              </p>
+            ) : null}
+
+            <p
+              className="m-0 text-[clamp(2rem,5.5vw,3.75rem)] font-light leading-[0.98] tracking-[-0.02em] text-white"
+              style={{ textShadow: '0 2px 26px rgba(0,0,0,0.45)' }}
+            >
+              {title}
+            </p>
+          </div>
+        </>
+      ) : null}
+
       {lightboxOpen && activeAttrs ? (
         <ImageLightboxDialog
           src={getFullSizeImageUrl(activeAttrs)}
@@ -215,6 +273,7 @@ export default function ImageSlider(props) {
           ariaLabel="Huvudbild i full storlek"
         />
       ) : null}
+    </div>
     </div>
   );
 }

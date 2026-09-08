@@ -174,7 +174,7 @@ export default function Homepage(props) {
   return (
     <div className="min-h-[calc(100vh-437px)] pb-0">
       <div className="box-border w-full">
-        <ImageSlider home={props.homecontent} />
+        <ImageSlider home={props.homecontent} eyebrow="Välkommen till" title="Simonstorp" />
       </div>
 
       <div className={twoColumnRow}>
