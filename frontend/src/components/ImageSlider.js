@@ -14,12 +14,18 @@ import { getFullSizeImageUrl, getHeroDisplayUrl } from '../utils/strapiMedia';
  * body scatters more and returns less.
  */
 const SSS_LAYERS = [
-  { inset: 6, blur: 22, opacity: 0.34, saturate: 2.2, brightness: 1.2 },
-  { inset: 22, blur: 44, opacity: 0.2, saturate: 2.0, brightness: 1.15 },
-  { inset: 54, blur: 74, opacity: 0.11, saturate: 1.8, brightness: 1.1 },
-  { inset: 108, blur: 118, opacity: 0.055, saturate: 1.5, brightness: 1.05 },
-  { inset: 200, blur: 170, opacity: 0.025, saturate: 1.3, brightness: 1.0 },
+  { spread: 6, blur: 24, opacity: 0.17, saturate: 1.9, brightness: 1.14 },
+  { spread: 20, blur: 46, opacity: 0.1, saturate: 1.75, brightness: 1.1 },
+  { spread: 50, blur: 80, opacity: 0.055, saturate: 1.6, brightness: 1.06 },
+  { spread: 104, blur: 124, opacity: 0.028, saturate: 1.4, brightness: 1.03 },
 ];
+
+/**
+ * Light arrives from above, so less of it comes back over the top edge than spills out
+ * below. The asymmetry is what gives the panel a side that faces the light and a side
+ * that does not — a symmetric halo reads as flat however strong it is.
+ */
+const SSS_BIAS = { top: 0.34, side: 0.8, bottom: 1.35 };
 
 const SLIDE_INTERVAL_MS = 12000;
 const FADE_DURATION_MS = 1800;
@@ -241,9 +247,14 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
       */}
       {SSS_LAYERS.map((layer) => (
         <div
-          key={layer.inset}
+          key={layer.spread}
           className="pointer-events-none absolute z-0"
-          style={{ inset: `-${layer.inset}px` }}
+          style={{
+            top: `-${Math.round(layer.spread * SSS_BIAS.top)}px`,
+            right: `-${Math.round(layer.spread * SSS_BIAS.side)}px`,
+            bottom: `-${Math.round(layer.spread * SSS_BIAS.bottom)}px`,
+            left: `-${Math.round(layer.spread * SSS_BIAS.side)}px`,
+          }}
           aria-hidden
         >
           <img
@@ -263,6 +274,11 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
     <div
       ref={frameRef}
       className="relative isolate z-[1] h-[min(56vh,600px)] w-full overflow-hidden bg-[#272926] rounded-md"
+      style={{
+        boxShadow:
+          '0 2px 6px rgba(24,26,20,0.06), 0 14px 34px rgba(24,26,20,0.09), ' +
+          '0 40px 80px rgba(24,26,20,0.07)',
+      }}
     >
       <style>{sliderAnimationStyles}</style>
       {images.map((img, index) => {

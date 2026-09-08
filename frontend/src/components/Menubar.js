@@ -271,7 +271,7 @@ export default function Menubar({
 
   const shellClassName = [
     'w-full',
-    isFixed ? 'fixed left-0 top-0 z-20' : '',
+    isFixed ? 'fixed left-0 top-0 z-20' : 'relative z-20',
     !isDesktop ? 'bg-[var(--bg-white)]' : '',
   ]
     .filter(Boolean)
