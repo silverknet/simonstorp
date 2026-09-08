@@ -9,7 +9,6 @@ import useFetch from '../hooks/useFetch';
 import useWindowDimensions from '../hooks/getWindowDimensions';
 import apiBaseUrl from '../config/apiBaseUrl';
 import { usePageMeta } from '../utils/pageMeta';
-import { getOptimizedDisplayUrl } from '../utils/strapiMedia';
 import { getNyhetSlug } from '../utils/utils';
 import {
   formatEventDatumShort,
@@ -63,7 +62,8 @@ const aktuelltHeading =
 
 /** Page-load fade only on the outer Link — avoids transition-delay slowing hover */
 const newsCardLink =
-  'relative -ml-1 block w-full cursor-pointer no-underline text-inherit transition-[opacity,transform] duration-700 ease-out max-[800px]:ml-0';
+  'group relative block w-full cursor-pointer no-underline text-inherit ' +
+  'transition-[opacity,transform] duration-700 ease-out';
 
 /** Hover lives here so it isn’t delayed by the entrance `transitionDelay` on the Link */
 /*
@@ -72,41 +72,44 @@ const newsCardLink =
  * little: the headline leads, the picture is small, square and consistently cropped,
  * and it sits at the end of the row rather than opening it.
  */
-const newsCardBase = 'flex w-full items-start gap-6 py-7 max-[800px]:gap-4 max-[800px]:py-5';
+/*
+ * No thumbnail.
+ *
+ * The pictures come from Facebook posts and are whatever somebody happened to
+ * photograph. Shrunk into a corner they read as an apology for themselves, and given
+ * room they overpower the story. The list is text instead — headline, when and where,
+ * a couple of lines — and the photograph appears on the article page, where the reader
+ * has already chosen to look at it.
+ */
+const newsCardBase = 'flex w-full flex-col py-8 max-[800px]:py-6';
 
-const newsThumbCell = 'order-2 shrink-0';
-
-/** One fixed square, whatever the source aspect ratio. */
-const newsThumbWrap =
-  'relative h-24 w-24 shrink-0 overflow-hidden rounded-md bg-[var(--bg-white-accent)] ' +
-  'max-[800px]:h-16 max-[800px]:w-16';
-
-const newsThumb = 'absolute inset-0 h-full w-full object-cover';
-
-/** Hairlines between stories; no boxes. */
 const newsCardDivider = 'h-px w-full shrink-0 bg-[var(--divider-color)]';
 
-const newsCardBodyBase = 'order-1 flex min-w-0 flex-1 flex-col text-left';
-const newsCardBody = newsCardBodyBase;
-const newsCardBodyTextOnly = newsCardBodyBase;
+const newsCardBody = 'flex min-w-0 flex-1 flex-col text-left';
 
-const newsCardLeadBlock = 'flex min-w-0 flex-col';
 
-const newsCardTitleRow = 'flex w-full min-w-0 flex-col text-[var(--main-text)]';
 
 const newsCardTitle =
-  'm-0 w-full min-w-0 overflow-hidden text-[1.35rem] font-normal leading-snug tracking-[-0.01em] ' +
-  'transition-colors [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] ' +
-  'max-[800px]:text-lg';
+  'm-0 w-full min-w-0 max-w-[34ch] text-[1.6rem] font-light leading-[1.2] tracking-[-0.015em] ' +
+  'transition-colors group-hover:text-[var(--main-text)]/60 max-[800px]:text-xl';
 
+/* Title → meta → text → link all step by the same amount; the two meta values sit
+   together on one line rather than stacking into a second block. */
 const newsCardMeta =
-  'm-0 mt-1 block w-full min-w-0 break-words text-left text-xs font-normal leading-snug text-[var(--grey-text)]/70';
+  'm-0 mt-3 flex w-full min-w-0 flex-wrap items-baseline gap-x-3 gap-y-1 text-left';
 
-const newsCardPubDate = 'm-0 text-xs leading-snug text-[var(--grey-text)]/55';
+const newsCardMetaPrimary = 'text-sm leading-snug text-[var(--main-text)]/70';
+
+const newsCardPubDate = 'text-sm leading-snug text-[var(--grey-text)]/55';
 
 const newsCardExcerpt =
-  'm-0 mt-3 max-w-[68ch] overflow-hidden text-[0.95rem] leading-[1.7] text-[var(--grey-text)] ' +
-  '[display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]';
+  'm-0 mt-3 max-w-[72ch] overflow-hidden text-[1rem] leading-[1.75] text-[var(--grey-text)] ' +
+  '[display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:3]';
+
+const newsReadMore =
+  'mt-3 inline-flex items-center gap-2 text-sm text-[var(--main-text)] transition-colors';
+
+const newsReadMoreIcon = 'h-4 w-4 transition-transform group-hover:translate-x-1';
 
 const seeAllWrap =
   'group w-fit px-1 py-0 text-neutral-700 no-underline transition-all duration-700 ease-out ' +
@@ -179,7 +182,6 @@ export default function Homepage(props) {
               ? null
               : (Array.isArray(newsTeaser?.data) ? newsTeaser.data : []).map((value, index) => {
                   const title = value.title ?? value.Rubrik ?? '';
-                  const imgUrl = getOptimizedDisplayUrl(value.Bild) || null;
                   const pathSlug = getNyhetSlug(value);
                   if (!pathSlug) return null;
                   const eventStr = hasDatumValue(value?.Datum)
@@ -198,32 +200,29 @@ export default function Homepage(props) {
                         state={{ newsFrom: 'home' }}
                       >
                         <div className={newsCardBase}>
-                          {imgUrl ? (
-                            <div className={newsThumbCell}>
-                              <div className={newsThumbWrap}>
-                                <img className={newsThumb} src={imgUrl} alt="" />
-                              </div>
-                            </div>
-                          ) : null}
-                          <div className={imgUrl ? newsCardBody : newsCardBodyTextOnly}>
-                            <div className={newsCardLeadBlock}>
-                              <div className={newsCardTitleRow}>
-                                <p className={newsCardTitle}>{title}</p>
-                                {(eventStr || platsStr) ? (
-                                  <span className={newsCardMeta}>
-                                    {eventStr ?? ''}
-                                    {eventStr && platsStr ? <span aria-hidden> · </span> : null}
-                                    {platsStr ?? ''}
+                          <div className={newsCardBody}>
+                            <p className={newsCardTitle}>{title}</p>
+
+                            {eventStr || platsStr || pubStr ? (
+                              <p className={newsCardMeta}>
+                                {eventStr || platsStr ? (
+                                  <span className={newsCardMetaPrimary}>
+                                    {[eventStr, platsStr].filter(Boolean).join(' · ')}
                                   </span>
                                 ) : null}
-                              </div>
-                              {pubStr ? (
-                                <p className={newsCardPubDate}>Publicerad {pubStr}</p>
-                              ) : null}
-                            </div>
+                                {pubStr ? (
+                                  <span className={newsCardPubDate}>Publicerad {pubStr}</span>
+                                ) : null}
+                              </p>
+                            ) : null}
                             <p className={newsCardExcerpt}>
                               {plainNewsTeaserText(value.Beskrivning)}
                             </p>
+
+                            <span className={newsReadMore}>
+                              Läs mer
+                              <ArrowRight className={newsReadMoreIcon} aria-hidden />
+                            </span>
                           </div>
                         </div>
                       </Link>
