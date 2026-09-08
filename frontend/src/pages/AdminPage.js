@@ -28,7 +28,7 @@ import {
 
 /* Deliberately large, high-contrast and plain: the people using this are elderly. */
 const loginShell = 'mx-auto flex w-full max-w-[36rem] flex-col px-4 py-10';
-const dashShell = 'mx-auto flex w-full max-w-[64rem] flex-col px-4 py-10';
+const dashShell = 'mx-auto flex w-full max-w-[84rem] flex-col px-4 py-10';
 const heading = 'mb-2 text-[1.75rem] font-normal leading-tight text-[var(--main-text)]';
 const subtle = 'mb-6 text-base leading-relaxed text-[var(--grey-text)]';
 const sectionTitle = 'mb-4 text-[1.25rem] font-normal text-[var(--main-text)]';
@@ -63,8 +63,12 @@ const linkBox =
   'mb-3 w-full break-all rounded-md bg-[var(--bg-white-accent)] px-3 py-3 text-sm text-[var(--main-text)]';
 
 /** Members take the width; tools sit in a narrower rail beside them. */
-const pageGrid = 'mt-8 grid w-full grid-cols-1 gap-10 lg:grid-cols-[7fr_3fr]';
-const toolRail = 'min-w-0 lg:sticky lg:top-6 lg:self-start';
+const pageGrid = 'mt-8 grid w-full grid-cols-1 gap-8 lg:grid-cols-[7fr_3fr] lg:gap-0';
+
+/** Ruled off from the member lists: these are tools, not more people. */
+const toolRail =
+  'min-w-0 border-t border-black/10 pt-8 lg:sticky lg:top-6 lg:self-start ' +
+  'lg:border-l lg:border-t-0 lg:pl-10 lg:pt-0';
 
 /** The two member lists split the wide side once there is room for both. */
 const splitGrid = 'grid w-full grid-cols-1 gap-8 xl:grid-cols-2 xl:gap-8';
@@ -72,7 +76,7 @@ const listCol = 'min-w-0';
 
 /** Fixed height so the two lists line up and nothing jumps as statuses change. */
 const rowBase =
-  'flex h-[4.25rem] items-center gap-3 rounded-md px-3 text-left';
+  'flex h-[4.25rem] items-center gap-2.5 rounded-md px-3 text-left';
 const userRow = rowBase;
 const userRowSelf = `${rowBase} bg-[var(--bg-white-accent)]`;
 
@@ -80,11 +84,14 @@ const rowName = 'truncate text-base text-[var(--main-text)]';
 const rowSub = 'truncate text-xs text-[var(--grey-text)]';
 const emptyNote = 'px-3 py-4 text-sm text-[var(--grey-text)]';
 
-/** A live green light: a steady dot with a slow halo, readable at a glance. */
-const readyDot = 'relative flex h-3 w-3 shrink-0';
+/**
+ * A live green light. Deliberately a vivid signal green rather than the muted brand
+ * green, so it reads as a lit indicator instead of another decorative element.
+ */
+const readyDot = 'relative flex h-2 w-2 shrink-0';
 const readyPing =
-  'absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--accent-one)] opacity-75';
-const readyCore = 'relative inline-flex h-3 w-3 rounded-full bg-[var(--accent-one)]';
+  'absolute inline-flex h-full w-full animate-ping rounded-full bg-[#22c55e] opacity-75';
+const readyCore = 'relative inline-flex h-2 w-2 rounded-full bg-[#22c55e]';
 
 const checkBar = 'mt-4 flex flex-wrap items-center gap-3 text-sm text-[var(--grey-text)]';
 const checkButton =
@@ -154,7 +161,7 @@ function PersonRow({ entry, onOpen }) {
         <span className={rowSub}>{entry.email}</span>
       </button>
 
-      <span className="flex shrink-0 items-center gap-2">
+      <span className="flex shrink-0 items-center gap-2.5">
         {entry.mail?.state === 'ok' ? (
           <span className={readyDot} title="E-posten fungerar" aria-label="E-posten fungerar">
             <span className={readyPing} />
