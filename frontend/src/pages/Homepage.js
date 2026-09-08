@@ -3,6 +3,7 @@ import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 import ImageSlider from '../components/ImageSlider';
+import FontLab from '../components/FontLab';
 import useFetch from '../hooks/useFetch';
 import useWindowDimensions from '../hooks/getWindowDimensions';
 import apiBaseUrl from '../config/apiBaseUrl';
@@ -175,6 +176,8 @@ export default function Homepage(props) {
 
   return (
     <div className="min-h-[calc(100vh-437px)] pb-0">
+      {/* TEMPORARY: font experimentation panel, remove with the component. */}
+      <FontLab />
       <div className="box-border w-full">
         <ImageSlider
           home={props.homecontent}
@@ -230,7 +233,7 @@ export default function Homepage(props) {
                           {stamp ? (
                             <div className={newsStampCell}>
                               <div className={newsStamp}>
-                                <p className={newsStampDay}>{stamp.day}</p>
+                                <p data-font="stamp" className={newsStampDay}>{stamp.day}</p>
                                 <p className={newsStampMonth}>{stamp.month}</p>
                                 {stamp.year !== new Date().getFullYear() ? (
                                   <p className={newsStampYear}>{stamp.year}</p>
@@ -241,7 +244,7 @@ export default function Homepage(props) {
                           ) : null}
 
                           <div className={newsCardBody}>
-                            <p className={newsCardTitle}>{title}</p>
+                            <p data-font="newstitle" className={newsCardTitle}>{title}</p>
 
                             {timeStr || platsStr || showPublished ? (
                               <p className={newsCardMeta}>
@@ -255,7 +258,7 @@ export default function Homepage(props) {
                                 ) : null}
                               </p>
                             ) : null}
-                            <p className={newsCardExcerpt}>
+                            <p data-font="body" className={newsCardExcerpt}>
                               {plainNewsTeaserText(value.Beskrivning)}
                             </p>
 

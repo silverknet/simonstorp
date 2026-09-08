@@ -270,6 +270,7 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
           <div className="pointer-events-none absolute bottom-0 left-0 z-[3] p-6 md:p-10">
             {eyebrow ? (
               <p
+                data-font="body"
                 className="m-0 mb-2 text-sm tracking-[0.04em] md:text-base"
                 // Set here rather than as a utility: the global stylesheet colours <p>,
                 // and an opacity variant Tailwind has not emitted loses to it silently.
@@ -280,6 +281,7 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
             ) : null}
 
             <p
+              data-font="hero"
               className="m-0 text-[clamp(2rem,5.5vw,3.75rem)] font-light leading-[0.98] tracking-[-0.02em] text-white"
               style={{ textShadow: '0 2px 26px rgba(0,0,0,0.45)' }}
             >
@@ -289,6 +291,7 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
             {sentence ? (
               <p
                 key={`${active}-${cycleToken}`}
+                data-font="body"
                 className="m-0 mt-4 h-[5.1rem] max-w-[56ch] overflow-hidden text-[0.95rem] leading-[1.7] text-white md:mt-5 md:h-[5.4rem] md:text-base"
                 style={{
                   textShadow: '0 1px 14px rgba(0,0,0,0.55)',
