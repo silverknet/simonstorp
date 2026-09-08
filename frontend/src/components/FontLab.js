@@ -54,8 +54,6 @@ const IMAGE_CONTROLS = [
   { key: 'height', label: 'Höjd', min: 60, max: 300, step: 2, unit: 'px', value: 176 },
   { key: 'radius', label: 'Hörnradie', min: 0, max: 40, step: 1, unit: 'px', value: 1 },
   { key: 'mat', label: 'Passepartout', min: 0, max: 28, step: 1, unit: 'px', value: 8 },
-  { key: 'saturate', label: 'Mättnad', min: 0, max: 1.4, step: 0.02, unit: '', value: 0 },
-  { key: 'contrast', label: 'Kontrast', min: 0.7, max: 1.5, step: 0.02, unit: '', value: 1 },
 ];
 
 /** The desktop nav row: how tall each item is and how much room it claims. */
@@ -143,9 +141,6 @@ export default function FontLab() {
   width: ${img.width}px !important;
   height: ${img.height}px !important;
   border-radius: ${img.radius}px !important;
-}
-.group:not(:hover) [data-newsimg="img"] {
-  filter: saturate(${img.saturate}) contrast(${img.contrast}) !important;
 }`;
 
     const nav = state[MENUITEM_KEY];
