@@ -154,7 +154,7 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
         <img
           src={glowSrc}
           alt=""
-          className="h-full w-full scale-105 object-cover opacity-[0.05] transition-opacity duration-[1800ms]"
+          className="h-full w-full scale-105 object-cover opacity-[0.038] transition-opacity duration-[1800ms]"
           style={{ filter: 'blur(70px) saturate(130%)' }}
         />
       </div>
@@ -162,7 +162,7 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
         <img
           src={glowSrc}
           alt=""
-          className="h-full w-full scale-110 object-cover opacity-[0.03] transition-opacity duration-[1800ms]"
+          className="h-full w-full scale-110 object-cover opacity-[0.022] transition-opacity duration-[1800ms]"
           style={{ filter: 'blur(150px) saturate(120%)' }}
         />
       </div>
@@ -270,8 +270,8 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
           <div className="pointer-events-none absolute bottom-0 left-0 z-[3] p-6 md:p-10">
             {eyebrow ? (
               <p
-                data-font="body"
-                className="m-0 mb-2 text-sm tracking-[0.04em] md:text-base"
+                data-font="herobody"
+                className="m-0 mb-2 font-['Source_Serif_4',serif] text-sm tracking-[0.04em] md:text-base"
                 // Set here rather than as a utility: the global stylesheet colours <p>,
                 // and an opacity variant Tailwind has not emitted loses to it silently.
                 style={{ color: 'rgba(255,255,255,0.88)', textShadow: '0 1px 12px rgba(0,0,0,0.55)' }}
@@ -282,7 +282,7 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
 
             <p
               data-font="hero"
-              className="m-0 text-[clamp(2rem,5.5vw,3.75rem)] font-light leading-[0.98] tracking-[-0.02em] text-white"
+              className="m-0 font-['EB_Garamond',serif] text-[clamp(2.25rem,6vw,4.55rem)] font-semibold leading-[0.95] tracking-[-0.01em] text-white"
               style={{ textShadow: '0 2px 26px rgba(0,0,0,0.45)' }}
             >
               {title}
@@ -291,8 +291,8 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
             {sentence ? (
               <p
                 key={`${active}-${cycleToken}`}
-                data-font="body"
-                className="m-0 mt-4 h-[5.1rem] max-w-[56ch] overflow-hidden text-[0.95rem] leading-[1.7] text-white md:mt-5 md:h-[5.4rem] md:text-base"
+                data-font="herobody"
+                className="m-0 mt-4 h-[4.6rem] max-w-[62ch] overflow-hidden font-['Source_Serif_4',serif] text-[0.875rem] font-light leading-[1.65] text-white md:mt-5 md:h-[4.8rem]"
                 style={{
                   textShadow: '0 1px 14px rgba(0,0,0,0.55)',
                   animation: 'heroLineIn 900ms ease-out both',

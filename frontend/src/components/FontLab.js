@@ -29,21 +29,43 @@ const FONTS = [
 
 const WEIGHTS = [200, 300, 400, 500, 600, 700];
 
-/** Each scope maps to the data-font marks placed on the page. */
+const GARAMOND = "'EB Garamond', serif";
+const BASKERVILLE = "'Libre Baskerville', serif";
+const SOURCE_SERIF = "'Source Serif 4', serif";
+const LATO = "'Lato', sans-serif";
+const PLEX = "'IBM Plex Sans', sans-serif";
+
+/**
+ * Each scope maps to the data-font marks placed on the page, and starts from what the
+ * page actually ships now — so opening the panel changes nothing until a control moves.
+ */
 const SCOPES = [
-  { key: 'hero', label: 'Rubrik på bilden', min: 24, max: 96, size: 60, leading: 1 },
-  { key: 'newstitle', label: 'Nyhetsrubriker', min: 14, max: 48, size: 23, leading: 1.2 },
-  { key: 'body', label: 'Brödtext', min: 11, max: 26, size: 16, leading: 1.75 },
-  { key: 'stamp', label: 'Datumstämpel', min: 16, max: 64, size: 32, leading: 1 },
+  { key: 'hero', label: 'Rubrik på bilden', min: 24, max: 96, font: GARAMOND, weight: 600, size: 73, leading: 0.95 },
+  { key: 'newstitle', label: 'Nyhetsrubriker', min: 14, max: 48, font: BASKERVILLE, weight: 300, size: 21, leading: 1.6 },
+  { key: 'herobody', label: 'Brödtext på bilden', min: 11, max: 26, font: SOURCE_SERIF, weight: 300, size: 14, leading: 1.65 },
+  { key: 'newsbody', label: 'Brödtext i nyheter', min: 11, max: 26, font: SOURCE_SERIF, weight: 300, size: 14, leading: 1.65 },
+  { key: 'stamp', label: 'Datumstämpel', min: 16, max: 64, font: LATO, weight: 400, size: 32, leading: 1 },
+  { key: 'menu', label: 'Menyn', min: 10, max: 24, font: PLEX, weight: 400, size: 14, leading: 1.25 },
 ];
 
-const defaults = () =>
-  Object.fromEntries(
-    SCOPES.map((s) => [
-      s.key,
-      { font: FONTS[0].stack, weight: 300, size: s.size, leading: s.leading },
-    ])
-  );
+/** The news thumbnail, sized and shaped from the same panel. */
+const IMAGE_CONTROLS = [
+  { key: 'width', label: 'Bredd', min: 80, max: 340, step: 2, unit: 'px', value: 128 },
+  { key: 'height', label: 'Höjd', min: 60, max: 300, step: 2, unit: 'px', value: 96 },
+  { key: 'radius', label: 'Hörnradie', min: 0, max: 40, step: 1, unit: 'px', value: 0 },
+  { key: 'mat', label: 'Passepartout', min: 0, max: 28, step: 1, unit: 'px', value: 10 },
+  { key: 'saturate', label: 'Mättnad', min: 0, max: 1.4, step: 0.02, unit: '', value: 0.94 },
+  { key: 'contrast', label: 'Kontrast', min: 0.7, max: 1.5, step: 0.02, unit: '', value: 1.03 },
+];
+
+const IMAGE_KEY = 'newsimage';
+
+const defaults = () => ({
+  ...Object.fromEntries(
+    SCOPES.map((s) => [s.key, { font: s.font, weight: s.weight, size: s.size, leading: s.leading }])
+  ),
+  [IMAGE_KEY]: Object.fromEntries(IMAGE_CONTROLS.map((c) => [c.key, c.value])),
+});
 
 function load() {
   try {
@@ -84,19 +106,33 @@ export default function FontLab() {
     document.head.appendChild(link);
   }, []);
 
-  const css = useMemo(
-    () =>
-      SCOPES.map((scope) => {
-        const v = state[scope.key];
-        return `[data-font="${scope.key}"], [data-font="${scope.key}"] * {
+  const css = useMemo(() => {
+    const type = SCOPES.map((scope) => {
+      const v = state[scope.key];
+      return `[data-font="${scope.key}"], [data-font="${scope.key}"] * {
   font-family: ${v.font} !important;
   font-weight: ${v.weight} !important;
   font-size: ${v.size}px !important;
   line-height: ${v.leading} !important;
 }`;
-      }).join('\n'),
-    [state]
-  );
+    }).join('\n');
+
+    const img = state[IMAGE_KEY];
+    const image = `[data-newsimg="wrap"] {
+  padding: ${img.mat}px !important;
+  border-radius: ${img.mat > 0 && img.radius > 0 ? img.radius + img.mat : img.radius}px !important;
+}
+[data-newsimg="inner"] {
+  width: ${img.width}px !important;
+  height: ${img.height}px !important;
+  border-radius: ${img.radius}px !important;
+}
+[data-newsimg="img"] {
+  filter: saturate(${img.saturate}) contrast(${img.contrast}) !important;
+}`;
+
+    return `${type}\n${image}`;
+  }, [state]);
 
   useEffect(() => {
     try {
@@ -110,8 +146,8 @@ export default function FontLab() {
   const summary = useMemo(
     () =>
       JSON.stringify(
-        Object.fromEntries(
-          SCOPES.map((scope) => [
+        Object.fromEntries([
+          ...SCOPES.map((scope) => [
             scope.label,
             {
               typsnitt: labelFor(state[scope.key].font),
@@ -120,8 +156,9 @@ export default function FontLab() {
               storlek: `${state[scope.key].size}px`,
               radavstånd: state[scope.key].leading,
             },
-          ])
-        ),
+          ]),
+          ['Nyhetsbild', state[IMAGE_KEY]],
+        ]),
         null,
         2
       ),
@@ -236,6 +273,36 @@ export default function FontLab() {
               </div>
             );
           })}
+
+          <div className="mb-4 border-t border-black/10 pt-3">
+            <p className="m-0 mb-2 text-xs font-medium uppercase tracking-wide text-neutral-500">
+              Nyhetsbild
+            </p>
+
+            {IMAGE_CONTROLS.map((control) => (
+              <div key={control.key} className="mb-2 flex items-center gap-2">
+                <span className="w-[4.5rem] shrink-0 text-xs text-neutral-500">{control.label}</span>
+                <input
+                  type="range"
+                  className="flex-1"
+                  min={control.min}
+                  max={control.max}
+                  step={control.step}
+                  value={state[IMAGE_KEY][control.key]}
+                  onChange={(e) =>
+                    setState((prev) => ({
+                      ...prev,
+                      [IMAGE_KEY]: { ...prev[IMAGE_KEY], [control.key]: Number(e.target.value) },
+                    }))
+                  }
+                />
+                <span className="w-12 shrink-0 text-right text-xs tabular-nums text-neutral-600">
+                  {state[IMAGE_KEY][control.key]}
+                  {control.unit}
+                </span>
+              </div>
+            ))}
+          </div>
 
           <button
             type="button"

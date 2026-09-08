@@ -439,7 +439,7 @@ export default function Menubar({
                 data-desktop-measure-item="true"
                 data-category-id={String(category.id)}
               >
-                <p className={desktopCategoryLabelClass}>
+                <p data-font="menu" className={desktopCategoryLabelClass}>
                   <span className="block">
                     {category.title}
                   </span>
@@ -447,7 +447,7 @@ export default function Menubar({
               </div>
             ))}
             <div className={desktopCategoryShellClass} data-desktop-more-item="true">
-              <p className={desktopCategoryLabelClass}>
+              <p data-font="menu" className={desktopCategoryLabelClass}>
                 <span className="inline-flex items-center gap-1.5">
                   <span>Fler</span>
                   <ChevronDown className="h-3.5 w-3.5 shrink-0" strokeWidth={2.1} aria-hidden />
@@ -505,6 +505,7 @@ export default function Menubar({
                 }}
               >
                 <p
+                  data-font="menu"
                   className={[
                     isDesktop
                       ? desktopCategoryLabelClass
@@ -552,6 +553,7 @@ export default function Menubar({
                           }}
                         >
                           <p
+                            data-font="menu"
                             className={[
                               isDesktop ? desktopPageTextClass : 'm-0 w-full text-sm leading-snug transition-all',
                               isDesktop
@@ -584,7 +586,7 @@ export default function Menubar({
                 .filter(Boolean)
                 .join(' ')}
             >
-              <p className={desktopCategoryLabelClass}>
+              <p data-font="menu" className={desktopCategoryLabelClass}>
                 <span className="inline-flex items-center gap-1.5">
                   <span>Fler</span>
                   <ChevronDown className="h-3.5 w-3.5 shrink-0" strokeWidth={2.1} aria-hidden />

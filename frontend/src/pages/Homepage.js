@@ -73,7 +73,8 @@ const newsStampCell = 'flex shrink-0 items-stretch gap-6 max-[800px]:gap-4';
 const newsStamp = 'w-14 shrink-0 pt-1 text-right max-[800px]:w-11';
 
 const newsStampDay =
-  'm-0 text-[2rem] font-light leading-none tracking-[-0.03em] text-[var(--main-text)] max-[800px]:text-2xl';
+  "m-0 font-['Lato',sans-serif] text-[2rem] font-normal leading-none tracking-[-0.03em] " +
+  'text-[var(--main-text)] max-[800px]:text-2xl';
 
 const newsStampMonth =
   'm-0 mt-1.5 text-xs uppercase tracking-[0.16em] text-[var(--main-text)]/55';
@@ -87,8 +88,8 @@ const newsCardDivider = 'h-px w-full shrink-0 bg-[var(--divider-color)]';
 const newsCardBody = 'flex min-w-0 flex-1 flex-col text-left';
 
 const newsCardTitle =
-  'm-0 w-full min-w-0 max-w-[32ch] text-[1.45rem] font-light leading-[1.25] tracking-[-0.015em] ' +
-  'transition-colors group-hover:text-[var(--main-text)]/60 max-[800px]:text-lg';
+  "m-0 w-full min-w-0 max-w-[32ch] font-['Libre_Baskerville',serif] text-[1.3rem] font-normal " +
+  'leading-[1.6] transition-colors group-hover:text-[var(--main-text)]/60 max-[800px]:text-base';
 
 const newsCardMeta =
   'm-0 mt-2 flex w-full min-w-0 flex-wrap items-baseline gap-x-3 gap-y-1 text-left';
@@ -98,7 +99,8 @@ const newsCardMetaPrimary = 'text-sm leading-snug text-[var(--main-text)]/70';
 const newsCardPubDate = 'text-sm leading-snug text-[var(--grey-text)]/55';
 
 const newsCardExcerpt =
-  'm-0 mt-3 max-w-[68ch] overflow-hidden text-[1rem] leading-[1.75] text-[var(--grey-text)] ' +
+  "m-0 mt-3 max-w-[72ch] overflow-hidden font-['Source_Serif_4',serif] text-[0.875rem] font-light " +
+  'leading-[1.65] text-[var(--grey-text)] ' +
   '[display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:4]';
 
 /* Small, and last: the date and the headline carry the row. */
@@ -258,7 +260,7 @@ export default function Homepage(props) {
                                 ) : null}
                               </p>
                             ) : null}
-                            <p data-font="body" className={newsCardExcerpt}>
+                            <p data-font="newsbody" className={newsCardExcerpt}>
                               {plainNewsTeaserText(value.Beskrivning)}
                             </p>
 
@@ -270,9 +272,10 @@ export default function Homepage(props) {
 
                           {imgUrl ? (
                             <div className={newsThumbCell}>
-                              <div className={newsThumbWrap}>
-                                <div className={newsThumbInner}>
+                              <div data-newsimg="wrap" className={newsThumbWrap}>
+                                <div data-newsimg="inner" className={newsThumbInner}>
                                   <img
+                                    data-newsimg="img"
                                     className={newsThumbImg}
                                     style={newsThumbFilter}
                                     src={imgUrl}
