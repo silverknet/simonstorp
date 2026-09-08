@@ -70,7 +70,7 @@ function buildTextMask(boxes, width, height) {
   const soft =
     Number(
       getComputedStyle(document.documentElement).getPropertyValue('--hero-mask-soft')
-    ) || 25;
+    ) || 66;
 
   const shapes = boxes
     .map(
@@ -401,7 +401,7 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
           <div
             className="pointer-events-none absolute inset-0 z-[2]"
             aria-hidden
-            style={{ backgroundColor: 'rgba(8,10,7,var(--hero-veil, 0.02))' }}
+            style={{ backgroundColor: 'rgba(8,10,7,var(--hero-veil, 0.07))' }}
           />
 
           {/*
@@ -414,9 +414,9 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
               className="pointer-events-none absolute inset-0 z-[2]"
               aria-hidden
               style={{
-                backdropFilter: 'blur(calc(var(--hero-blur, 1) * 1px)) saturate(104%)',
-                WebkitBackdropFilter: 'blur(calc(var(--hero-blur, 1) * 1px)) saturate(104%)',
-                backgroundColor: 'rgba(8,10,7,var(--hero-shade, 0.2))',
+                backdropFilter: 'blur(calc(var(--hero-blur, 4) * 1px)) saturate(104%)',
+                WebkitBackdropFilter: 'blur(calc(var(--hero-blur, 4) * 1px)) saturate(104%)',
+                backgroundColor: 'rgba(8,10,7,var(--hero-shade, 0.52))',
                 maskImage: textMask,
                 WebkitMaskImage: textMask,
                 maskRepeat: 'no-repeat',

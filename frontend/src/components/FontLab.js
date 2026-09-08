@@ -63,10 +63,10 @@ const MENU_CONTROLS = [
 
 /** What sits behind the hero caption: the veil, the softening and the shade. */
 const HERO_CONTROLS = [
-  { key: 'veil', varName: '--hero-veil', label: 'Slöja', min: 0, max: 0.4, step: 0.01, unit: '', value: 0.02 },
-  { key: 'blur', varName: '--hero-blur', label: 'Oskärpa', min: 0, max: 24, step: 1, unit: 'px', value: 1 },
-  { key: 'shade', varName: '--hero-shade', label: 'Mörker', min: 0, max: 0.8, step: 0.02, unit: '', value: 0.2 },
-  { key: 'maskSoft', varName: '--hero-mask-soft', label: 'Mjukhet', min: 4, max: 70, step: 1, unit: '', value: 25 },
+  { key: 'veil', varName: '--hero-veil', label: 'Slöja', min: 0, max: 0.4, step: 0.01, unit: '', value: 0.07 },
+  { key: 'blur', varName: '--hero-blur', label: 'Oskärpa', min: 0, max: 24, step: 1, unit: 'px', value: 4 },
+  { key: 'shade', varName: '--hero-shade', label: 'Mörker', min: 0, max: 0.8, step: 0.02, unit: '', value: 0.52 },
+  { key: 'maskSoft', varName: '--hero-mask-soft', label: 'Mjukhet', min: 4, max: 70, step: 1, unit: '', value: 66 },
 ];
 
 /** EXPERIMENT — the light leaking out around the picture. */
