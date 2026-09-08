@@ -38,19 +38,30 @@ const sliderAnimationStyles = `
  * Split on sentence endings rather than on line breaks: the text is written as prose in
  * Strapi, and whoever writes it should not have to think about where the slides fall.
  */
-/* Gathered around the words and nothing else: wide enough that no edge of it is
-   findable, so the picture simply loses focus where the type sits. */
-const BLUR_MASK =
-  'radial-gradient(115% 105% at 20% 86%, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.62) 34%, ' +
-  'rgba(0,0,0,0.24) 62%, transparent 84%)';
+/**
+ * Builds the mask the shade is seen through: the words' own footprint, blurred until
+ * it is a cloud. Rectangles rather than glyphs — at this blur radius the difference is
+ * not visible, and it costs no font loading inside the mask.
+ */
+function buildTextMask(boxes, width, height) {
+  if (!boxes.length || !width || !height) return null;
 
-/* The shade is cast by the type rather than laid under it: three shadows, each softer
-   and wider than the last, so it reads as the letters darkening the picture behind
-   them and never as a shape of its own. */
-const TITLE_SHADE =
-  '0 2px 10px rgba(8,10,7,0.40), 0 6px 44px rgba(8,10,7,0.52), 0 0 120px rgba(8,10,7,0.50)';
-const COPY_SHADE =
-  '0 1px 8px rgba(8,10,7,0.48), 0 4px 28px rgba(8,10,7,0.52), 0 0 80px rgba(8,10,7,0.44)';
+  const shapes = boxes
+    .map(
+      (b) =>
+        `<rect x='${b.x.toFixed(1)}' y='${b.y.toFixed(1)}' width='${b.width.toFixed(1)}' ` +
+        `height='${b.height.toFixed(1)}' rx='${(b.height / 2).toFixed(1)}'/>`
+    )
+    .join('');
+
+  const svg =
+    `<svg xmlns='http://www.w3.org/2000/svg' width='${Math.round(width)}' height='${Math.round(height)}'>` +
+    `<filter id='s' x='-60%' y='-60%' width='220%' height='220%'>` +
+    `<feGaussianBlur stdDeviation='26'/></filter>` +
+    `<g filter='url(#s)' fill='#fff'>${shapes}</g></svg>`;
+
+  return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+}
 
 const splitSentences = (text) =>
   String(text ?? '')
@@ -89,7 +100,51 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
   const [previousSlide, setPreviousSlide] = useState(null);
   const [cycleToken, setCycleToken] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const frameRef = useRef(null);
+  const captionRef = useRef(null);
+  const [textMask, setTextMask] = useState(null);
   const cycleStartRef = useRef(performance.now());
+
+  /* Remeasure whenever the words or the frame change: the mask has to sit exactly
+     where the type is, at every width, or it becomes a shape of its own again. */
+  useEffect(() => {
+    const frame = frameRef.current;
+    const caption = captionRef.current;
+    if (!frame || !caption) return undefined;
+
+    const measure = () => {
+      const frameBox = frame.getBoundingClientRect();
+      if (!frameBox.width || !frameBox.height) return;
+
+      const boxes = [];
+      caption.querySelectorAll('p').forEach((el) => {
+        const range = document.createRange();
+        range.selectNodeContents(el);
+        // Per line, not per paragraph: a wrapped sentence should cast two clouds.
+        Array.from(range.getClientRects()).forEach((r) => {
+          if (r.width < 1 || r.height < 1) return;
+          boxes.push({
+            x: r.left - frameBox.left,
+            y: r.top - frameBox.top,
+            width: r.width,
+            height: r.height,
+          });
+        });
+        range.detach?.();
+      });
+
+      setTextMask(buildTextMask(boxes, frameBox.width, frameBox.height));
+    };
+
+    measure();
+
+    const observer = new ResizeObserver(measure);
+    observer.observe(frame);
+    observer.observe(caption);
+
+    return () => observer.disconnect();
+  });
+
 
   const beginCycle = useCallback((nextIndex) => {
     setPreviousSlide({
@@ -181,7 +236,10 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
         />
       </div>
 
-    <div className="relative isolate z-[1] h-[min(56vh,600px)] w-full overflow-hidden bg-[#272926] rounded-md">
+    <div
+      ref={frameRef}
+      className="relative isolate z-[1] h-[min(56vh,600px)] w-full overflow-hidden bg-[#272926] rounded-md"
+    >
       <style>{sliderAnimationStyles}</style>
       {images.map((img, index) => {
         const isActive = index === active;
@@ -266,11 +324,7 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
 
       {title ? (
         <>
-          {/*
-              No pool of darkness in one corner: an even veil over the whole picture to
-              flatten it into the page, then a full-width foot that only ever varies
-              from top to bottom. Nothing here is brighter or darker on one side.
-          */}
+          {/* An even veil over the whole picture, to flatten it into the page. */}
           <div
             className="pointer-events-none absolute inset-0 z-[2]"
             aria-hidden
@@ -278,30 +332,39 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
           />
 
           {/*
-              The type is lifted by softening what sits under it rather than by dimming
-              it. The blur is masked to fade out well before the middle, so the reader
-              sees a photograph that goes gently out of focus, not a panel laid on top.
+              Softening and shade, seen only through the words' own blurred footprint:
+              the picture gives way where the type sits and nowhere else, with no edge
+              anywhere for the eye to catch.
           */}
-          <div
-            className="pointer-events-none absolute inset-0 z-[2]"
-            aria-hidden
-            style={{
-              backdropFilter: 'blur(10px) saturate(106%)',
-              WebkitBackdropFilter: 'blur(10px) saturate(106%)',
-              maskImage:
-                BLUR_MASK,
-              WebkitMaskImage: BLUR_MASK,
-            }}
-          />
+          {textMask ? (
+            <div
+              className="pointer-events-none absolute inset-0 z-[2]"
+              aria-hidden
+              style={{
+                backdropFilter: 'blur(5px) saturate(104%)',
+                WebkitBackdropFilter: 'blur(5px) saturate(104%)',
+                backgroundColor: 'rgba(8,10,7,0.40)',
+                maskImage: textMask,
+                WebkitMaskImage: textMask,
+                maskRepeat: 'no-repeat',
+                WebkitMaskRepeat: 'no-repeat',
+                maskSize: '100% 100%',
+                WebkitMaskSize: '100% 100%',
+              }}
+            />
+          ) : null}
 
-          <div className="pointer-events-none absolute bottom-0 left-0 z-[3] p-6 md:p-10">
+          <div
+            ref={captionRef}
+            className="pointer-events-none absolute bottom-0 left-0 z-[3] p-6 md:p-10"
+          >
             {eyebrow ? (
               <p
                 data-font="herobody"
                 className="m-0 mb-2 font-['Source_Serif_4',serif] text-sm tracking-[0.04em] md:text-base"
                 // Set here rather than as a utility: the global stylesheet colours <p>,
                 // and an opacity variant Tailwind has not emitted loses to it silently.
-                style={{ color: 'rgba(255,255,255,0.88)', textShadow: COPY_SHADE }}
+                style={{ color: 'rgba(255,255,255,0.88)', textShadow: '0 1px 6px rgba(8,10,7,0.35)' }}
               >
                 {eyebrow}
               </p>
@@ -310,7 +373,7 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
             <p
               data-font="hero"
               className="m-0 font-['Source_Serif_4',serif] text-[clamp(2rem,5.4vw,4.0625rem)] font-normal leading-[0.85] tracking-[-0.01em] text-white"
-              style={{ textShadow: TITLE_SHADE }}
+              style={{ textShadow: '0 1px 8px rgba(8,10,7,0.32)' }}
             >
               {title}
             </p>
@@ -321,7 +384,7 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
                 data-font="herobody"
                 className="m-0 mt-4 h-[4.6rem] max-w-[62ch] overflow-hidden font-['Source_Serif_4',serif] text-[0.875rem] font-light leading-[1.65] text-white md:mt-5 md:h-[4.8rem]"
                 style={{
-                  textShadow: COPY_SHADE,
+                  textShadow: '0 1px 6px rgba(8,10,7,0.35)',
                   animation: 'heroLineIn 900ms ease-out both',
                 }}
               >
