@@ -19,6 +19,7 @@ import {
   adminLogin,
   adminLogout,
   createAdminInvite,
+  deleteAdminUser,
   fetchAdminMe,
   activateMail,
   fetchNewsPreview,
@@ -71,6 +72,8 @@ const smallButton =
   'rounded-md bg-[var(--accent-one)] px-4 py-3 text-base font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-60';
 const ghostButton =
   'rounded-md border border-black/20 bg-white px-4 py-3 text-base text-[var(--main-text)] hover:bg-black/5';
+const dangerButton =
+  'mt-2 rounded-md border border-[#b3261e]/40 bg-white px-4 py-3 text-base text-[#b3261e] hover:bg-[#b3261e]/5';
 const linkBox =
   'mb-3 w-full break-all rounded-md bg-[var(--bg-white-accent)] px-3 py-3 text-sm text-[var(--main-text)]';
 
@@ -277,6 +280,8 @@ function PersonDialog({
   onMove,
   onFixMail,
   onShowInvite,
+  onDelete,
+  canDelete,
 }) {
   const mail = entry.mail ? MAIL_STATES[entry.mail.state] : null;
   const MailIcon = mail?.icon;
@@ -339,6 +344,12 @@ function PersonDialog({
           {entry.mail?.state === 'unverified' && entry.mail.forwardsTo ? (
             <button type="button" className={ghostButton} disabled={busy} onClick={onFixMail}>
               Skicka bekräftelse till {entry.name.split(' ')[0]}
+            </button>
+          ) : null}
+
+          {canDelete ? (
+            <button type="button" className={dangerButton} disabled={busy} onClick={onDelete}>
+              Ta bort {entry.name.split(' ')[0]} helt
             </button>
           ) : null}
         </>
@@ -774,6 +785,29 @@ export default function AdminPage() {
    * "Make this address work" — connects the alias and sends the confirmation the person
    * has to click. Splitting these was a distinction only the API cared about.
    */
+  async function removeUser(entry) {
+    const ok = window.confirm(
+      `Ta bort ${entry.name} helt?\n\nKontot och inloggningen försvinner. ` +
+        'Personen ligger kvar på styrelsesidan om hen står där.'
+    );
+
+    if (!ok) return;
+
+    setBusyId(entry.userId);
+    setUsersError('');
+    setNotice('');
+
+    try {
+      await deleteAdminUser(entry.userId);
+      setNotice(`${entry.name} är borttagen.`);
+      loadUsers();
+    } catch (err) {
+      setUsersError(err.message);
+    } finally {
+      setBusyId(null);
+    }
+  }
+
   /** Shows an existing invite again — never reissues, which would break a sent link. */
   async function showInvite(entry) {
     setBusyId(entry.userId);
@@ -1068,6 +1102,16 @@ Plats: Bolenparken`}</pre>
               const target = detail;
               setDetail(null);
               moveMember(target);
+            }}
+            canDelete={
+              Boolean(detail.userId) &&
+              !detail.isSelf &&
+              user.roles?.includes('strapi-super-admin')
+            }
+            onDelete={() => {
+              const target = detail;
+              setDetail(null);
+              removeUser(target);
             }}
             onShowInvite={() => {
               const target = detail;

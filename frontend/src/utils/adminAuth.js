@@ -164,6 +164,18 @@ export async function setBoardMember(userId, { roll, boardId } = {}) {
   return true;
 }
 
+export async function deleteAdminUser(userId) {
+  const token = getAdminToken();
+  const res = await fetch(`${apiBaseUrl}/api/site-admin/people/${userId}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data?.error?.message || 'Kunde inte ta bort användaren.');
+  return true;
+}
+
 export async function removeBoardMember(userId) {
   const token = getAdminToken();
   const res = await fetch(`${apiBaseUrl}/api/site-admin/people/${userId}/styrelse`, {
