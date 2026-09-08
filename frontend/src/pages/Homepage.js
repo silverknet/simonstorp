@@ -83,12 +83,26 @@ const newsCardBase = 'flex w-full items-start gap-7 py-8 max-[800px]:gap-4 max-[
 
 const newsThumbCell = 'shrink-0';
 
+/*
+ * Mounted like a print rather than dropped straight onto the page: a pale mat, a
+ * hairline around it, and the image inset within. The mat does the work a good
+ * photograph would otherwise have to do itself — it separates the picture from the
+ * page, gives every item the same edge whatever the source looks like, and stops a
+ * dark or badly cropped frame bleeding into the text beside it.
+ */
 const newsThumbWrap =
-  'relative aspect-[3/2] w-56 shrink-0 overflow-hidden rounded-md bg-[var(--bg-white-accent)] ' +
-  'max-[800px]:w-28';
+  'relative shrink-0 rounded-xl bg-[var(--bg-white-accent)] p-1.5 ring-1 ring-black/[0.06] ' +
+  'transition-shadow duration-300 group-hover:shadow-[0_6px_20px_rgba(0,0,0,0.07)]';
 
+const newsThumbInner =
+  'relative aspect-[3/2] w-52 overflow-hidden rounded-lg bg-black/[0.04] max-[800px]:w-28';
+
+/* A whisper of correction so wildly different photographs read as one set. */
 const newsThumb =
-  'absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]';
+  'absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out ' +
+  'group-hover:scale-[1.03]';
+
+const newsThumbFilter = { filter: 'saturate(0.94) contrast(1.03)' };
 
 const newsCardDivider = 'h-px w-full shrink-0 bg-[var(--divider-color)]';
 
@@ -209,7 +223,15 @@ export default function Homepage(props) {
                           {imgUrl ? (
                             <div className={newsThumbCell}>
                               <div className={newsThumbWrap}>
-                                <img className={newsThumb} src={imgUrl} alt="" loading="lazy" />
+                                <div className={newsThumbInner}>
+                                  <img
+                                    className={newsThumb}
+                                    style={newsThumbFilter}
+                                    src={imgUrl}
+                                    alt=""
+                                    loading="lazy"
+                                  />
+                                </div>
                               </div>
                             </div>
                           ) : null}
