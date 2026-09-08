@@ -70,7 +70,7 @@ const newsCardBase = 'flex w-full items-start gap-6 py-8 max-[800px]:gap-4 max-[
 
 const newsStampCell = 'flex shrink-0 items-stretch gap-6 max-[800px]:gap-4';
 
-const newsStamp = 'w-14 shrink-0 pt-1 text-right max-[800px]:w-11';
+const newsStamp = 'w-16 shrink-0 pt-1 text-left max-[800px]:w-14';
 
 const newsStampDay =
   "m-0 font-['Lato',sans-serif] text-[2rem] font-normal leading-none tracking-[-0.03em] " +
@@ -112,15 +112,16 @@ const newsThumbCell = 'ml-auto shrink-0 pl-4 max-[800px]:hidden';
  * rather than a rounded UI card, with a shadow just heavy enough to lift it off the page.
  */
 const newsThumbWrap =
-  'relative shrink-0 bg-white p-2.5 shadow-[0_1px_3px_rgba(0,0,0,0.06),0_6px_16px_rgba(0,0,0,0.05)] ' +
+  'relative shrink-0 rounded-[1px] bg-white p-2 shadow-[0_1px_3px_rgba(0,0,0,0.06),0_6px_16px_rgba(0,0,0,0.05)] ' +
   'transition-shadow duration-300 group-hover:shadow-[0_2px_6px_rgba(0,0,0,0.08),0_10px_26px_rgba(0,0,0,0.08)]';
 
-const newsThumbInner = 'relative h-24 w-32 overflow-hidden bg-black/[0.04]';
+const newsThumbInner = 'relative h-[176px] w-[124px] overflow-hidden rounded-[1px] bg-black/[0.04]';
 
+/* Desaturated at rest, its own colour on hover: a column of mismatched snapshots reads
+ * as one set, and the photo still rewards the reader who reaches for it. */
 const newsThumbImg =
-  'block h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]';
-
-const newsThumbFilter = { filter: 'saturate(0.94) contrast(1.03)' };
+  'block h-full w-full object-cover grayscale transition-[filter,transform] duration-500 ease-out ' +
+  'group-hover:scale-[1.04] group-hover:grayscale-0';
 
 const newsReadMore =
   'mt-3 inline-flex items-center gap-2 text-sm text-[var(--main-text)] transition-colors';
@@ -277,7 +278,6 @@ export default function Homepage(props) {
                                   <img
                                     data-newsimg="img"
                                     className={newsThumbImg}
-                                    style={newsThumbFilter}
                                     src={imgUrl}
                                     alt=""
                                     loading="lazy"

@@ -8,7 +8,7 @@ import React, { useEffect, useMemo, useState } from 'react';
  * once the choice is made.
  */
 
-const STORAGE_KEY = 'simonstorp_fontlab';
+const STORAGE_KEY = 'simonstorp_fontlab_v2';
 
 /** Faces already in play on the site, plus a few worth comparing them against. */
 const FONTS = [
@@ -50,15 +50,17 @@ const SCOPES = [
 
 /** The news thumbnail, sized and shaped from the same panel. */
 const IMAGE_CONTROLS = [
-  { key: 'width', label: 'Bredd', min: 80, max: 340, step: 2, unit: 'px', value: 128 },
-  { key: 'height', label: 'Höjd', min: 60, max: 300, step: 2, unit: 'px', value: 96 },
-  { key: 'radius', label: 'Hörnradie', min: 0, max: 40, step: 1, unit: 'px', value: 0 },
-  { key: 'mat', label: 'Passepartout', min: 0, max: 28, step: 1, unit: 'px', value: 10 },
-  { key: 'saturate', label: 'Mättnad', min: 0, max: 1.4, step: 0.02, unit: '', value: 0.94 },
-  { key: 'contrast', label: 'Kontrast', min: 0.7, max: 1.5, step: 0.02, unit: '', value: 1.03 },
+  { key: 'width', label: 'Bredd', min: 80, max: 340, step: 2, unit: 'px', value: 124 },
+  { key: 'height', label: 'Höjd', min: 60, max: 300, step: 2, unit: 'px', value: 176 },
+  { key: 'radius', label: 'Hörnradie', min: 0, max: 40, step: 1, unit: 'px', value: 1 },
+  { key: 'mat', label: 'Passepartout', min: 0, max: 28, step: 1, unit: 'px', value: 8 },
+  { key: 'saturate', label: 'Mättnad', min: 0, max: 1.4, step: 0.02, unit: '', value: 0 },
+  { key: 'contrast', label: 'Kontrast', min: 0.7, max: 1.5, step: 0.02, unit: '', value: 1 },
 ];
 
 const IMAGE_KEY = 'newsimage';
+
+const TOUCHED_KEY = 'touched';
 
 const defaults = () => ({
   ...Object.fromEntries(
@@ -75,9 +77,12 @@ function load() {
 
     // Merge per scope, not just at the top level: settings saved before a control
     // existed would otherwise replace a whole scope and drop the new field.
-    return Object.fromEntries(
-      Object.entries(base).map(([key, value]) => [key, { ...value, ...(saved[key] ?? {}) }])
-    );
+    return {
+      ...Object.fromEntries(
+        Object.entries(base).map(([key, value]) => [key, { ...value, ...(saved[key] ?? {}) }])
+      ),
+      [TOUCHED_KEY]: Boolean(saved[TOUCHED_KEY]),
+    };
   } catch (err) {
     return defaults();
   }
@@ -91,6 +96,9 @@ function labelFor(stack) {
 export default function FontLab() {
   const [open, setOpen] = useState(false);
   const [state, setState] = useState(load);
+  /* Until a control moves, the page styles itself: the panel's !important rules would
+   * otherwise pin whatever was saved last and quietly outrank the real design. */
+  const [touched, setTouched] = useState(() => Boolean(load()[TOUCHED_KEY]));
   const [copied, setCopied] = useState(false);
 
   /* Pull every face up front: switching should be instant, and this panel is temporary. */
@@ -120,27 +128,27 @@ export default function FontLab() {
     const img = state[IMAGE_KEY];
     const image = `[data-newsimg="wrap"] {
   padding: ${img.mat}px !important;
-  border-radius: ${img.mat > 0 && img.radius > 0 ? img.radius + img.mat : img.radius}px !important;
+  border-radius: ${img.radius}px !important;
 }
 [data-newsimg="inner"] {
   width: ${img.width}px !important;
   height: ${img.height}px !important;
   border-radius: ${img.radius}px !important;
 }
-[data-newsimg="img"] {
+.group:not(:hover) [data-newsimg="img"] {
   filter: saturate(${img.saturate}) contrast(${img.contrast}) !important;
 }`;
 
-    return `${type}\n${image}`;
-  }, [state]);
+    return touched ? `${type}\n${image}` : '';
+  }, [state, touched]);
 
   useEffect(() => {
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...state, [TOUCHED_KEY]: touched }));
     } catch (err) {
       /* ignore */
     }
-  }, [state]);
+  }, [state, touched]);
 
   /* What to hand back: named faces and plain numbers, not internal keys. */
   const summary = useMemo(
@@ -175,8 +183,10 @@ export default function FontLab() {
     }
   }
 
-  const set = (scopeKey, patch) =>
+  const set = (scopeKey, patch) => {
+    setTouched(true);
     setState((prev) => ({ ...prev, [scopeKey]: { ...prev[scopeKey], ...patch } }));
+  };
 
   return (
     <>
@@ -190,7 +200,10 @@ export default function FontLab() {
               <button
                 type="button"
                 className="rounded border border-black/15 px-2 py-1 text-xs"
-                onClick={() => setState(defaults())}
+                onClick={() => {
+                  setTouched(false);
+                  setState(defaults());
+                }}
               >
                 Återställ
               </button>
@@ -289,12 +302,13 @@ export default function FontLab() {
                   max={control.max}
                   step={control.step}
                   value={state[IMAGE_KEY][control.key]}
-                  onChange={(e) =>
+                  onChange={(e) => {
+                    setTouched(true);
                     setState((prev) => ({
                       ...prev,
                       [IMAGE_KEY]: { ...prev[IMAGE_KEY], [control.key]: Number(e.target.value) },
-                    }))
-                  }
+                    }));
+                  }}
                 />
                 <span className="w-12 shrink-0 text-right text-xs tabular-nums text-neutral-600">
                   {state[IMAGE_KEY][control.key]}
