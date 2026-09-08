@@ -8,6 +8,19 @@ import useWindowDimensions from '../hooks/getWindowDimensions';
 import { getHomepageHeaderImages } from '../utils/homepageHeaderImages';
 import { getFullSizeImageUrl, getHeroDisplayUrl } from '../utils/strapiMedia';
 
+/**
+ * EXPERIMENT — the scattering stack, tight rim first. Each step travels further from
+ * the frame, loses light, and blurs more, the way a longer path through a translucent
+ * body scatters more and returns less.
+ */
+const SSS_LAYERS = [
+  { inset: 6, blur: 22, opacity: 0.34, saturate: 2.2, brightness: 1.2 },
+  { inset: 22, blur: 44, opacity: 0.2, saturate: 2.0, brightness: 1.15 },
+  { inset: 54, blur: 74, opacity: 0.11, saturate: 1.8, brightness: 1.1 },
+  { inset: 108, blur: 118, opacity: 0.055, saturate: 1.5, brightness: 1.05 },
+  { inset: 200, blur: 170, opacity: 0.025, saturate: 1.3, brightness: 1.0 },
+];
+
 const SLIDE_INTERVAL_MS = 12000;
 const FADE_DURATION_MS = 1800;
 const sliderAnimationStyles = `
@@ -215,26 +228,37 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
   return (
     <div className="relative w-full">
       {/*
-        Barely-there backlight: the current photograph, blurred past recognition and
-        pushed just outside the frame, so the picture warms the page around it. Kept
-        faint enough that it reads as light rather than as a second image.
+        EXPERIMENT — subsurface scattering. Delete this block and the SSS_LAYERS
+        constant to go back to the plain backlight.
+
+        Light behaves in translucent material the way it does in skin or a leaf: it
+        enters, bounces around inside, and leaves at the edges carrying the colour of
+        whatever it travelled through. There is no way to sample a neighbouring pixel
+        in CSS, so this stacks copies of the photograph itself, each pushed further out
+        and blurred harder, sitting behind the frame. Only the rim of each copy is ever
+        visible, so every edge leaks the colour of the picture directly inside it, and
+        the stack's falloff stands in for the depth the light travelled.
       */}
-      <div className="pointer-events-none absolute -inset-x-[14%] -inset-y-[22%] z-0" aria-hidden>
-        <img
-          src={glowSrc}
-          alt=""
-          className="h-full w-full scale-105 object-cover opacity-[0.038] transition-opacity duration-[1800ms]"
-          style={{ filter: 'blur(70px) saturate(130%)' }}
-        />
-      </div>
-      <div className="pointer-events-none absolute -inset-x-[20%] -inset-y-[40%] z-0" aria-hidden>
-        <img
-          src={glowSrc}
-          alt=""
-          className="h-full w-full scale-110 object-cover opacity-[0.022] transition-opacity duration-[1800ms]"
-          style={{ filter: 'blur(150px) saturate(120%)' }}
-        />
-      </div>
+      {SSS_LAYERS.map((layer) => (
+        <div
+          key={layer.inset}
+          className="pointer-events-none absolute z-0"
+          style={{ inset: `-${layer.inset}px` }}
+          aria-hidden
+        >
+          <img
+            src={glowSrc}
+            alt=""
+            className="h-full w-full object-cover transition-opacity duration-[1800ms]"
+            style={{
+              opacity: layer.opacity,
+              // Scattered light comes back more saturated and a touch brighter than
+              // what went in — that is what sells it as light rather than a copy.
+              filter: `blur(${layer.blur}px) saturate(${layer.saturate}) brightness(${layer.brightness})`,
+            }}
+          />
+        </div>
+      ))}
 
     <div
       ref={frameRef}
@@ -324,6 +348,20 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
 
       {title ? (
         <>
+          {/*
+              EXPERIMENT — the other half of the effect: in a translucent body the rim
+              is where scattered light gathers before it escapes, so the picture lifts
+              very slightly at its own edges.
+          */}
+          <div
+            className="pointer-events-none absolute inset-0 z-[2]"
+            aria-hidden
+            style={{
+              boxShadow:
+                'inset 0 0 22px rgba(255,255,255,0.07), inset 0 0 70px rgba(255,255,255,0.045)',
+            }}
+          />
+
           {/* An even veil over the whole picture, to flatten it into the page. */}
           <div
             className="pointer-events-none absolute inset-0 z-[2]"
