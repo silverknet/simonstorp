@@ -85,12 +85,12 @@ export async function fetchAdminUsers() {
   return Array.isArray(data.users) ? data.users : [];
 }
 
-export async function createAdminInvite({ firstname, lastname, email }) {
+export async function createAdminInvite({ firstname, lastname, email, boardId }) {
   const token = getAdminToken();
   const res = await fetch(`${apiBaseUrl}/api/site-admin/invites`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-    body: JSON.stringify({ firstname, lastname, email }),
+    body: JSON.stringify({ firstname, lastname, email, boardId }),
   });
 
   const data = await res.json().catch(() => ({}));
@@ -99,6 +99,17 @@ export async function createAdminInvite({ firstname, lastname, email }) {
     throw new Error(data?.error?.message || 'Kunde inte skapa inbjudan.');
   }
 
+  return data.inviteUrl;
+}
+
+export async function fetchPendingInvite(userId) {
+  const token = getAdminToken();
+  const res = await fetch(`${apiBaseUrl}/api/site-admin/invites/pending/${userId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data?.error?.message || 'Ingen inbjudan väntar.');
   return data.inviteUrl;
 }
 

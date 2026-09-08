@@ -22,6 +22,7 @@ import {
   fetchAdminMe,
   activateMail,
   fetchNewsPreview,
+  fetchPendingInvite,
   fetchPeople,
   importNewsPost,
   removeBoardMember,
@@ -87,7 +88,7 @@ const listCol = 'min-w-0';
 
 /** Fixed height so the two lists line up and nothing jumps as statuses change. */
 const rowBase =
-  'flex h-[4.25rem] items-center gap-2.5 rounded-md px-3 text-left';
+  'flex h-[4.75rem] items-center gap-2.5 rounded-md px-3 text-left';
 const userRow = rowBase;
 const userRowSelf = `${rowBase} bg-[var(--bg-white-accent)]`;
 
@@ -178,6 +179,11 @@ function PersonRow({ entry, onOpen }) {
           {entry.isSelf ? ' (du)' : ''}
         </span>
         <span className={rowSub}>{entry.email}</span>
+        {entry.userId && !entry.isActive ? (
+          <span className="mt-0.5 w-fit rounded-full bg-[#b26b00]/12 px-2 py-0.5 text-[11px] font-medium text-[#b26b00]">
+            Inbjuden – väntar på svar
+          </span>
+        ) : null}
       </button>
 
       <span className="flex shrink-0 items-center gap-2.5">
@@ -270,6 +276,7 @@ function PersonDialog({
   onResend,
   onMove,
   onFixMail,
+  onShowInvite,
 }) {
   const mail = entry.mail ? MAIL_STATES[entry.mail.state] : null;
   const MailIcon = mail?.icon;
@@ -289,6 +296,12 @@ function PersonDialog({
           <button type="button" className={smallButton} disabled={busy} onClick={onMove}>
             {entry.board ? 'Flytta till Övriga' : 'Flytta till Styrelsen'}
           </button>
+
+          {entry.userId && !entry.isActive ? (
+            <button type="button" className={smallButton} disabled={busy} onClick={onShowInvite}>
+              Visa inbjudningslänken igen
+            </button>
+          ) : null}
 
           {!entry.userId && entry.suggested ? (
             <button
@@ -594,7 +607,7 @@ function InviteDialog({ onClose, onCreated, prefill }) {
   const [firstname, setFirstname] = useState(first);
   const [lastname, setLastname] = useState(rest.join(' '));
   const [email, setEmail] = useState(prefill?.email ?? '');
-  const [inviteUrl, setInviteUrl] = useState('');
+  const [inviteUrl, setInviteUrl] = useState(prefill?.existingUrl ?? '');
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -617,7 +630,12 @@ function InviteDialog({ onClose, onCreated, prefill }) {
     setSubmitting(true);
 
     try {
-      const url = await createAdminInvite({ firstname, lastname, email });
+      const url = await createAdminInvite({
+        firstname,
+        lastname,
+        email,
+        boardId: prefill?.boardId ?? null,
+      });
       setInviteUrl(url);
       onCreated();
     } catch (err) {
@@ -756,6 +774,21 @@ export default function AdminPage() {
    * "Make this address work" — connects the alias and sends the confirmation the person
    * has to click. Splitting these was a distinction only the API cared about.
    */
+  /** Shows an existing invite again — never reissues, which would break a sent link. */
+  async function showInvite(entry) {
+    setBusyId(entry.userId);
+    setUsersError('');
+    setNotice('');
+
+    try {
+      setInviteOpen({ existingUrl: await fetchPendingInvite(entry.userId) });
+    } catch (err) {
+      setUsersError(err.message);
+    } finally {
+      setBusyId(null);
+    }
+  }
+
   async function fixMail(entry) {
     setBusyId(entry.userId ?? entry.boardId);
     setUsersError('');
@@ -1021,7 +1054,11 @@ Plats: Bolenparken`}</pre>
             onClose={() => setDetail(null)}
             onInvite={() => {
               setDetail(null);
-              setInviteOpen({ name: detail.name, email: detail.email });
+              setInviteOpen({
+                name: detail.name,
+                email: detail.email,
+                boardId: detail.board?.id ?? detail.formerBoardId ?? null,
+              });
             }}
             onLink={(userId) => {
               setDetail(null);
@@ -1031,6 +1068,11 @@ Plats: Bolenparken`}</pre>
               const target = detail;
               setDetail(null);
               moveMember(target);
+            }}
+            onShowInvite={() => {
+              const target = detail;
+              setDetail(null);
+              showInvite(target);
             }}
             onFixMail={() => {
               const target = detail;
