@@ -61,8 +61,28 @@ const MENU_CONTROLS = [
   { key: 'padding', label: 'Sidpadd.', min: 0, max: 48, step: 1, unit: 'px', value: 37 },
 ];
 
+/** What sits behind the hero caption: the veil, the softening and the shade. */
+const HERO_CONTROLS = [
+  { key: 'veil', varName: '--hero-veil', label: 'Slöja', min: 0, max: 0.4, step: 0.01, unit: '', value: 0.1 },
+  { key: 'blur', varName: '--hero-blur', label: 'Oskärpa', min: 0, max: 24, step: 1, unit: 'px', value: 5 },
+  { key: 'shade', varName: '--hero-shade', label: 'Mörker', min: 0, max: 0.8, step: 0.02, unit: '', value: 0.4 },
+  { key: 'maskSoft', varName: '--hero-mask-soft', label: 'Mjukhet', min: 4, max: 70, step: 1, unit: '', value: 26 },
+];
+
+/** EXPERIMENT — the light leaking out around the picture. */
+const SSS_CONTROLS = [
+  { key: 'strength', varName: '--sss-strength', label: 'Styrka', min: 0, max: 2.5, step: 0.05, unit: '×', value: 1 },
+  { key: 'spread', varName: '--sss-spread', label: 'Spridning', min: 0.2, max: 3, step: 0.05, unit: '×', value: 1 },
+  { key: 'saturate', varName: '--sss-saturate', label: 'Mättnad', min: 0.4, max: 2, step: 0.05, unit: '×', value: 1 },
+  { key: 'top', varName: '--sss-top', label: 'Uppåt', min: 0, max: 2, step: 0.02, unit: '', value: 0.34 },
+  { key: 'side', varName: '--sss-side', label: 'I sidled', min: 0, max: 2.5, step: 0.05, unit: '', value: 0.8 },
+  { key: 'bottom', varName: '--sss-bottom', label: 'Nedåt', min: 0, max: 3.5, step: 0.05, unit: '', value: 1.35 },
+];
+
 const IMAGE_KEY = 'newsimage';
 const MENUITEM_KEY = 'menuitem';
+const HERO_KEY = 'herobackdrop';
+const SSS_KEY = 'scatter';
 
 const TOUCHED_KEY = 'touched';
 
@@ -72,6 +92,8 @@ const defaults = () => ({
   ),
   [IMAGE_KEY]: Object.fromEntries(IMAGE_CONTROLS.map((c) => [c.key, c.value])),
   [MENUITEM_KEY]: Object.fromEntries(MENU_CONTROLS.map((c) => [c.key, c.value])),
+  [HERO_KEY]: Object.fromEntries(HERO_CONTROLS.map((c) => [c.key, c.value])),
+  [SSS_KEY]: Object.fromEntries(SSS_CONTROLS.map((c) => [c.key, c.value])),
 });
 
 function load() {
@@ -151,7 +173,14 @@ export default function FontLab() {
   padding-right: ${nav.padding}px !important;
 }`;
 
-    return touched ? `${type}\n${image}\n${menuitem}` : '';
+    /* Plain custom properties: the slider reads these, so a knob can reach values that
+       live in JS (an SVG filter, a blend of layers) and not only in a stylesheet. */
+    const vars = [
+      ...HERO_CONTROLS.map((c) => `  ${c.varName}: ${state[HERO_KEY][c.key]};`),
+      ...SSS_CONTROLS.map((c) => `  ${c.varName}: ${state[SSS_KEY][c.key]};`),
+    ].join('\n');
+
+    return touched ? `:root {\n${vars}\n}\n${type}\n${image}\n${menuitem}` : '';
   }, [state, touched]);
 
   useEffect(() => {
@@ -160,6 +189,12 @@ export default function FontLab() {
     } catch (err) {
       /* ignore */
     }
+  }, [state, touched]);
+
+  /* The hero mask's softness is baked into an SVG data URI, out of CSS's reach, so the
+     slider is told to rebuild it whenever anything here moves. */
+  useEffect(() => {
+    window.dispatchEvent(new Event('fontlab:change'));
   }, [state, touched]);
 
   /* What to hand back: named faces and plain numbers, not internal keys. */
@@ -179,6 +214,8 @@ export default function FontLab() {
           ]),
           ['Nyhetsbild', state[IMAGE_KEY]],
           ['Menyrad', state[MENUITEM_KEY]],
+          ['Rubrikbild', state[HERO_KEY]],
+          ['Ljusläckage', state[SSS_KEY]],
         ]),
         null,
         2
@@ -303,6 +340,8 @@ export default function FontLab() {
           {[
             { key: IMAGE_KEY, label: 'Nyhetsbild', controls: IMAGE_CONTROLS },
             { key: MENUITEM_KEY, label: 'Menyrad', controls: MENU_CONTROLS },
+            { key: HERO_KEY, label: 'Bakom rubriken', controls: HERO_CONTROLS },
+            { key: SSS_KEY, label: 'Ljusläckage', controls: SSS_CONTROLS },
           ].map((group) => (
             <div key={group.key} className="mb-4 border-t border-black/10 pt-3">
               <p className="m-0 mb-2 text-xs font-medium uppercase tracking-wide text-neutral-500">

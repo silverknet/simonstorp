@@ -14,10 +14,10 @@ import { getFullSizeImageUrl, getHeroDisplayUrl } from '../utils/strapiMedia';
  * body scatters more and returns less.
  */
 const SSS_LAYERS = [
-  { spread: 6, blur: 24, opacity: 0.17, saturate: 1.9, brightness: 1.14 },
-  { spread: 20, blur: 46, opacity: 0.1, saturate: 1.75, brightness: 1.1 },
-  { spread: 50, blur: 80, opacity: 0.055, saturate: 1.6, brightness: 1.06 },
-  { spread: 104, blur: 124, opacity: 0.028, saturate: 1.4, brightness: 1.03 },
+  { spread: 6, blur: 24, opacity: 0.42, saturate: 1.9, brightness: 1.1 },
+  { spread: 20, blur: 46, opacity: 0.26, saturate: 1.75, brightness: 1.06 },
+  { spread: 50, blur: 80, opacity: 0.15, saturate: 1.6, brightness: 1.03 },
+  { spread: 104, blur: 124, opacity: 0.075, saturate: 1.4, brightness: 1.0 },
 ];
 
 /**
@@ -65,6 +65,13 @@ const sliderAnimationStyles = `
 function buildTextMask(boxes, width, height) {
   if (!boxes.length || !width || !height) return null;
 
+  // Read as a custom property so the panel can turn this without a rebuild; the
+  // stdDeviation lives inside an SVG data URI, where CSS cannot reach it.
+  const soft =
+    Number(
+      getComputedStyle(document.documentElement).getPropertyValue('--hero-mask-soft')
+    ) || 26;
+
   const shapes = boxes
     .map(
       (b) =>
@@ -76,7 +83,7 @@ function buildTextMask(boxes, width, height) {
   const svg =
     `<svg xmlns='http://www.w3.org/2000/svg' width='${Math.round(width)}' height='${Math.round(height)}'>` +
     `<filter id='s' x='-60%' y='-60%' width='220%' height='220%'>` +
-    `<feGaussianBlur stdDeviation='26'/></filter>` +
+    `<feGaussianBlur stdDeviation='${soft}'/></filter>` +
     `<g filter='url(#s)' fill='#fff'>${shapes}</g></svg>`;
 
   return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
@@ -160,8 +167,12 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
     const observer = new ResizeObserver(measure);
     observer.observe(frame);
     observer.observe(caption);
+    window.addEventListener('fontlab:change', measure);
 
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('fontlab:change', measure);
+    };
   });
 
 
@@ -250,10 +261,10 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
           key={layer.spread}
           className="pointer-events-none absolute z-0"
           style={{
-            top: `-${Math.round(layer.spread * SSS_BIAS.top)}px`,
-            right: `-${Math.round(layer.spread * SSS_BIAS.side)}px`,
-            bottom: `-${Math.round(layer.spread * SSS_BIAS.bottom)}px`,
-            left: `-${Math.round(layer.spread * SSS_BIAS.side)}px`,
+            top: `calc(${layer.spread}px * var(--sss-top, ${SSS_BIAS.top}) * -1)`,
+            right: `calc(${layer.spread}px * var(--sss-side, ${SSS_BIAS.side}) * -1)`,
+            bottom: `calc(${layer.spread}px * var(--sss-bottom, ${SSS_BIAS.bottom}) * -1)`,
+            left: `calc(${layer.spread}px * var(--sss-side, ${SSS_BIAS.side}) * -1)`,
           }}
           aria-hidden
         >
@@ -262,10 +273,17 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
             alt=""
             className="h-full w-full object-cover transition-opacity duration-[1800ms]"
             style={{
-              opacity: layer.opacity,
+              // Scattered light can only add. Screened against the page, a black pixel
+              // contributes nothing at all, so the picture's dark edges leak no light
+              // instead of leaking darkness — which is what read as a shadow.
+              mixBlendMode: 'screen',
+              opacity: `calc(${layer.opacity} * var(--sss-strength, 1))`,
               // Scattered light comes back more saturated and a touch brighter than
               // what went in — that is what sells it as light rather than a copy.
-              filter: `blur(${layer.blur}px) saturate(${layer.saturate}) brightness(${layer.brightness})`,
+              filter:
+                `blur(calc(${layer.blur}px * var(--sss-spread, 1))) ` +
+                `saturate(calc(${layer.saturate} * var(--sss-saturate, 1))) ` +
+                `brightness(${layer.brightness})`,
             }}
           />
         </div>
@@ -274,11 +292,6 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
     <div
       ref={frameRef}
       className="relative isolate z-[1] h-[min(56vh,600px)] w-full overflow-hidden bg-[#272926] rounded-md"
-      style={{
-        boxShadow:
-          '0 2px 6px rgba(24,26,20,0.06), 0 14px 34px rgba(24,26,20,0.09), ' +
-          '0 40px 80px rgba(24,26,20,0.07)',
-      }}
     >
       <style>{sliderAnimationStyles}</style>
       {images.map((img, index) => {
@@ -382,7 +395,7 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
           <div
             className="pointer-events-none absolute inset-0 z-[2]"
             aria-hidden
-            style={{ backgroundColor: 'rgba(8,10,7,0.10)' }}
+            style={{ backgroundColor: 'rgba(8,10,7,var(--hero-veil, 0.1))' }}
           />
 
           {/*
@@ -395,9 +408,9 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
               className="pointer-events-none absolute inset-0 z-[2]"
               aria-hidden
               style={{
-                backdropFilter: 'blur(5px) saturate(104%)',
-                WebkitBackdropFilter: 'blur(5px) saturate(104%)',
-                backgroundColor: 'rgba(8,10,7,0.40)',
+                backdropFilter: 'blur(calc(var(--hero-blur, 5) * 1px)) saturate(104%)',
+                WebkitBackdropFilter: 'blur(calc(var(--hero-blur, 5) * 1px)) saturate(104%)',
+                backgroundColor: 'rgba(8,10,7,var(--hero-shade, 0.4))',
                 maskImage: textMask,
                 WebkitMaskImage: textMask,
                 maskRepeat: 'no-repeat',
