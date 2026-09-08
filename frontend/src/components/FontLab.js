@@ -73,7 +73,9 @@ const HERO_CONTROLS = [
 const SSS_CONTROLS = [
   { key: 'strength', varName: '--sss-strength', label: 'Styrka', min: 0, max: 2.5, step: 0.05, unit: '×', value: 1 },
   { key: 'spread', varName: '--sss-spread', label: 'Spridning', min: 0.2, max: 3, step: 0.05, unit: '×', value: 1 },
-  { key: 'saturate', varName: '--sss-saturate', label: 'Mättnad', min: 0.4, max: 2, step: 0.05, unit: '×', value: 1 },
+  { key: 'contrast', varName: '--sss-contrast', label: 'Tröskel', min: 0.5, max: 2.5, step: 0.05, unit: '×', value: 1 },
+  { key: 'brightness', varName: '--sss-brightness', label: 'Ljus', min: 0.5, max: 2.5, step: 0.05, unit: '×', value: 1 },
+  { key: 'saturate', varName: '--sss-saturate', label: 'Mättnad', min: 0.4, max: 2.5, step: 0.05, unit: '×', value: 1 },
   { key: 'top', varName: '--sss-top', label: 'Uppåt', min: 0, max: 2, step: 0.02, unit: '', value: 0.34 },
   { key: 'side', varName: '--sss-side', label: 'I sidled', min: 0, max: 2.5, step: 0.05, unit: '', value: 0.8 },
   { key: 'bottom', varName: '--sss-bottom', label: 'Nedåt', min: 0, max: 3.5, step: 0.05, unit: '', value: 1.35 },

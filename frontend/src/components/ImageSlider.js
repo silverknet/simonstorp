@@ -14,10 +14,10 @@ import { getFullSizeImageUrl, getHeroDisplayUrl } from '../utils/strapiMedia';
  * body scatters more and returns less.
  */
 const SSS_LAYERS = [
-  { spread: 6, blur: 24, opacity: 0.42, saturate: 1.9, brightness: 1.1 },
-  { spread: 20, blur: 46, opacity: 0.26, saturate: 1.75, brightness: 1.06 },
-  { spread: 50, blur: 80, opacity: 0.15, saturate: 1.6, brightness: 1.03 },
-  { spread: 104, blur: 124, opacity: 0.075, saturate: 1.4, brightness: 1.0 },
+  { spread: 6, blur: 24, opacity: 0.5, contrast: 1.9, brightness: 1.25, saturate: 2.4 },
+  { spread: 20, blur: 46, opacity: 0.32, contrast: 1.8, brightness: 1.2, saturate: 2.2 },
+  { spread: 50, blur: 80, opacity: 0.18, contrast: 1.7, brightness: 1.15, saturate: 2.0 },
+  { spread: 104, blur: 124, opacity: 0.09, contrast: 1.6, brightness: 1.1, saturate: 1.8 },
 ];
 
 /**
@@ -280,10 +280,16 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
               opacity: `calc(${layer.opacity} * var(--sss-strength, 1))`,
               // Scattered light comes back more saturated and a touch brighter than
               // what went in — that is what sells it as light rather than a copy.
+              /* Order is the whole trick. Contrast first, pivoting on mid-grey, drives
+                 everything below it to black — and black contributes nothing once the
+                 layer is screened, so the dull middle of the picture stops leaking and
+                 only real highlights get through. Colour is pushed up before the blur
+                 spreads it, so what escapes is saturated light and never grey. */
               filter:
-                `blur(calc(${layer.blur}px * var(--sss-spread, 1))) ` +
+                `contrast(calc(${layer.contrast} * var(--sss-contrast, 1))) ` +
+                `brightness(calc(${layer.brightness} * var(--sss-brightness, 1))) ` +
                 `saturate(calc(${layer.saturate} * var(--sss-saturate, 1))) ` +
-                `brightness(${layer.brightness})`,
+                `blur(calc(${layer.blur}px * var(--sss-spread, 1)))`,
             }}
           />
         </div>
