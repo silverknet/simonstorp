@@ -98,7 +98,7 @@ const newsCardPubDate = 'text-sm leading-snug text-[var(--grey-text)]/55';
 
 const newsCardExcerpt =
   'm-0 mt-3 max-w-[68ch] overflow-hidden text-[1rem] leading-[1.75] text-[var(--grey-text)] ' +
-  '[display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]';
+  '[display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:4]';
 
 /* Small, and last: the date and the headline carry the row. */
 const newsThumbCell = 'ml-auto shrink-0 pl-4 max-[800px]:hidden';

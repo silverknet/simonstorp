@@ -21,7 +21,7 @@ const sortByRank = (pages = []) =>
  * updating (menu toggle, compact scroll, resize) or briefly reads low.
  * Phone uses a smaller floor (~collapsed top row); desktop keeps more headroom.
  */
-const MIN_INFO_HEADER_RESERVE_DESKTOP_PX = 152;
+const MIN_INFO_HEADER_RESERVE_DESKTOP_PX = 120;
 const MIN_INFO_HEADER_RESERVE_MOBILE_PX = 64;
 
 export default function Menubar({
@@ -311,7 +311,7 @@ export default function Menubar({
         ? 'h-16 w-full gap-3 px-3.5 py-0'
         : isCompactDesktop
           ? 'w-auto shrink-0 justify-start pl-5 pr-0 py-0'
-          : 'h-24 w-full px-5 py-0',
+          : 'h-20 w-full px-5 py-0',
     ]
       .filter(Boolean)
       .join(' ');
@@ -341,8 +341,10 @@ export default function Menubar({
       .filter(Boolean)
       .join(' ');
 
-    const desktopCategoryShellClass =
-      'group relative flex h-16 min-w-[7rem] shrink-0 cursor-pointer items-stretch justify-center font-medium';
+    const desktopCategoryShellClass = [
+      'group relative flex min-w-[7rem] shrink-0 cursor-pointer items-stretch justify-center font-medium',
+      isCompactDesktop ? 'h-16' : 'h-12',
+    ].join(' ');
     const desktopCategoryLabelClass =
       'flex h-full w-full items-center justify-center whitespace-nowrap px-5 text-center font-["IBM_Plex_Sans",sans-serif] text-sm font-normal uppercase leading-tight transition-colors group-hover:text-[var(--accent-one)]';
     const desktopPageRowClass =
