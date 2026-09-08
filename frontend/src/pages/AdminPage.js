@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import {
   AlertTriangle,
   Check,
+  Newspaper,
   Copy,
   MailCheck,
   MailX,
@@ -20,7 +21,9 @@ import {
   createAdminInvite,
   fetchAdminMe,
   activateMail,
+  fetchNewsPreview,
   fetchPeople,
+  importNewsPost,
   removeBoardMember,
   setBoardMember,
   setProfileOnBoard,
@@ -92,6 +95,11 @@ const readyDot = 'relative flex h-4 w-4 shrink-0 items-center justify-center';
 const readyPing =
   'absolute inline-flex h-2 w-2 animate-ping rounded-full bg-[#22c55e] opacity-75';
 const readyCore = 'relative inline-flex h-2 w-2 rounded-full bg-[#22c55e]';
+
+const newsRow = 'flex flex-col gap-2 border-b border-black/5 py-3 last:border-b-0';
+const newsBadge = 'rounded-full px-2 py-0.5 text-xs font-medium';
+const newsButton =
+  'mt-4 flex w-full items-center justify-center gap-2 rounded-md border border-black/20 bg-white px-4 py-3 text-base text-[var(--main-text)] hover:bg-black/5 disabled:opacity-50';
 
 const checkBar = 'mt-4 flex flex-wrap items-center gap-3 text-sm text-[var(--grey-text)]';
 const checkButton =
@@ -350,6 +358,93 @@ function PersonDialog({
   );
 }
 
+/** Recent Facebook posts and whether each one made it onto the site. */
+function NewsDialog({ onClose }) {
+  const [posts, setPosts] = useState(null);
+  const [error, setError] = useState('');
+  const [busyId, setBusyId] = useState(null);
+
+  const load = useCallback(() => {
+    setError('');
+    fetchNewsPreview(30)
+      .then(setPosts)
+      .catch((err) => {
+        setPosts([]);
+        setError(err.message);
+      });
+  }, []);
+
+  useEffect(load, [load]);
+
+  async function addPost(post) {
+    setBusyId(post.facebookPostId);
+    setError('');
+
+    try {
+      await importNewsPost(post.facebookPostId);
+      load();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  return (
+    <Dialog title="Inlägg från Facebook" onClose={onClose}>
+      {error ? <p className={errorBox}>{error}</p> : null}
+
+      {posts === null ? (
+        <p className={helpText}>Hämtar inlägg…</p>
+      ) : posts.length === 0 ? (
+        <p className={helpText}>Inga inlägg de senaste 30 dagarna.</p>
+      ) : (
+        <ul className="m-0 flex list-none flex-col p-0">
+          {posts.map((post) => (
+            <li key={post.facebookPostId} className={newsRow}>
+              <span className="flex flex-wrap items-center gap-2">
+                <span className="text-sm text-[var(--grey-text)]">
+                  {post.createdTime ? post.createdTime.slice(0, 10) : ''}
+                </span>
+                {post.imported ? (
+                  <span className={`${newsBadge} bg-[#22c55e]/15 text-[#15803d]`}>
+                    Redan på hemsidan
+                  </span>
+                ) : post.tagged ? (
+                  <span className={`${newsBadge} bg-[#22c55e]/15 text-[#15803d]`}>
+                    Klar att läggas till
+                  </span>
+                ) : (
+                  <span className={`${newsBadge} bg-black/5 text-[var(--grey-text)]`}>
+                    Saknar simonstorp.se
+                  </span>
+                )}
+              </span>
+
+              <span className="text-base text-[var(--main-text)]">
+                {post.title || post.excerpt.split('\n')[0] || '(ingen text)'}
+              </span>
+
+              {!post.imported ? (
+                <span>
+                  <button
+                    type="button"
+                    className={ghostButton + ' py-2 text-sm'}
+                    disabled={busyId === post.facebookPostId || !post.importable}
+                    onClick={() => addPost(post)}
+                  >
+                    {busyId === post.facebookPostId ? 'Lägger till…' : 'Lägg till på hemsidan'}
+                  </button>
+                </span>
+              ) : null}
+            </li>
+          ))}
+        </ul>
+      )}
+    </Dialog>
+  );
+}
+
 function InviteDialog({ onClose, onCreated, prefill }) {
   const [first = '', ...rest] = String(prefill?.name ?? '').trim().split(/\s+/);
   const [firstname, setFirstname] = useState(first);
@@ -495,6 +590,7 @@ export default function AdminPage() {
   const [notice, setNotice] = useState('');
   const [checkedAt, setCheckedAt] = useState(null);
   const [checking2, setChecking2] = useState(false);
+  const [newsOpen, setNewsOpen] = useState(false);
 
   const loadUsers = useCallback(
     ({ refresh = false } = {}) => {
@@ -760,6 +856,11 @@ simonstorp.se
 Titel: Valborg
 Datum: 2026-04-30 19:00
 Plats: Bolenparken`}</pre>
+
+          <button type="button" className={newsButton} onClick={() => setNewsOpen(true)}>
+            <Newspaper className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
+            Leta efter nya inlägg
+          </button>
         </div>
           </aside>
         </div>
@@ -794,6 +895,8 @@ Plats: Bolenparken`}</pre>
             }}
           />
         ) : null}
+
+        {newsOpen ? <NewsDialog onClose={() => setNewsOpen(false)} /> : null}
 
         {inviteOpen ? (
           <InviteDialog

@@ -190,6 +190,30 @@ export async function activateMail(alias, destination) {
   return data;
 }
 
+export async function fetchNewsPreview(days = 30) {
+  const token = getAdminToken();
+  const res = await fetch(`${apiBaseUrl}/api/update-news/preview?days=${days}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data?.error?.message || 'Kunde inte hämta inlägg.');
+  return data.posts ?? [];
+}
+
+export async function importNewsPost(facebookPostId) {
+  const token = getAdminToken();
+  const res = await fetch(`${apiBaseUrl}/api/update-news/import`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ facebookPostId }),
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data?.error?.message || 'Kunde inte importera inlägget.');
+  return data;
+}
+
 export function adminLogout() {
   setAdminToken('');
 }
