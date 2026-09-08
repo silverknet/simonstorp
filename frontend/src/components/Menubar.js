@@ -7,7 +7,7 @@ import { getCategoryFromPage, getStrapiItems, toValidUrl } from '../utils/utils'
 import { absoluteMediaUrl, getStrapiMedia } from '../utils/strapiMedia';
 import apiBaseUrl from '../config/apiBaseUrl';
 
-import { ChevronDown, Menu, X } from 'lucide-react';
+import { ChevronDown, Equal, X } from 'lucide-react';
 
 import ErrorScreen from './ErrorScreen';
 import fblogo from '../assets/img/fblogo.png';
@@ -347,11 +347,11 @@ export default function Menubar({
     const desktopCategoryShellClass =
       'group relative flex h-11 min-w-[98px] shrink-0 cursor-pointer items-stretch justify-center font-medium';
     const desktopCategoryLabelClass =
-      'flex h-full w-full items-center justify-center whitespace-nowrap px-[37px] text-center font-["Karla",sans-serif] text-sm font-light uppercase leading-[1.25] transition-colors group-hover:text-[var(--accent-one)]';
+      'flex h-full w-full items-center justify-center whitespace-nowrap px-[37px] text-center font-["Karla",sans-serif] text-[15px] font-light uppercase leading-[1.25] transition-colors group-hover:text-[var(--accent-one)]';
     const desktopPageRowClass =
       'group/submenu flex min-h-[44px] w-full items-center px-5 py-0 transition-colors';
     const desktopPageTextClass =
-      'm-0 w-full text-left font-["Karla",sans-serif] text-sm font-light leading-[1.25] transition-all group-hover/submenu:text-[var(--accent-one)]';
+      'm-0 w-full text-left font-["Karla",sans-serif] text-[15px] font-light leading-[1.25] transition-all group-hover/submenu:text-[var(--accent-one)]';
 
     return (
       <div className={headerClassName}>
@@ -365,9 +365,9 @@ export default function Menubar({
               className="flex h-11 w-11 items-center justify-center rounded-full p-0 text-[var(--main-text)] transition hover:bg-black/5"
             >
               {menuDown ? (
-                <X className="h-7 w-7 shrink-0" strokeWidth={2} aria-hidden />
+                <X className="h-6 w-6 shrink-0" strokeWidth={1.5} aria-hidden />
               ) : (
-                <Menu className="h-7 w-7 shrink-0" strokeWidth={2} aria-hidden />
+                <Equal className="h-6 w-6 shrink-0" strokeWidth={1.5} aria-hidden />
               )}
             </button>
           ) : !isCompactDesktop ? (

@@ -1,3 +1,4 @@
+/** The pre-redesign hero, frozen for /gamla-startsidan. */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
@@ -21,28 +22,11 @@ const sliderAnimationStyles = `
     to { transform: scale(1.08) translate3d(-1.2%, -0.35%, 0); }
   }
 
-  @keyframes heroLineIn {
-    from { opacity: 0; transform: translate3d(0, 8px, 0); }
-    to { opacity: 1; transform: translate3d(0, 0, 0); }
-  }
-
   @keyframes heroKenBurnsRight {
     from { transform: scale(1.04) translate3d(0, 0, 0); }
     to { transform: scale(1.08) translate3d(1.2%, 0.35%, 0); }
   }
 `;
-
-/**
- * The introduction, one sentence at a time.
- *
- * Split on sentence endings rather than on line breaks: the text is written as prose in
- * Strapi, and whoever writes it should not have to think about where the slides fall.
- */
-const splitSentences = (text) =>
-  String(text ?? '')
-    .split(/(?<=[.!?])\s+/)
-    .map((part) => part.trim())
-    .filter(Boolean);
 
 const clampProgress = (value) => Math.max(0, Math.min(value, 1));
 const getCurrentProgress = (cycleStart) =>
@@ -63,7 +47,7 @@ const getSlideTransform = (index, progress) => {
  * does not compete with fixed nav (z-index: 2) on mobile.
  * Timings match .slideimgActive (5s) / .slideimg (1s) in indextemp.css.
  */
-export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
+export default function LegacyImageSlider(props) {
   const homeData = props.home?.data?.data;
   const images = getHomepageHeaderImages(homeData);
   const { width } = useWindowDimensions();
@@ -123,7 +107,7 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
   }, [length]);
 
   if (!length) {
-    return <div className="relative isolate z-0 h-[min(56vh,600px)] w-full bg-[#272926]" />;
+    return <div className="relative isolate z-0 h-[50vh] w-full bg-[#d8d8d8]" />;
   }
 
   const active = ((activeIndex % length) + length) % length;
@@ -138,36 +122,8 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
     beginCycle(nextIndex);
   };
 
-  const glowSrc = getHeroDisplayUrl(activeImage, { preferOriginal: false });
-  const sentences = splitSentences(bodyText);
-  // Sentences and images cycle independently; whichever list is shorter simply repeats.
-  const sentence = sentences.length ? sentences[active % sentences.length] : null;
-
   return (
-    <div className="relative w-full">
-      {/*
-        Barely-there backlight: the current photograph, blurred past recognition and
-        pushed just outside the frame, so the picture warms the page around it. Kept
-        faint enough that it reads as light rather than as a second image.
-      */}
-      <div className="pointer-events-none absolute -inset-x-[14%] -inset-y-[22%] z-0" aria-hidden>
-        <img
-          src={glowSrc}
-          alt=""
-          className="h-full w-full scale-105 object-cover opacity-[0.038] transition-opacity duration-[1800ms]"
-          style={{ filter: 'blur(70px) saturate(130%)' }}
-        />
-      </div>
-      <div className="pointer-events-none absolute -inset-x-[20%] -inset-y-[40%] z-0" aria-hidden>
-        <img
-          src={glowSrc}
-          alt=""
-          className="h-full w-full scale-110 object-cover opacity-[0.022] transition-opacity duration-[1800ms]"
-          style={{ filter: 'blur(150px) saturate(120%)' }}
-        />
-      </div>
-
-    <div className="relative isolate z-[1] h-[min(56vh,600px)] w-full overflow-hidden bg-[#272926] rounded-md">
+    <div className="relative isolate z-0 h-[50vh] w-full overflow-hidden bg-[#d8d8d8] rounded-md">
       <style>{sliderAnimationStyles}</style>
       {images.map((img, index) => {
         const isActive = index === active;
@@ -192,8 +148,7 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
             aria-label={isActive ? 'Visa bild i full storlek' : undefined}
           >
             <LazyLoadImage
-              wrapperClassName="!block h-full w-full"
-              className={`block h-full w-full transform-gpu bg-[#272926] object-center object-cover will-change-transform transition-[filter,opacity] duration-[1800ms] ease-out ${
+              className={`block h-[50vh] w-full transform-gpu bg-[#272926] object-cover will-change-transform transition-[filter,opacity] duration-[1800ms] ease-out ${
                 isActive ? 'opacity-[0.94] blur-0' : 'opacity-[0.86] blur-[1px]'
               }`}
               loading={index === 0 ? 'eager' : 'lazy'}
@@ -214,7 +169,7 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
         );
       })}
       <div
-        className="absolute bottom-4 right-4 z-[3] flex items-center gap-2 rounded-full bg-black/20 px-3 py-2 backdrop-blur-sm"
+        className="absolute bottom-4 left-1/2 z-[3] flex -translate-x-1/2 items-center gap-2 rounded-full bg-black/20 px-3 py-2 backdrop-blur-sm"
         onClick={(e) => e.stopPropagation()}
         onKeyDown={(e) => e.stopPropagation()}
       >
@@ -250,62 +205,6 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
         })}
       </div>
 
-      {title ? (
-        <>
-          {/* Anchored under the type only, fading out well before any edge, so it works
-              on a dark forest and a sunlit meadow alike. */}
-          <div
-            className="pointer-events-none absolute inset-0 z-[2]"
-            aria-hidden
-            style={{
-              backgroundImage:
-                [
-                  // Sized to the text block, not the image: an ellipse for the words plus
-                  // a shallow foot so a paragraph never sits half on and half off it.
-                  'radial-gradient(76% 78% at 26% 82%, rgba(8,10,7,0.60) 0%, rgba(8,10,7,0.44) 34%, rgba(8,10,7,0.18) 64%, transparent 86%)',
-                  'linear-gradient(to top, rgba(8,10,7,0.24) 0%, rgba(8,10,7,0.08) 28%, transparent 52%)',
-                ].join(', '),
-            }}
-          />
-
-          <div className="pointer-events-none absolute bottom-0 left-0 z-[3] p-6 md:p-10">
-            {eyebrow ? (
-              <p
-                data-font="herobody"
-                className="m-0 mb-2 font-['Source_Serif_4',serif] text-sm tracking-[0.04em] md:text-base"
-                // Set here rather than as a utility: the global stylesheet colours <p>,
-                // and an opacity variant Tailwind has not emitted loses to it silently.
-                style={{ color: 'rgba(255,255,255,0.88)', textShadow: '0 1px 12px rgba(0,0,0,0.55)' }}
-              >
-                {eyebrow}
-              </p>
-            ) : null}
-
-            <p
-              data-font="hero"
-              className="m-0 font-['Source_Serif_4',serif] text-[clamp(2rem,5.4vw,4.0625rem)] font-normal leading-[0.85] tracking-[-0.01em] text-white"
-              style={{ textShadow: '0 2px 26px rgba(0,0,0,0.45)' }}
-            >
-              {title}
-            </p>
-
-            {sentence ? (
-              <p
-                key={`${active}-${cycleToken}`}
-                data-font="herobody"
-                className="m-0 mt-4 h-[4.6rem] max-w-[62ch] overflow-hidden font-['Source_Serif_4',serif] text-[0.875rem] font-light leading-[1.65] text-white md:mt-5 md:h-[4.8rem]"
-                style={{
-                  textShadow: '0 1px 14px rgba(0,0,0,0.55)',
-                  animation: 'heroLineIn 900ms ease-out both',
-                }}
-              >
-                {sentence}
-              </p>
-            ) : null}
-          </div>
-        </>
-      ) : null}
-
       {lightboxOpen && activeAttrs ? (
         <ImageLightboxDialog
           src={getFullSizeImageUrl(activeAttrs)}
@@ -317,7 +216,6 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
           ariaLabel="Huvudbild i full storlek"
         />
       ) : null}
-    </div>
     </div>
   );
 }

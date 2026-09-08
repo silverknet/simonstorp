@@ -38,12 +38,12 @@ const LATO = "'Lato', sans-serif";
  * page actually ships now — so opening the panel changes nothing until a control moves.
  */
 const SCOPES = [
-  { key: 'hero', label: 'Rubrik på bilden', min: 24, max: 96, font: SOURCE_SERIF, weight: 300, size: 65, leading: 0.85 },
+  { key: 'hero', label: 'Rubrik på bilden', min: 24, max: 96, font: SOURCE_SERIF, weight: 400, size: 65, leading: 0.85 },
   { key: 'newstitle', label: 'Nyhetsrubriker', min: 14, max: 48, font: KARLA, weight: 400, size: 26, leading: 1.1 },
   { key: 'herobody', label: 'Brödtext på bilden', min: 11, max: 26, font: SOURCE_SERIF, weight: 300, size: 14, leading: 1.65 },
   { key: 'newsbody', label: 'Brödtext i nyheter', min: 11, max: 26, font: SOURCE_SERIF, weight: 300, size: 14, leading: 1.65 },
   { key: 'stamp', label: 'Datumstämpel', min: 16, max: 64, font: LATO, weight: 400, size: 32, leading: 1 },
-  { key: 'menu', label: 'Menyn', min: 10, max: 24, font: KARLA, weight: 300, size: 14, leading: 1.25 },
+  { key: 'menu', label: 'Menyn', min: 10, max: 24, font: KARLA, weight: 300, size: 15, leading: 1.25 },
 ];
 
 /** The news thumbnail, sized and shaped from the same panel. */

@@ -107,7 +107,7 @@ const newsCardExcerpt =
   '[display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:4]';
 
 /* Small, and last: the date and the headline carry the row. */
-const newsThumbCell = 'ml-auto shrink-0 pl-4 max-[800px]:hidden';
+const newsThumbCell = 'ml-auto shrink-0 pl-4 max-[560px]:hidden';
 
 /*
  * White, not the page's own off-white: a mat the same colour as what surrounds it is
@@ -118,7 +118,9 @@ const newsThumbWrap =
   'relative shrink-0 rounded-[3px] shadow-[0_1px_3px_rgba(0,0,0,0.06),0_6px_16px_rgba(0,0,0,0.05)] ' +
   'transition-shadow duration-300 group-hover:shadow-[0_2px_6px_rgba(0,0,0,0.08),0_10px_26px_rgba(0,0,0,0.08)]';
 
-const newsThumbInner = 'relative h-[192px] w-[124px] overflow-hidden rounded-[3px] bg-black/[0.04]';
+const newsThumbInner =
+  'relative h-[192px] w-[124px] overflow-hidden rounded-[3px] bg-black/[0.04] ' +
+  'max-[800px]:h-[144px] max-[800px]:w-[96px]';
 
 /* Desaturated at rest, its own colour on hover: a column of mismatched snapshots reads
  * as one set, and the photo still rewards the reader who reaches for it. */
@@ -183,7 +185,7 @@ export default function Homepage(props) {
   return (
     <div className="min-h-[calc(100vh-437px)] pb-0">
       {/* TEMPORARY: font experimentation panel, remove with the component. */}
-      <FontLab />
+      {process.env.NODE_ENV === 'development' ? <FontLab /> : null}
       <div className="box-border w-full">
         <ImageSlider
           home={props.homecontent}
