@@ -201,12 +201,12 @@ export async function fetchNewsPreview(days = 30) {
   return data.posts ?? [];
 }
 
-export async function importNewsPost(facebookPostId) {
+export async function importNewsPost(facebookPostId, fields = {}) {
   const token = getAdminToken();
   const res = await fetch(`${apiBaseUrl}/api/update-news/import`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-    body: JSON.stringify({ facebookPostId }),
+    body: JSON.stringify({ facebookPostId, ...fields }),
   });
 
   const data = await res.json().catch(() => ({}));

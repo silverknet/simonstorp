@@ -57,6 +57,14 @@ const addButton =
 const dialogBackdrop =
   'fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-8 overflow-y-auto';
 const dialogBox = 'w-full max-w-[32rem] rounded-xl bg-white p-6 shadow-xl';
+/** Grows sideways when the fill-in pane opens beside the list. */
+const dialogBoxWide =
+  'w-full max-w-[52rem] rounded-xl bg-white p-6 shadow-xl transition-[max-width] duration-200';
+const editPane = 'border-t border-black/10 pt-5 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0';
+const fieldLabel = 'mb-1 block text-sm font-medium text-[var(--main-text)]';
+const fieldInput =
+  'mb-3 w-full rounded-md border border-black/20 bg-white px-3 py-2 text-base outline-none ' +
+  'focus:border-[var(--accent-one)] focus:ring-2 focus:ring-[var(--accent-one)]/30';
 const dialogTitle = 'mb-1 text-[1.4rem] font-normal text-[var(--main-text)]';
 const smallButton =
   'rounded-md bg-[var(--accent-one)] px-4 py-3 text-base font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-60';
@@ -199,7 +207,7 @@ function PersonRow({ entry, onOpen }) {
  * Shared shell so both dialogs close the same way — clicking the backdrop or pressing
  * Escape, which is what people try first.
  */
-function Dialog({ title, onClose, children, footer }) {
+function Dialog({ title, onClose, children, footer, wide = false }) {
   useEffect(() => {
     const onKey = (e) => e.key === 'Escape' && onClose();
     document.addEventListener('keydown', onKey);
@@ -212,7 +220,12 @@ function Dialog({ title, onClose, children, footer }) {
       role="presentation"
       onMouseDown={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className={dialogBox} role="dialog" aria-modal="true" aria-label={title}>
+      <div
+        className={wide ? dialogBoxWide : dialogBox}
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+      >
         <div className="mb-5 flex items-start justify-between gap-4">
           <h2 className={dialogTitle}>{title}</h2>
           <button
@@ -363,6 +376,7 @@ function NewsDialog({ onClose }) {
   const [posts, setPosts] = useState(null);
   const [error, setError] = useState('');
   const [busyId, setBusyId] = useState(null);
+  const [draft, setDraft] = useState(null);
 
   const load = useCallback(() => {
     setError('');
@@ -376,12 +390,33 @@ function NewsDialog({ onClose }) {
 
   useEffect(load, [load]);
 
-  async function addPost(post) {
+  /**
+   * A tagged post already states its title, date and place, so it goes straight in.
+   * An untagged one states none of them — importing it blind would guess a title from
+   * the first sentence and leave the date and place empty — so it opens the pane first.
+   */
+  function begin(post) {
+    if (post.tagged) {
+      submit(post, {});
+      return;
+    }
+
+    setDraft({
+      post,
+      title: post.title || '',
+      beskrivning: post.excerpt || '',
+      datum: '',
+      plats: '',
+    });
+  }
+
+  async function submit(post, fields) {
     setBusyId(post.facebookPostId);
     setError('');
 
     try {
-      await importNewsPost(post.facebookPostId);
+      await importNewsPost(post.facebookPostId, fields);
+      setDraft(null);
       load();
     } catch (err) {
       setError(err.message);
@@ -391,56 +426,137 @@ function NewsDialog({ onClose }) {
   }
 
   return (
-    <Dialog title="Inlägg från Facebook" onClose={onClose}>
-      {error ? <p className={errorBox}>{error}</p> : null}
+    <Dialog title="Inlägg från Facebook" onClose={onClose} wide={Boolean(draft)}>
+      <div className={draft ? 'grid gap-6 lg:grid-cols-[3fr_2fr]' : ''}>
+        <div className="min-w-0">
+          {error ? <p className={errorBox}>{error}</p> : null}
 
-      {posts === null ? (
-        <p className={helpText}>Hämtar inlägg…</p>
-      ) : posts.length === 0 ? (
-        <p className={helpText}>Inga inlägg de senaste 30 dagarna.</p>
-      ) : (
-        <ul className="m-0 flex list-none flex-col p-0">
-          {posts.map((post) => (
-            <li key={post.facebookPostId} className={newsRow}>
-              <span className="flex flex-wrap items-center gap-2">
-                <span className="text-sm text-[var(--grey-text)]">
-                  {post.createdTime ? post.createdTime.slice(0, 10) : ''}
-                </span>
-                {post.imported ? (
-                  <span className={`${newsBadge} bg-[#22c55e]/15 text-[#15803d]`}>
-                    Redan på hemsidan
+          {posts === null ? (
+            <p className={helpText}>Hämtar inlägg…</p>
+          ) : posts.length === 0 ? (
+            <p className={helpText}>Inga inlägg de senaste 30 dagarna.</p>
+          ) : (
+            <ul className="m-0 flex list-none flex-col p-0">
+              {posts.map((post) => (
+                <li key={post.facebookPostId} className={newsRow}>
+                  <span className="flex flex-wrap items-center gap-2">
+                    <span className="text-sm text-[var(--grey-text)]">
+                      {post.createdTime ? post.createdTime.slice(0, 10) : ''}
+                    </span>
+                    {post.imported ? (
+                      <span className={`${newsBadge} bg-[#22c55e]/15 text-[#15803d]`}>
+                        Redan på hemsidan
+                      </span>
+                    ) : post.tagged ? (
+                      <span className={`${newsBadge} bg-[#22c55e]/15 text-[#15803d]`}>
+                        Klar att läggas till
+                      </span>
+                    ) : (
+                      <span className={`${newsBadge} bg-black/5 text-[var(--grey-text)]`}>
+                        Saknar simonstorp.se
+                      </span>
+                    )}
                   </span>
-                ) : post.tagged ? (
-                  <span className={`${newsBadge} bg-[#22c55e]/15 text-[#15803d]`}>
-                    Klar att läggas till
-                  </span>
-                ) : (
-                  <span className={`${newsBadge} bg-black/5 text-[var(--grey-text)]`}>
-                    Saknar simonstorp.se
-                  </span>
-                )}
-              </span>
 
-              <span className="text-base text-[var(--main-text)]">
-                {post.title || post.excerpt.split('\n')[0] || '(ingen text)'}
-              </span>
+                  <span className="text-base text-[var(--main-text)]">
+                    {post.title || post.excerpt.split('\n')[0] || '(ingen text)'}
+                  </span>
 
-              {!post.imported ? (
-                <span>
-                  <button
-                    type="button"
-                    className={ghostButton + ' py-2 text-sm'}
-                    disabled={busyId === post.facebookPostId || !post.importable}
-                    onClick={() => addPost(post)}
-                  >
-                    {busyId === post.facebookPostId ? 'Lägger till…' : 'Lägg till på hemsidan'}
-                  </button>
-                </span>
-              ) : null}
-            </li>
-          ))}
-        </ul>
-      )}
+                  {!post.imported ? (
+                    <span>
+                      <button
+                        type="button"
+                        className={ghostButton + ' py-2 text-sm'}
+                        disabled={busyId === post.facebookPostId || !post.importable}
+                        onClick={() => begin(post)}
+                      >
+                        {busyId === post.facebookPostId
+                          ? 'Lägger till…'
+                          : post.tagged
+                            ? 'Lägg till på hemsidan'
+                            : 'Fyll i och lägg till'}
+                      </button>
+                    </span>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        {draft ? (
+          <div className={editPane}>
+            <h3 className="m-0 mb-1 text-[1.05rem] font-medium text-[var(--main-text)]">
+              Fyll i uppgifterna
+            </h3>
+            <p className="m-0 mb-4 text-sm text-[var(--grey-text)]">
+              Inlägget saknar rader för titel, datum och plats — skriv dem här.
+            </p>
+
+            <label className={fieldLabel} htmlFor="news-title">
+              Titel
+            </label>
+            <input
+              id="news-title"
+              className={fieldInput}
+              value={draft.title}
+              onChange={(e) => setDraft({ ...draft, title: e.target.value })}
+            />
+
+            <label className={fieldLabel} htmlFor="news-datum">
+              Datum (frivilligt)
+            </label>
+            <input
+              id="news-datum"
+              className={fieldInput}
+              type="datetime-local"
+              value={draft.datum}
+              onChange={(e) => setDraft({ ...draft, datum: e.target.value })}
+            />
+
+            <label className={fieldLabel} htmlFor="news-plats">
+              Plats (frivilligt)
+            </label>
+            <input
+              id="news-plats"
+              className={fieldInput}
+              value={draft.plats}
+              onChange={(e) => setDraft({ ...draft, plats: e.target.value })}
+            />
+
+            <label className={fieldLabel} htmlFor="news-text">
+              Text
+            </label>
+            <textarea
+              id="news-text"
+              className={`${fieldInput} min-h-[7rem]`}
+              value={draft.beskrivning}
+              onChange={(e) => setDraft({ ...draft, beskrivning: e.target.value })}
+            />
+
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="button"
+                className={smallButton}
+                disabled={busyId === draft.post.facebookPostId || !draft.title.trim()}
+                onClick={() =>
+                  submit(draft.post, {
+                    title: draft.title.trim(),
+                    beskrivning: draft.beskrivning.trim(),
+                    datum: draft.datum || undefined,
+                    plats: draft.plats.trim() || undefined,
+                  })
+                }
+              >
+                Lägg till på hemsidan
+              </button>
+              <button type="button" className={ghostButton} onClick={() => setDraft(null)}>
+                Avbryt
+              </button>
+            </div>
+          </div>
+        ) : null}
+      </div>
     </Dialog>
   );
 }
