@@ -241,8 +241,8 @@ export default function ImageSlider({ eyebrow, title, body, ...props }) {
                 [
                   // Sized to the text block, not the image: an ellipse for the words plus
                   // a shallow foot so a paragraph never sits half on and half off it.
-                  'radial-gradient(62% 78% at 22% 82%, rgba(8,10,7,0.88) 0%, rgba(8,10,7,0.68) 32%, rgba(8,10,7,0.26) 62%, transparent 84%)',
-                  'linear-gradient(to top, rgba(8,10,7,0.34) 0%, rgba(8,10,7,0.12) 28%, transparent 52%)',
+                  'radial-gradient(76% 78% at 26% 82%, rgba(8,10,7,0.60) 0%, rgba(8,10,7,0.44) 34%, rgba(8,10,7,0.18) 64%, transparent 86%)',
+                  'linear-gradient(to top, rgba(8,10,7,0.24) 0%, rgba(8,10,7,0.08) 28%, transparent 52%)',
                 ].join(', '),
             }}
           />
@@ -266,7 +266,7 @@ export default function ImageSlider({ eyebrow, title, body, ...props }) {
 
             {body ? (
               <div
-                className="mt-4 max-w-[40ch] text-[0.95rem] leading-[1.7] text-white md:mt-5 md:text-base"
+                className="mt-4 max-w-[56ch] text-[0.95rem] leading-[1.7] text-white md:mt-5 md:text-base"
                 style={{ textShadow: '0 1px 14px rgba(0,0,0,0.55)' }}
               >
                 {body}
