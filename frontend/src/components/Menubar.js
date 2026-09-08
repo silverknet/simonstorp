@@ -345,13 +345,13 @@ export default function Menubar({
       .join(' ');
 
     const desktopCategoryShellClass =
-      'group relative flex h-14 min-w-[98px] shrink-0 cursor-pointer items-stretch justify-center font-medium';
+      'group relative flex h-11 min-w-[98px] shrink-0 cursor-pointer items-stretch justify-center font-medium';
     const desktopCategoryLabelClass =
-      'flex h-full w-full items-center justify-center whitespace-nowrap px-[37px] text-center font-["Karla",sans-serif] text-[15px] font-light uppercase leading-[1.25] transition-colors group-hover:text-[var(--accent-one)]';
+      'flex h-full w-full items-center justify-center whitespace-nowrap px-[37px] text-center font-["Karla",sans-serif] text-sm font-light uppercase leading-[1.25] transition-colors group-hover:text-[var(--accent-one)]';
     const desktopPageRowClass =
       'group/submenu flex min-h-[44px] w-full items-center px-5 py-0 transition-colors';
     const desktopPageTextClass =
-      'm-0 w-full text-left font-["Karla",sans-serif] text-[15px] font-light leading-[1.25] transition-all group-hover/submenu:text-[var(--accent-one)]';
+      'm-0 w-full text-left font-["Karla",sans-serif] text-sm font-light leading-[1.25] transition-all group-hover/submenu:text-[var(--accent-one)]';
 
     return (
       <div className={headerClassName}>

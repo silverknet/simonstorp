@@ -282,7 +282,7 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
 
             <p
               data-font="hero"
-              className="m-0 font-['Karla',sans-serif] text-[clamp(2rem,5.4vw,4.0625rem)] font-light leading-[0.85] tracking-[-0.01em] text-white"
+              className="m-0 font-['Source_Serif_4',serif] text-[clamp(2rem,5.4vw,4.0625rem)] font-light leading-[0.85] tracking-[-0.01em] text-white"
               style={{ textShadow: '0 2px 26px rgba(0,0,0,0.45)' }}
             >
               {title}
