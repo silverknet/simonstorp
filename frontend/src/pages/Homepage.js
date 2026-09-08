@@ -45,14 +45,11 @@ const columnNews = `${columnShell} font-['Heebo',sans-serif] max-[800px]:px-[var
 /*  Intro column — title + markdown                                           */
 /* -------------------------------------------------------------------------- */
 
-const introTitle =
-  'm-0 text-3xl font-light leading-tight max-[800px]:text-center max-[800px]:leading-snug';
 
 /** Shared heading row contract: both headings use items-start; Aktuellt adds pt-[15px] offset */
 const headingRow =
   'mb-4 flex items-start max-[800px]:mb-4';
 
-const introHeadingRow = `${headingRow} max-[800px]:mt-12`;
 
 const introMarkdown =
   'text-left font-["Lato",sans-serif] text-base leading-relaxed tracking-wide text-[var(--main-text)] ' +
@@ -183,9 +180,6 @@ export default function Homepage(props) {
           className={`${columnIntro} ${introFade}`}
           style={{ transitionDelay: '140ms' }}
         >
-          <div className={introHeadingRow}>
-            <h1 className={introTitle}>{homeData.upper}</h1>
-          </div>
           <ReactMarkdown className={introMarkdown} remarkPlugins={[remarkBreaks]}>
             {homeData.Huvudtext}
           </ReactMarkdown>

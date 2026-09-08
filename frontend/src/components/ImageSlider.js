@@ -130,19 +130,19 @@ export default function ImageSlider({ eyebrow, title, ...props }) {
         pushed just outside the frame, so the picture warms the page around it. Kept
         faint enough that it reads as light rather than as a second image.
       */}
-      <div className="pointer-events-none absolute -inset-x-[4%] -inset-y-[8%] z-0" aria-hidden>
+      <div className="pointer-events-none absolute -inset-x-[14%] -inset-y-[22%] z-0" aria-hidden>
         <img
           src={glowSrc}
           alt=""
-          className="h-full w-full scale-105 object-cover opacity-[0.16] transition-opacity duration-[1800ms]"
+          className="h-full w-full scale-105 object-cover opacity-[0.07] transition-opacity duration-[1800ms]"
           style={{ filter: 'blur(70px) saturate(130%)' }}
         />
       </div>
-      <div className="pointer-events-none absolute -inset-x-[9%] -inset-y-[16%] z-0" aria-hidden>
+      <div className="pointer-events-none absolute -inset-x-[26%] -inset-y-[44%] z-0" aria-hidden>
         <img
           src={glowSrc}
           alt=""
-          className="h-full w-full scale-110 object-cover opacity-[0.09] transition-opacity duration-[1800ms]"
+          className="h-full w-full scale-110 object-cover opacity-[0.045] transition-opacity duration-[1800ms]"
           style={{ filter: 'blur(150px) saturate(120%)' }}
         />
       </div>
