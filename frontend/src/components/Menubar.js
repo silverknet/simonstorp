@@ -345,13 +345,13 @@ export default function Menubar({
       .join(' ');
 
     const desktopCategoryShellClass =
-      'group relative flex h-16 min-w-[7rem] shrink-0 cursor-pointer items-stretch justify-center font-medium';
+      'group relative flex h-14 min-w-[98px] shrink-0 cursor-pointer items-stretch justify-center font-medium';
     const desktopCategoryLabelClass =
-      'flex h-full w-full items-center justify-center whitespace-nowrap px-5 text-center font-["IBM_Plex_Sans",sans-serif] text-sm font-normal uppercase leading-tight transition-colors group-hover:text-[var(--accent-one)]';
+      'flex h-full w-full items-center justify-center whitespace-nowrap px-[37px] text-center font-["Karla",sans-serif] text-[15px] font-light uppercase leading-[1.25] transition-colors group-hover:text-[var(--accent-one)]';
     const desktopPageRowClass =
       'group/submenu flex min-h-[44px] w-full items-center px-5 py-0 transition-colors';
     const desktopPageTextClass =
-      'm-0 w-full text-left text-sm leading-snug transition-all group-hover/submenu:text-[var(--accent-one)]';
+      'm-0 w-full text-left font-["Karla",sans-serif] text-[15px] font-light leading-[1.25] transition-all group-hover/submenu:text-[var(--accent-one)]';
 
     return (
       <div className={headerClassName}>
@@ -402,7 +402,7 @@ export default function Menubar({
 
           <a
             className={[
-              'group flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition duration-300 hover:bg-black/5 hover:cursor-pointer',
+              'flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition duration-300 hover:bg-black/5 hover:cursor-pointer',
               isDesktop ? 'hover:scale-110' : '',
               isCompactDesktop ? 'hidden' : '',
             ]
@@ -410,19 +410,7 @@ export default function Menubar({
               .join(' ')}
             href="http://www.facebook.com/simonstorparna"
           >
-            <img
-              className={[
-                // Brand blue reads loud next to the muted palette: drop the
-                // colour and push the circle down to near-black, leaving the
-                // knocked-out "f" white. The blue comes back on hover, so the
-                // link still identifies itself as Facebook when reached for.
-                'grayscale contrast-[3.5] transition duration-300',
-                'group-hover:grayscale-0 group-hover:contrast-100',
-                !isDesktop ? 'w-5' : 'w-8',
-              ].join(' ')}
-              src={fblogo}
-              alt="Facebook"
-            />
+            <img className={!isDesktop ? 'w-5' : 'w-8'} src={fblogo} alt="Facebook" />
           </a>
         </div>
 

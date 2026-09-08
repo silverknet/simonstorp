@@ -29,38 +29,36 @@ const FONTS = [
 
 const WEIGHTS = [200, 300, 400, 500, 600, 700];
 
-const GARAMOND = "'EB Garamond', serif";
-const BASKERVILLE = "'Libre Baskerville', serif";
+const KARLA = "'Karla', sans-serif";
 const SOURCE_SERIF = "'Source Serif 4', serif";
 const LATO = "'Lato', sans-serif";
-const PLEX = "'IBM Plex Sans', sans-serif";
 
 /**
  * Each scope maps to the data-font marks placed on the page, and starts from what the
  * page actually ships now — so opening the panel changes nothing until a control moves.
  */
 const SCOPES = [
-  { key: 'hero', label: 'Rubrik på bilden', min: 24, max: 96, font: GARAMOND, weight: 600, size: 73, leading: 0.95 },
-  { key: 'newstitle', label: 'Nyhetsrubriker', min: 14, max: 48, font: BASKERVILLE, weight: 300, size: 21, leading: 1.6 },
+  { key: 'hero', label: 'Rubrik på bilden', min: 24, max: 96, font: KARLA, weight: 300, size: 65, leading: 0.85 },
+  { key: 'newstitle', label: 'Nyhetsrubriker', min: 14, max: 48, font: KARLA, weight: 400, size: 26, leading: 1.1 },
   { key: 'herobody', label: 'Brödtext på bilden', min: 11, max: 26, font: SOURCE_SERIF, weight: 300, size: 14, leading: 1.65 },
   { key: 'newsbody', label: 'Brödtext i nyheter', min: 11, max: 26, font: SOURCE_SERIF, weight: 300, size: 14, leading: 1.65 },
   { key: 'stamp', label: 'Datumstämpel', min: 16, max: 64, font: LATO, weight: 400, size: 32, leading: 1 },
-  { key: 'menu', label: 'Menyn', min: 10, max: 24, font: PLEX, weight: 400, size: 14, leading: 1.25 },
+  { key: 'menu', label: 'Menyn', min: 10, max: 24, font: KARLA, weight: 300, size: 15, leading: 1.25 },
 ];
 
 /** The news thumbnail, sized and shaped from the same panel. */
 const IMAGE_CONTROLS = [
   { key: 'width', label: 'Bredd', min: 80, max: 340, step: 2, unit: 'px', value: 124 },
-  { key: 'height', label: 'Höjd', min: 60, max: 300, step: 2, unit: 'px', value: 176 },
-  { key: 'radius', label: 'Hörnradie', min: 0, max: 40, step: 1, unit: 'px', value: 1 },
-  { key: 'mat', label: 'Passepartout', min: 0, max: 28, step: 1, unit: 'px', value: 8 },
+  { key: 'height', label: 'Höjd', min: 60, max: 300, step: 2, unit: 'px', value: 192 },
+  { key: 'radius', label: 'Hörnradie', min: 0, max: 40, step: 1, unit: 'px', value: 3 },
+  { key: 'mat', label: 'Passepartout', min: 0, max: 28, step: 1, unit: 'px', value: 0 },
 ];
 
 /** The desktop nav row: how tall each item is and how much room it claims. */
 const MENU_CONTROLS = [
-  { key: 'height', label: 'Höjd', min: 32, max: 112, step: 1, unit: 'px', value: 64 },
-  { key: 'minWidth', label: 'Minbredd', min: 40, max: 200, step: 2, unit: 'px', value: 112 },
-  { key: 'padding', label: 'Sidpadd.', min: 0, max: 48, step: 1, unit: 'px', value: 20 },
+  { key: 'height', label: 'Höjd', min: 32, max: 112, step: 1, unit: 'px', value: 56 },
+  { key: 'minWidth', label: 'Minbredd', min: 40, max: 200, step: 2, unit: 'px', value: 98 },
+  { key: 'padding', label: 'Sidpadd.', min: 0, max: 48, step: 1, unit: 'px', value: 37 },
 ];
 
 const IMAGE_KEY = 'newsimage';
