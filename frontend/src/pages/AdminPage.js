@@ -104,7 +104,10 @@ const readyPing =
   'absolute inline-flex h-2 w-2 animate-ping rounded-full bg-[#22c55e] opacity-75';
 const readyCore = 'relative inline-flex h-2 w-2 rounded-full bg-[#22c55e]';
 
-const newsRow = 'flex flex-col gap-2 border-b border-black/5 py-3 last:border-b-0';
+const newsRow = 'flex gap-3 border-b border-black/5 py-3 last:border-b-0';
+const newsThumb = 'h-16 w-16 shrink-0 rounded-md bg-black/5 object-cover';
+const newsThumbEmpty =
+  'flex h-16 w-16 shrink-0 items-center justify-center rounded-md bg-black/5 text-[10px] text-[var(--grey-text)]';
 const newsBadge = 'rounded-full px-2 py-0.5 text-xs font-medium';
 const newsButton =
   'mt-4 flex w-full items-center justify-center gap-2 rounded-md border border-black/20 bg-white px-4 py-3 text-base text-[var(--main-text)] hover:bg-black/5 disabled:opacity-50';
@@ -439,6 +442,13 @@ function NewsDialog({ onClose }) {
             <ul className="m-0 flex list-none flex-col p-0">
               {posts.map((post) => (
                 <li key={post.facebookPostId} className={newsRow}>
+                  {post.image ? (
+                    <img className={newsThumb} src={post.image} alt="" loading="lazy" />
+                  ) : (
+                    <span className={newsThumbEmpty}>Ingen bild</span>
+                  )}
+
+                  <span className="flex min-w-0 flex-1 flex-col gap-2">
                   <span className="flex flex-wrap items-center gap-2">
                     <span className="text-sm text-[var(--grey-text)]">
                       {post.createdTime ? post.createdTime.slice(0, 10) : ''}
@@ -478,6 +488,7 @@ function NewsDialog({ onClose }) {
                       </button>
                     </span>
                   ) : null}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -492,6 +503,23 @@ function NewsDialog({ onClose }) {
             <p className="m-0 mb-4 text-sm text-[var(--grey-text)]">
               Inlägget saknar rader för titel, datum och plats — skriv dem här.
             </p>
+
+            {draft.post.image ? (
+              <>
+                <img
+                  className="mb-1 h-32 w-full rounded-md object-cover"
+                  src={draft.post.image}
+                  alt=""
+                />
+                <p className="m-0 mb-4 text-xs text-[var(--grey-text)]">
+                  Bilden följer med automatiskt.
+                </p>
+              </>
+            ) : (
+              <p className="m-0 mb-4 text-xs text-[var(--grey-text)]">
+                Inlägget har ingen bild.
+              </p>
+            )}
 
             <label className={fieldLabel} htmlFor="news-title">
               Titel
