@@ -399,7 +399,7 @@ export default function Menubar({
 
           <a
             className={[
-              'flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition duration-300 hover:bg-black/5 hover:cursor-pointer',
+              'group flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition duration-300 hover:bg-black/5 hover:cursor-pointer',
               isDesktop ? 'hover:scale-110' : '',
               isCompactDesktop ? 'hidden' : '',
             ]
@@ -407,7 +407,19 @@ export default function Menubar({
               .join(' ')}
             href="http://www.facebook.com/simonstorparna"
           >
-            <img className={!isDesktop ? 'w-5' : 'w-8'} src={fblogo} alt="Facebook" />
+            <img
+              className={[
+                // Brand blue reads loud next to the muted palette: drop the
+                // colour and push the circle down to near-black, leaving the
+                // knocked-out "f" white. The blue comes back on hover, so the
+                // link still identifies itself as Facebook when reached for.
+                'grayscale contrast-[3.5] transition duration-300',
+                'group-hover:grayscale-0 group-hover:contrast-100',
+                !isDesktop ? 'w-5' : 'w-8',
+              ].join(' ')}
+              src={fblogo}
+              alt="Facebook"
+            />
           </a>
         </div>
 

@@ -9,6 +9,7 @@ import useFetch from '../hooks/useFetch';
 import useWindowDimensions from '../hooks/getWindowDimensions';
 import apiBaseUrl from '../config/apiBaseUrl';
 import { usePageMeta } from '../utils/pageMeta';
+import { getOptimizedDisplayUrl } from '../utils/strapiMedia';
 import { getNyhetSlug } from '../utils/utils';
 import {
   formatEventDatumShort,
@@ -73,25 +74,29 @@ const newsCardLink =
  * and it sits at the end of the row rather than opening it.
  */
 /*
- * No thumbnail.
- *
- * The pictures come from Facebook posts and are whatever somebody happened to
- * photograph. Shrunk into a corner they read as an apology for themselves, and given
- * room they overpower the story. The list is text instead — headline, when and where,
- * a couple of lines — and the photograph appears on the article page, where the reader
- * has already chosen to look at it.
+ * The picture leads the row at a size worth looking at, but always in the same 3:2
+ * frame: whatever somebody photographed — portrait, square, badly framed — crops to
+ * the same shape, so the column stays even and no single weak image throws the page
+ * off. A story without one keeps its full width rather than leaving a hole.
  */
-const newsCardBase = 'flex w-full flex-col py-8 max-[800px]:py-6';
+const newsCardBase = 'flex w-full items-start gap-7 py-8 max-[800px]:gap-4 max-[800px]:py-6';
+
+const newsThumbCell = 'shrink-0';
+
+const newsThumbWrap =
+  'relative aspect-[3/2] w-56 shrink-0 overflow-hidden rounded-md bg-[var(--bg-white-accent)] ' +
+  'max-[800px]:w-28';
+
+const newsThumb =
+  'absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]';
 
 const newsCardDivider = 'h-px w-full shrink-0 bg-[var(--divider-color)]';
 
 const newsCardBody = 'flex min-w-0 flex-1 flex-col text-left';
 
-
-
 const newsCardTitle =
-  'm-0 w-full min-w-0 max-w-[34ch] text-[1.6rem] font-light leading-[1.2] tracking-[-0.015em] ' +
-  'transition-colors group-hover:text-[var(--main-text)]/60 max-[800px]:text-xl';
+  'm-0 w-full min-w-0 max-w-[34ch] text-[1.5rem] font-light leading-[1.2] tracking-[-0.015em] ' +
+  'transition-colors group-hover:text-[var(--main-text)]/60 max-[800px]:text-lg';
 
 /* Title → meta → text → link all step by the same amount; the two meta values sit
    together on one line rather than stacking into a second block. */
@@ -182,6 +187,7 @@ export default function Homepage(props) {
               ? null
               : (Array.isArray(newsTeaser?.data) ? newsTeaser.data : []).map((value, index) => {
                   const title = value.title ?? value.Rubrik ?? '';
+                  const imgUrl = getOptimizedDisplayUrl(value.Bild) || null;
                   const pathSlug = getNyhetSlug(value);
                   if (!pathSlug) return null;
                   const eventStr = hasDatumValue(value?.Datum)
@@ -200,6 +206,13 @@ export default function Homepage(props) {
                         state={{ newsFrom: 'home' }}
                       >
                         <div className={newsCardBase}>
+                          {imgUrl ? (
+                            <div className={newsThumbCell}>
+                              <div className={newsThumbWrap}>
+                                <img className={newsThumb} src={imgUrl} alt="" loading="lazy" />
+                              </div>
+                            </div>
+                          ) : null}
                           <div className={newsCardBody}>
                             <p className={newsCardTitle}>{title}</p>
 
