@@ -116,6 +116,11 @@ const newsBadge = 'rounded-full px-2 py-0.5 text-xs font-medium';
 const newsButton =
   'mt-4 flex w-full items-center justify-center gap-2 rounded-md border border-black/20 bg-white px-4 py-3 text-base text-[var(--main-text)] hover:bg-black/5 disabled:opacity-50';
 
+/** Addressed to the signed-in person about their own account, so it leads the page. */
+const todoCard = 'mt-6 rounded-xl border border-[#b26b00]/30 bg-[#b26b00]/[0.06] px-5 py-5';
+const todoTitle = 'm-0 mb-1 text-[1.15rem] font-medium text-[var(--main-text)]';
+const todoStep = 'flex items-start gap-3 py-1.5 text-base';
+
 const checkBar = 'mt-4 flex flex-wrap items-center gap-3 text-sm text-[var(--grey-text)]';
 const checkButton =
   'rounded-md border border-black/20 bg-white px-3 py-2 text-sm text-[var(--main-text)] hover:bg-black/5 disabled:opacity-50';
@@ -395,6 +400,58 @@ function PersonDialog({
         </Field>
       </div>
     </Dialog>
+  );
+}
+
+/**
+ * Shown to the signed-in person when their own address is still waiting on them.
+ * The registration screen says this once and is then never seen again, so without this
+ * the outstanding step is invisible to the only person who can complete it.
+ */
+function OwnTodo({ me, busy, onResend }) {
+  if (!me?.mail || me.mail.state !== 'unverified' || !me.mail.forwardsTo) {
+    return null;
+  }
+
+  const alias = me.board?.email || me.email;
+
+  return (
+    <div className={todoCard}>
+      <h2 className={todoTitle}>Ett steg kvar</h2>
+      <p className="m-0 mb-4 text-base leading-relaxed text-[var(--grey-text)]">
+        Din adress <strong>{alias}</strong> är nästan klar.
+      </p>
+
+      <div className="mb-4 flex flex-col">
+        <span className={todoStep}>
+          <Check className="mt-0.5 h-5 w-5 shrink-0 text-[#22c55e]" aria-hidden />
+          <span className="text-[var(--grey-text)]">Ditt konto är skapat</span>
+        </span>
+        <span className={todoStep}>
+          <Check className="mt-0.5 h-5 w-5 shrink-0 text-[#22c55e]" aria-hidden />
+          <span className="text-[var(--grey-text)]">{alias} är reserverad åt dig</span>
+        </span>
+        <span className={todoStep}>
+          <span
+            className="mt-0.5 h-5 w-5 shrink-0 rounded-full border-2 border-[#b26b00]"
+            aria-hidden
+          />
+          <span className="text-[var(--main-text)]">
+            <strong>Bekräfta din vanliga e-postadress.</strong> Vi har skickat ett mejl till{' '}
+            <strong>{me.mail.forwardsTo}</strong>. Öppna det och klicka på länken — då börjar{' '}
+            {alias} fungera.
+          </span>
+        </span>
+      </div>
+
+      <p className="m-0 mb-4 text-sm text-[var(--grey-text)]">
+        Hittar du inte mejlet? Kolla skräpposten. Det kommer från Cloudflare.
+      </p>
+
+      <button type="button" className={smallButton} disabled={busy} onClick={onResend}>
+        Skicka mejlet igen
+      </button>
+    </div>
   );
 }
 
@@ -967,6 +1024,15 @@ export default function AdminPage() {
             {notice}
           </p>
         ) : null}
+
+        <OwnTodo
+          me={people.find((p) => p.isSelf)}
+          busy={busyId === user.id}
+          onResend={() => {
+            const me = people.find((p) => p.isSelf);
+            if (me) fixMail(me);
+          }}
+        />
 
         <div className={pageGrid}>
           <div className="min-w-0 lg:pr-10">
