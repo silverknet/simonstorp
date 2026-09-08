@@ -127,11 +127,11 @@ export async function completeInvite(token, { password, firstname, lastname, pri
   return data;
 }
 
-export async function fetchPeople() {
+export async function fetchPeople({ refresh = false } = {}) {
   const token = getAdminToken();
   if (!token) return { people: [], mailConfigured: false };
 
-  const res = await fetch(`${apiBaseUrl}/api/site-admin/people`, {
+  const res = await fetch(`${apiBaseUrl}/api/site-admin/people${refresh ? '?refresh=1' : ''}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 

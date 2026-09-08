@@ -77,6 +77,16 @@ const rowName = 'truncate text-base text-[var(--main-text)]';
 const rowSub = 'truncate text-xs text-[var(--grey-text)]';
 const emptyNote = 'px-3 py-4 text-sm text-[var(--grey-text)]';
 
+/** A live green light: a steady dot with a slow halo, readable at a glance. */
+const readyDot = 'relative flex h-3 w-3 shrink-0';
+const readyPing =
+  'absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--accent-one)] opacity-75';
+const readyCore = 'relative inline-flex h-3 w-3 rounded-full bg-[var(--accent-one)]';
+
+const checkBar = 'mt-4 flex flex-wrap items-center gap-3 text-sm text-[var(--grey-text)]';
+const checkButton =
+  'rounded-md border border-black/20 bg-white px-3 py-2 text-sm text-[var(--main-text)] hover:bg-black/5 disabled:opacity-50';
+
 const helpCard = 'mt-4 rounded-xl bg-[var(--bg-white-accent)] px-5 py-4';
 const helpTitle = 'm-0 mb-2 text-[1.05rem] font-medium text-[var(--main-text)]';
 const helpText = 'm-0 text-base leading-relaxed text-[var(--grey-text)]';
@@ -142,6 +152,13 @@ function PersonRow({ entry, onOpen }) {
       </button>
 
       <span className="flex shrink-0 items-center gap-2">
+        {entry.mail?.state === 'ok' ? (
+          <span className={readyDot} title="E-posten fungerar" aria-label="E-posten fungerar">
+            <span className={readyPing} />
+            <span className={readyCore} />
+          </span>
+        ) : null}
+
         {hasAccount ? (
           <UserCheck
             className={`h-4 w-4 ${
@@ -468,15 +485,24 @@ export default function AdminPage() {
   const [inviteOpen, setInviteOpen] = useState(null);
   const [detail, setDetail] = useState(null);
   const [notice, setNotice] = useState('');
+  const [checkedAt, setCheckedAt] = useState(null);
+  const [checking2, setChecking2] = useState(false);
 
-  const loadUsers = useCallback(() => {
-    fetchPeople()
-      .then((data) => {
-        setPeople(data.people ?? []);
-        setUsersError('');
-      })
-      .catch((err) => setUsersError(err.message));
-  }, []);
+  const loadUsers = useCallback(
+    ({ refresh = false } = {}) => {
+      if (refresh) setChecking2(true);
+
+      return fetchPeople({ refresh })
+        .then((data) => {
+          setPeople(data.people ?? []);
+          setCheckedAt(data.mailCheckedAt ?? null);
+          setUsersError('');
+        })
+        .catch((err) => setUsersError(err.message))
+        .finally(() => setChecking2(false));
+    },
+    []
+  );
 
   /**
    * "Make this address work" — connects the alias and sends the confirmation the person
@@ -659,6 +685,13 @@ Plats: Bolenparken`}</pre>
         <div className={`${splitGrid} mt-8`}>
           <section className={listCol}>
             <h2 className={sectionTitle}>Styrelsen</h2>
+            <p className="mb-2 flex items-center gap-2 px-3 text-sm text-[var(--grey-text)]">
+              <span className={readyDot}>
+                <span className={readyPing} />
+                <span className={readyCore} />
+              </span>
+              betyder att personens e-post fungerar
+            </p>
 
             {styrelsen.length ? (
               <ul className="m-0 flex list-none flex-col p-0">
@@ -697,6 +730,25 @@ Plats: Bolenparken`}</pre>
               Lägg till ny medlem
             </button>
           </section>
+        </div>
+
+        <div className={checkBar}>
+          <span>
+            {checkedAt
+              ? `E-postadresserna kontrollerades ${new Date(checkedAt).toLocaleTimeString('sv-SE', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}`
+              : 'E-postadresserna har inte kontrollerats än'}
+          </span>
+          <button
+            type="button"
+            className={checkButton}
+            disabled={checking2}
+            onClick={() => loadUsers({ refresh: true })}
+          >
+            {checking2 ? 'Kontrollerar…' : 'Kontrollera nu'}
+          </button>
         </div>
 
         <button type="button" className={linkButton} onClick={handleLogout}>
