@@ -21,7 +21,7 @@ const sortByRank = (pages = []) =>
  * updating (menu toggle, compact scroll, resize) or briefly reads low.
  * Phone uses a smaller floor (~collapsed top row); desktop keeps more headroom.
  */
-const MIN_INFO_HEADER_RESERVE_DESKTOP_PX = 120;
+const MIN_INFO_HEADER_RESERVE_DESKTOP_PX = 160;
 const MIN_INFO_HEADER_RESERVE_MOBILE_PX = 64;
 
 export default function Menubar({
@@ -285,6 +285,9 @@ export default function Menubar({
     (!isDesktop || (isInfo && !isCompactDesktop)) ? 'bg-[var(--bg-white)]' : '',
     !isDesktop ? 'border-b border-black/10 shadow-[0_4px_18px_rgba(0,0,0,0.06)]' : '',
     isCompactDesktop ? 'liquid-glass' : '',
+    // Air above the logo. Padding rather than margin so the header's own
+    // background covers it and it can't collapse out of the wrapper.
+    isDesktop && !isCompactDesktop ? 'pt-2' : '',
     isDesktop && isInfo && !isCompactDesktop ? 'border-b border-neutral-200' : '',
   ]
     .filter(Boolean)
@@ -311,7 +314,7 @@ export default function Menubar({
         ? 'h-16 w-full gap-3 px-3.5 py-0'
         : isCompactDesktop
           ? 'w-auto shrink-0 justify-start pl-5 pr-0 py-0'
-          : 'h-20 w-full px-5 py-0',
+          : 'h-28 w-full px-5 py-0',
     ]
       .filter(Boolean)
       .join(' ');
@@ -333,7 +336,7 @@ export default function Menubar({
       'text-[var(--main-text)]',
       'transition-[margin,max-height,opacity] duration-300 ease-out',
       isDesktop
-        ? `${isCompactDesktop ? 'flex-1 pr-5' : 'w-full'} min-w-0 flex-row flex-wrap justify-center gap-0`
+        ? `${isCompactDesktop ? 'flex-1 pr-5' : 'w-full -mt-4'} min-w-0 flex-row flex-wrap justify-center gap-0`
         : 'liquid-glass liquid-glass--panel absolute left-0 top-full z-[2] w-full flex-col flex-nowrap rounded-b-2xl border-t border-black/10 shadow-[0_16px_32px_rgba(0,0,0,0.08)]',
       !isDesktop && !menuDown ? 'invisible max-h-0 overflow-hidden opacity-0' : '',
       !isDesktop && menuDown ? 'visible max-h-[calc(100vh-4.75rem)] overflow-y-auto opacity-100' : '',
@@ -341,10 +344,8 @@ export default function Menubar({
       .filter(Boolean)
       .join(' ');
 
-    const desktopCategoryShellClass = [
-      'group relative flex min-w-[7rem] shrink-0 cursor-pointer items-stretch justify-center font-medium',
-      isCompactDesktop ? 'h-16' : 'h-12',
-    ].join(' ');
+    const desktopCategoryShellClass =
+      'group relative flex h-16 min-w-[7rem] shrink-0 cursor-pointer items-stretch justify-center font-medium';
     const desktopCategoryLabelClass =
       'flex h-full w-full items-center justify-center whitespace-nowrap px-5 text-center font-["IBM_Plex_Sans",sans-serif] text-sm font-normal uppercase leading-tight transition-colors group-hover:text-[var(--accent-one)]';
     const desktopPageRowClass =

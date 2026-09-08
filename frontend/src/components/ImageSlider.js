@@ -270,8 +270,10 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
           <div className="pointer-events-none absolute bottom-0 left-0 z-[3] p-6 md:p-10">
             {eyebrow ? (
               <p
-                className="m-0 mb-2 text-xs uppercase tracking-[0.22em] text-white/90 md:text-sm"
-                style={{ textShadow: '0 1px 12px rgba(0,0,0,0.55)' }}
+                className="m-0 mb-2 text-sm tracking-[0.04em] md:text-base"
+                // Set here rather than as a utility: the global stylesheet colours <p>,
+                // and an opacity variant Tailwind has not emitted loses to it silently.
+                style={{ color: 'rgba(255,255,255,0.88)', textShadow: '0 1px 12px rgba(0,0,0,0.55)' }}
               >
                 {eyebrow}
               </p>
