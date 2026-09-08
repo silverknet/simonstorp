@@ -66,57 +66,47 @@ const newsCardLink =
   'relative -ml-1 block w-full cursor-pointer no-underline text-inherit transition-[opacity,transform] duration-700 ease-out max-[800px]:ml-0';
 
 /** Hover lives here so it isn’t delayed by the entrance `transitionDelay` on the Link */
-const newsCardBase =
-  'flex w-full flex-row items-stretch overflow-hidden rounded-lg ' +
-  'text-[var(--main-text)] shadow-none transition-colors duration-200 ease-out ' +
-  'hover:bg-black/[0.03]';
+/*
+ * The pictures come from Facebook posts, so they are whatever somebody happened to
+ * photograph — dark, blurry, badly framed. The row is built so a weak image costs
+ * little: the headline leads, the picture is small, square and consistently cropped,
+ * and it sits at the end of the row rather than opening it.
+ */
+const newsCardBase = 'flex w-full items-start gap-6 py-7 max-[800px]:gap-4 max-[800px]:py-5';
 
-/** Image top-aligned to text; padding matches newsCardBody py-2 horizontally */
-const newsThumbCell = 'flex shrink-0 items-start justify-center self-stretch p-2';
+const newsThumbCell = 'order-2 shrink-0';
 
+/** One fixed square, whatever the source aspect ratio. */
 const newsThumbWrap =
-  'relative h-36 w-52 shrink-0 overflow-hidden rounded-md bg-[var(--bg-white-accent)] ' +
-  'max-[800px]:h-24 max-[800px]:w-28';
-
-/** Thin separator between home news cards / before “Se alla” */
-const newsCardDivider = 'my-1.5 h-px w-full shrink-0 bg-[var(--divider-color)]';
+  'relative h-24 w-24 shrink-0 overflow-hidden rounded-md bg-[var(--bg-white-accent)] ' +
+  'max-[800px]:h-16 max-[800px]:w-16';
 
 const newsThumb = 'absolute inset-0 h-full w-full object-cover';
 
-/** py-2 matches thumb outer p-2 — tops/bottoms line up beside the thumbnail */
-const newsCardBodyBase =
-  'flex min-w-0 flex-1 flex-col justify-start gap-0.5 py-2 text-left';
+/** Hairlines between stories; no boxes. */
+const newsCardDivider = 'h-px w-full shrink-0 bg-[var(--divider-color)]';
 
-/** With image: h-32 pins the body to the thumb band (h-28 + p-2); overflow-hidden keeps text inside it. */
-const newsCardBody = `${newsCardBodyBase} h-40 overflow-hidden pl-4 pr-4 max-[800px]:h-28 max-[800px]:pl-2`;
+const newsCardBodyBase = 'order-1 flex min-w-0 flex-1 flex-col text-left';
+const newsCardBody = newsCardBodyBase;
+const newsCardBodyTextOnly = newsCardBodyBase;
 
-/** No image: same stack, free to grow since there is no thumbnail to match */
-const newsCardBodyTextOnly = `${newsCardBodyBase} pl-2 pr-4`;
+const newsCardLeadBlock = 'flex min-w-0 flex-col';
 
-/** Title + dates above excerpt when thumbnail present */
-const newsCardLeadBlock = 'flex min-w-0 flex-col gap-0.5';
-
-/**
- * Title + event date/place: always vertical in this compact card. Side-by-side with the
- * thumbnail, the text column is too narrow for a title row + meta column — date/place
- * must sit on its own line under the title so nothing overlaps.
- */
-const newsCardTitleRow =
-  'flex w-full min-w-0 flex-col gap-0.5 text-[var(--main-text)]';
+const newsCardTitleRow = 'flex w-full min-w-0 flex-col text-[var(--main-text)]';
 
 const newsCardTitle =
-  'm-0 w-full min-w-0 overflow-hidden font-normal leading-snug [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]';
+  'm-0 w-full min-w-0 overflow-hidden text-[1.35rem] font-normal leading-snug tracking-[-0.01em] ' +
+  'transition-colors [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] ' +
+  'max-[800px]:text-lg';
 
-/** Date/time + place — full width under title; block text (no -webkit-box) avoids overlap bugs beside clamped title */
 const newsCardMeta =
-  'm-0 block w-full min-w-0 break-words text-left text-[10px] font-normal leading-tight text-neutral-400';
+  'm-0 mt-1 block w-full min-w-0 break-words text-left text-xs font-normal leading-snug text-[var(--grey-text)]/70';
 
-/** Published date — small muted line below the title row */
-const newsCardPubDate = 'm-0 text-[10px] leading-tight text-neutral-400';
+const newsCardPubDate = 'm-0 text-xs leading-snug text-[var(--grey-text)]/55';
 
 const newsCardExcerpt =
-  'm-0 min-h-0 overflow-hidden pr-1 text-sm leading-snug text-[#403939] ' +
-  '[display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:4]';
+  'm-0 mt-3 max-w-[68ch] overflow-hidden text-[0.95rem] leading-[1.7] text-[var(--grey-text)] ' +
+  '[display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]';
 
 const seeAllWrap =
   'group w-fit px-1 py-0 text-neutral-700 no-underline transition-all duration-700 ease-out ' +

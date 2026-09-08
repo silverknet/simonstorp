@@ -134,7 +134,7 @@ export default function ImageSlider({ eyebrow, title, body, ...props }) {
         <img
           src={glowSrc}
           alt=""
-          className="h-full w-full scale-105 object-cover opacity-[0.07] transition-opacity duration-[1800ms]"
+          className="h-full w-full scale-105 object-cover opacity-[0.05] transition-opacity duration-[1800ms]"
           style={{ filter: 'blur(70px) saturate(130%)' }}
         />
       </div>
@@ -142,7 +142,7 @@ export default function ImageSlider({ eyebrow, title, body, ...props }) {
         <img
           src={glowSrc}
           alt=""
-          className="h-full w-full scale-110 object-cover opacity-[0.045] transition-opacity duration-[1800ms]"
+          className="h-full w-full scale-110 object-cover opacity-[0.03] transition-opacity duration-[1800ms]"
           style={{ filter: 'blur(150px) saturate(120%)' }}
         />
       </div>
