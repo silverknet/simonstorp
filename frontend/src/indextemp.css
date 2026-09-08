@@ -59,6 +59,13 @@ LazyloadImg{
   width:100%;
 }
 
+/* The hero's backlight is meant to spill past the content column into the page
+   margins; it must not spill past the window and create a sideways scrollbar. */
+html,
+body {
+  overflow-x: hidden;
+}
+
 body {
   margin: 0;
   font-family: 'Lato', sans-serif;

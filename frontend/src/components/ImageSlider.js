@@ -158,7 +158,7 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
           style={{ filter: 'blur(70px) saturate(130%)' }}
         />
       </div>
-      <div className="pointer-events-none absolute -inset-x-[26%] -inset-y-[44%] z-0" aria-hidden>
+      <div className="pointer-events-none absolute -inset-x-[20%] -inset-y-[40%] z-0" aria-hidden>
         <img
           src={glowSrc}
           alt=""
