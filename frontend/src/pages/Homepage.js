@@ -94,13 +94,22 @@ const newsThumbWrap =
   'relative shrink-0 rounded-xl bg-[var(--bg-white-accent)] p-1.5 ring-1 ring-black/[0.06] ' +
   'transition-shadow duration-300 group-hover:shadow-[0_6px_20px_rgba(0,0,0,0.07)]';
 
+/*
+ * The picture keeps its own proportions inside the mat rather than being forced into
+ * one rectangle — a portrait stays a portrait — which loosens the column and stops the
+ * page looking stamped out. Bounded top and bottom so nothing runs away: a very tall
+ * photograph is capped, a very wide one still has presence.
+ */
 const newsThumbInner =
-  'relative aspect-[3/2] w-52 overflow-hidden rounded-lg bg-black/[0.04] max-[800px]:w-28';
+  // A floor so the mat reserves its space instead of collapsing to a sliver until the
+  // picture arrives, which would shift the whole row as the page loads.
+  'relative min-h-32 w-56 overflow-hidden rounded-lg bg-black/[0.04] max-[800px]:min-h-20 max-[800px]:w-28';
+
+const newsThumbImg =
+  'block h-auto max-h-64 w-full object-cover transition-transform duration-500 ease-out ' +
+  'group-hover:scale-[1.03] max-[800px]:max-h-32';
 
 /* A whisper of correction so wildly different photographs read as one set. */
-const newsThumb =
-  'absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out ' +
-  'group-hover:scale-[1.03]';
 
 const newsThumbFilter = { filter: 'saturate(0.94) contrast(1.03)' };
 
@@ -225,7 +234,7 @@ export default function Homepage(props) {
                               <div className={newsThumbWrap}>
                                 <div className={newsThumbInner}>
                                   <img
-                                    className={newsThumb}
+                                    className={newsThumbImg}
                                     style={newsThumbFilter}
                                     src={imgUrl}
                                     alt=""

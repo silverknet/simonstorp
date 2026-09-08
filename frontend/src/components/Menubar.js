@@ -344,7 +344,7 @@ export default function Menubar({
     const desktopCategoryShellClass =
       'group relative flex h-16 min-w-[7rem] shrink-0 cursor-pointer items-stretch justify-center font-medium';
     const desktopCategoryLabelClass =
-      'flex h-full w-full items-center justify-center whitespace-nowrap px-5 text-center font-["Heebo",sans-serif] text-sm font-normal leading-tight transition-colors group-hover:text-[var(--accent-one)]';
+      'flex h-full w-full items-center justify-center whitespace-nowrap px-5 text-center font-["IBM_Plex_Sans",sans-serif] text-sm font-normal uppercase leading-tight transition-colors group-hover:text-[var(--accent-one)]';
     const desktopPageRowClass =
       'group/submenu flex min-h-[44px] w-full items-center px-5 py-0 transition-colors';
     const desktopPageTextClass =
@@ -506,7 +506,7 @@ export default function Menubar({
                     isDesktop
                       ? desktopCategoryLabelClass
                       : 'm-0 px-4 py-4 text-left',
-                    !isDesktop ? 'font-["Heebo",sans-serif] text-sm font-normal transition-colors' : '',
+                    !isDesktop ? 'font-["IBM_Plex_Sans",sans-serif] text-sm font-normal uppercase transition-colors' : '',
                     !isDesktop && isMobileExpanded ? 'text-[var(--bg-white)]' : '',
                   ]
                     .filter(Boolean)
@@ -591,7 +591,7 @@ export default function Menubar({
               <div className="invisible absolute right-0 top-full z-[2] max-h-0 w-[22rem] overflow-hidden rounded-b-md bg-[#F9F9F9] shadow-md group-hover:visible group-hover:max-h-[min(100vh,36rem)]">
                 {overflowCategoryItems.map((category) => (
                   <div key={`overflow-${category.id}`} className="border-t border-black/5 first:border-t-0">
-                    <p className="m-0 bg-black/[0.02] px-5 py-3 font-['Heebo',sans-serif] text-[0.68rem] font-semibold uppercase tracking-[0.08em] text-[var(--grey-text)]">
+                    <p className="m-0 bg-black/[0.02] px-5 py-3 font-['IBM_Plex_Sans',sans-serif] text-[0.68rem] font-semibold uppercase tracking-[0.08em] text-[var(--grey-text)]">
                       {category.title}
                     </p>
                     {sortByRank(getStrapiItems(category.pages)).map((page) => {
