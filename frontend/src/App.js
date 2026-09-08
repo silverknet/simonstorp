@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-route
 import useFetch from './hooks/useFetch'
 import Infopage from './pages/Infopage'
 import Homepage from './pages/Homepage'
+import LegacyHomepage from './pages/LegacyHomepage'
 import AllNews from './pages/All_news'
 import AdminPage from './pages/AdminPage'
 import RegisterPage from './pages/RegisterPage'
@@ -49,6 +50,11 @@ function AppLayout({
       <div className={appClassName}>
         <Routes>
           <Route exact path="/" element={<Homepage homecontent={home} />}></Route>
+          <Route
+            exact
+            path="/gamla-startsidan"
+            element={<LegacyHomepage homecontent={home} />}
+          ></Route>
 
           <Route exact path="/allanyheter" element={<AllNews />}></Route>
 

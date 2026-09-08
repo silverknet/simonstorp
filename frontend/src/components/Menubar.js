@@ -7,7 +7,7 @@ import { getCategoryFromPage, getStrapiItems, toValidUrl } from '../utils/utils'
 import { absoluteMediaUrl, getStrapiMedia } from '../utils/strapiMedia';
 import apiBaseUrl from '../config/apiBaseUrl';
 
-import { ChevronDown, Menu, X } from 'lucide-react';
+import { ChevronDown, Equal, X } from 'lucide-react';
 
 import ErrorScreen from './ErrorScreen';
 import fblogo from '../assets/img/fblogo.png';
@@ -21,7 +21,7 @@ const sortByRank = (pages = []) =>
  * updating (menu toggle, compact scroll, resize) or briefly reads low.
  * Phone uses a smaller floor (~collapsed top row); desktop keeps more headroom.
  */
-const MIN_INFO_HEADER_RESERVE_DESKTOP_PX = 168;
+const MIN_INFO_HEADER_RESERVE_DESKTOP_PX = 160;
 const MIN_INFO_HEADER_RESERVE_MOBILE_PX = 64;
 
 export default function Menubar({
@@ -285,6 +285,9 @@ export default function Menubar({
     (!isDesktop || (isInfo && !isCompactDesktop)) ? 'bg-[var(--bg-white)]' : '',
     !isDesktop ? 'border-b border-black/10 shadow-[0_4px_18px_rgba(0,0,0,0.06)]' : '',
     isCompactDesktop ? 'liquid-glass' : '',
+    // Air above the logo. Padding rather than margin so the header's own
+    // background covers it and it can't collapse out of the wrapper.
+    isDesktop && !isCompactDesktop ? 'pt-2' : '',
     isDesktop && isInfo && !isCompactDesktop ? 'border-b border-neutral-200' : '',
   ]
     .filter(Boolean)
@@ -333,7 +336,7 @@ export default function Menubar({
       'text-[var(--main-text)]',
       'transition-[margin,max-height,opacity] duration-300 ease-out',
       isDesktop
-        ? `${isCompactDesktop ? 'flex-1 pr-5' : 'w-full'} min-w-0 flex-row flex-wrap justify-center gap-0`
+        ? `${isCompactDesktop ? 'flex-1 pr-5' : 'w-full -mt-4'} min-w-0 flex-row flex-wrap justify-center gap-0`
         : 'liquid-glass liquid-glass--panel absolute left-0 top-full z-[2] w-full flex-col flex-nowrap rounded-b-2xl border-t border-black/10 shadow-[0_16px_32px_rgba(0,0,0,0.08)]',
       !isDesktop && !menuDown ? 'invisible max-h-0 overflow-hidden opacity-0' : '',
       !isDesktop && menuDown ? 'visible max-h-[calc(100vh-4.75rem)] overflow-y-auto opacity-100' : '',
@@ -342,13 +345,13 @@ export default function Menubar({
       .join(' ');
 
     const desktopCategoryShellClass =
-      'group relative flex h-16 w-40 shrink-0 cursor-pointer items-stretch justify-center font-medium';
+      'group relative flex h-11 min-w-[98px] shrink-0 cursor-pointer items-stretch justify-center font-medium';
     const desktopCategoryLabelClass =
-      'flex h-full w-full items-center justify-center px-3 text-center font-["IBM_Plex_Sans",sans-serif] text-sm font-normal uppercase leading-tight transition-colors group-hover:text-[var(--accent-one)]';
+      'flex h-full w-full items-center justify-center whitespace-nowrap px-[37px] text-center font-["Karla",sans-serif] text-[15px] font-light uppercase leading-[1.25] transition-colors group-hover:text-[var(--accent-one)]';
     const desktopPageRowClass =
       'group/submenu flex min-h-[44px] w-full items-center px-5 py-0 transition-colors';
     const desktopPageTextClass =
-      'm-0 w-full text-left text-sm leading-snug transition-all group-hover/submenu:text-[var(--accent-one)]';
+      'm-0 w-full text-left font-["Karla",sans-serif] text-[15px] font-light leading-[1.25] transition-all group-hover/submenu:text-[var(--accent-one)]';
 
     return (
       <div className={headerClassName}>
@@ -362,39 +365,17 @@ export default function Menubar({
               className="flex h-11 w-11 items-center justify-center rounded-full p-0 text-[var(--main-text)] transition hover:bg-black/5"
             >
               {menuDown ? (
-                <X className="h-7 w-7 shrink-0" strokeWidth={2} aria-hidden />
+                <X className="h-6 w-6 shrink-0" strokeWidth={1.5} aria-hidden />
               ) : (
-                <Menu className="h-7 w-7 shrink-0" strokeWidth={2} aria-hidden />
+                <Equal className="h-6 w-6 shrink-0" strokeWidth={1.5} aria-hidden />
               )}
             </button>
           ) : !isCompactDesktop ? (
             <span className="invisible block h-7 w-7" aria-hidden />
           ) : null}
 
-          <Link to="/" className="relative block">
-            <img
-              className={`${logoClassName} pointer-events-none absolute inset-0 select-none`}
-              src={logoUrl}
-              alt=""
-              aria-hidden
-              style={{
-                filter: 'brightness(0) blur(1.2px) opacity(0.14)',
-                transform: 'translateY(1.3px) translateX(0.2px)',
-                WebkitMaskImage:
-                  'linear-gradient(90deg, rgba(0,0,0,0.0) 0%, rgba(0,0,0,0.40) 28%, rgba(0,0,0,0.03) 39%, rgba(0,0,0,0.00) 46%, rgba(0,0,0,0.43) 58%, rgba(0,0,0,0.33) 100%)',
-                maskImage:
-                  'linear-gradient(90deg, rgba(0,0,0,0.0) 0%, rgba(0,0,0,0.40) 28%, rgba(0,0,0,0.03) 39%, rgba(0,0,0,0.00) 46%, rgba(0,0,0,0.43) 58%, rgba(0,0,0,0.33) 100%)',
-              }}
-            />
-            <img
-              className={logoClassName}
-              src={logoUrl}
-              alt="Simonstorp logo"
-              style={{
-                filter:
-                  'sepia(0.11) contrast(1.01) drop-shadow(0 0.5px 0.7px rgba(0,0,0,0.055)) drop-shadow(1.1px 0.6px 1px rgba(0,0,0,0.042))',
-              }}
-            />
+          <Link to="/" className="block">
+            <img className={logoClassName} src={logoUrl} alt="Simonstorp logo" />
           </Link>
 
           <a
@@ -421,18 +402,19 @@ export default function Menubar({
               <div
                 key={`measure-${category.id}`}
                 className={desktopCategoryShellClass}
+                data-menuitem="shell"
                 data-desktop-measure-item="true"
                 data-category-id={String(category.id)}
               >
-                <p className={desktopCategoryLabelClass}>
-                  <span className="block max-w-full [display:-webkit-box] overflow-hidden [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">
+                <p data-font="menu" className={desktopCategoryLabelClass}>
+                  <span className="block">
                     {category.title}
                   </span>
                 </p>
               </div>
             ))}
-            <div className={desktopCategoryShellClass} data-desktop-more-item="true">
-              <p className={desktopCategoryLabelClass}>
+            <div className={desktopCategoryShellClass} data-menuitem="shell" data-desktop-more-item="true">
+              <p data-font="menu" className={desktopCategoryLabelClass}>
                 <span className="inline-flex items-center gap-1.5">
                   <span>Fler</span>
                   <ChevronDown className="h-3.5 w-3.5 shrink-0" strokeWidth={2.1} aria-hidden />
@@ -482,6 +464,7 @@ export default function Menubar({
                 key={category.id}
                 className={itemClassName}
                 data-category-id={categoryIdStr}
+                {...(isDesktop ? { 'data-menuitem': 'shell' } : {})}
                 {...(isDesktop ? { 'data-desktop-nav-item': 'true' } : {})}
                 onClick={() => {
                   if (!isDesktop) {
@@ -490,6 +473,7 @@ export default function Menubar({
                 }}
               >
                 <p
+                  data-font="menu"
                   className={[
                     isDesktop
                       ? desktopCategoryLabelClass
@@ -502,9 +486,7 @@ export default function Menubar({
                 >
                   <span
                     className={
-                      isDesktop
-                        ? 'block max-w-full [display:-webkit-box] overflow-hidden [-webkit-box-orient:vertical] [-webkit-line-clamp:2]'
-                        : ''
+                      isDesktop ? 'block' : ''
                     }
                   >
                     {category.title}
@@ -539,6 +521,7 @@ export default function Menubar({
                           }}
                         >
                           <p
+                            data-font="menu"
                             className={[
                               isDesktop ? desktopPageTextClass : 'm-0 w-full text-sm leading-snug transition-all',
                               isDesktop
@@ -570,8 +553,9 @@ export default function Menubar({
               ]
                 .filter(Boolean)
                 .join(' ')}
+              data-menuitem="shell"
             >
-              <p className={desktopCategoryLabelClass}>
+              <p data-font="menu" className={desktopCategoryLabelClass}>
                 <span className="inline-flex items-center gap-1.5">
                   <span>Fler</span>
                   <ChevronDown className="h-3.5 w-3.5 shrink-0" strokeWidth={2.1} aria-hidden />
