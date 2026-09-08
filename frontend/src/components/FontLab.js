@@ -63,10 +63,10 @@ const MENU_CONTROLS = [
 
 /** What sits behind the hero caption: the veil, the softening and the shade. */
 const HERO_CONTROLS = [
-  { key: 'veil', varName: '--hero-veil', label: 'Slöja', min: 0, max: 0.4, step: 0.01, unit: '', value: 0.1 },
-  { key: 'blur', varName: '--hero-blur', label: 'Oskärpa', min: 0, max: 24, step: 1, unit: 'px', value: 5 },
-  { key: 'shade', varName: '--hero-shade', label: 'Mörker', min: 0, max: 0.8, step: 0.02, unit: '', value: 0.4 },
-  { key: 'maskSoft', varName: '--hero-mask-soft', label: 'Mjukhet', min: 4, max: 70, step: 1, unit: '', value: 26 },
+  { key: 'veil', varName: '--hero-veil', label: 'Slöja', min: 0, max: 0.4, step: 0.01, unit: '', value: 0.02 },
+  { key: 'blur', varName: '--hero-blur', label: 'Oskärpa', min: 0, max: 24, step: 1, unit: 'px', value: 1 },
+  { key: 'shade', varName: '--hero-shade', label: 'Mörker', min: 0, max: 0.8, step: 0.02, unit: '', value: 0.2 },
+  { key: 'maskSoft', varName: '--hero-mask-soft', label: 'Mjukhet', min: 4, max: 70, step: 1, unit: '', value: 25 },
 ];
 
 /** EXPERIMENT — the light leaking out around the picture. */
@@ -76,7 +76,7 @@ const SSS_CONTROLS = [
   { key: 'contrast', varName: '--sss-contrast', label: 'Tröskel', min: 0.5, max: 2.5, step: 0.05, unit: '×', value: 1 },
   { key: 'brightness', varName: '--sss-brightness', label: 'Ljus', min: 0.5, max: 2.5, step: 0.05, unit: '×', value: 1 },
   { key: 'saturate', varName: '--sss-saturate', label: 'Mättnad', min: 0.4, max: 2.5, step: 0.05, unit: '×', value: 1 },
-  { key: 'top', varName: '--sss-top', label: 'Uppåt', min: 0, max: 2, step: 0.02, unit: '', value: 0.34 },
+  { key: 'top', varName: '--sss-top', label: 'Uppåt', min: 0, max: 2, step: 0.02, unit: '', value: 0.12 },
   { key: 'side', varName: '--sss-side', label: 'I sidled', min: 0, max: 2.5, step: 0.05, unit: '', value: 0.8 },
   { key: 'bottom', varName: '--sss-bottom', label: 'Nedåt', min: 0, max: 3.5, step: 0.05, unit: '', value: 1.35 },
 ];

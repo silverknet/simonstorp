@@ -14,10 +14,10 @@ import { getFullSizeImageUrl, getHeroDisplayUrl } from '../utils/strapiMedia';
  * body scatters more and returns less.
  */
 const SSS_LAYERS = [
-  { spread: 6, blur: 24, opacity: 0.5, contrast: 1.9, brightness: 1.25, saturate: 2.4 },
-  { spread: 20, blur: 46, opacity: 0.32, contrast: 1.8, brightness: 1.2, saturate: 2.2 },
-  { spread: 50, blur: 80, opacity: 0.18, contrast: 1.7, brightness: 1.15, saturate: 2.0 },
-  { spread: 104, blur: 124, opacity: 0.09, contrast: 1.6, brightness: 1.1, saturate: 1.8 },
+  { spread: 6, blur: 5, opacity: 0.125, contrast: 0.95, brightness: 2.38, saturate: 1.56 },
+  { spread: 20, blur: 9, opacity: 0.08, contrast: 0.9, brightness: 2.28, saturate: 1.43 },
+  { spread: 50, blur: 16, opacity: 0.045, contrast: 0.85, brightness: 2.19, saturate: 1.3 },
+  { spread: 104, blur: 25, opacity: 0.023, contrast: 0.8, brightness: 2.09, saturate: 1.17 },
 ];
 
 /**
@@ -25,7 +25,7 @@ const SSS_LAYERS = [
  * below. The asymmetry is what gives the panel a side that faces the light and a side
  * that does not — a symmetric halo reads as flat however strong it is.
  */
-const SSS_BIAS = { top: 0.34, side: 0.8, bottom: 1.35 };
+const SSS_BIAS = { top: 0.12, side: 0.8, bottom: 1.35 };
 
 const SLIDE_INTERVAL_MS = 12000;
 const FADE_DURATION_MS = 1800;
@@ -70,7 +70,7 @@ function buildTextMask(boxes, width, height) {
   const soft =
     Number(
       getComputedStyle(document.documentElement).getPropertyValue('--hero-mask-soft')
-    ) || 26;
+    ) || 25;
 
   const shapes = boxes
     .map(
@@ -401,7 +401,7 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
           <div
             className="pointer-events-none absolute inset-0 z-[2]"
             aria-hidden
-            style={{ backgroundColor: 'rgba(8,10,7,var(--hero-veil, 0.1))' }}
+            style={{ backgroundColor: 'rgba(8,10,7,var(--hero-veil, 0.02))' }}
           />
 
           {/*
@@ -414,9 +414,9 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
               className="pointer-events-none absolute inset-0 z-[2]"
               aria-hidden
               style={{
-                backdropFilter: 'blur(calc(var(--hero-blur, 5) * 1px)) saturate(104%)',
-                WebkitBackdropFilter: 'blur(calc(var(--hero-blur, 5) * 1px)) saturate(104%)',
-                backgroundColor: 'rgba(8,10,7,var(--hero-shade, 0.4))',
+                backdropFilter: 'blur(calc(var(--hero-blur, 1) * 1px)) saturate(104%)',
+                WebkitBackdropFilter: 'blur(calc(var(--hero-blur, 1) * 1px)) saturate(104%)',
+                backgroundColor: 'rgba(8,10,7,var(--hero-shade, 0.2))',
                 maskImage: textMask,
                 WebkitMaskImage: textMask,
                 maskRepeat: 'no-repeat',
