@@ -77,6 +77,12 @@ const rowName = 'truncate text-base text-[var(--main-text)]';
 const rowSub = 'truncate text-xs text-[var(--grey-text)]';
 const emptyNote = 'px-3 py-4 text-sm text-[var(--grey-text)]';
 
+const helpCard = 'mt-4 rounded-xl bg-[var(--bg-white-accent)] px-5 py-4';
+const helpTitle = 'm-0 mb-2 text-[1.05rem] font-medium text-[var(--main-text)]';
+const helpText = 'm-0 text-base leading-relaxed text-[var(--grey-text)]';
+const helpExample =
+  'mt-3 mb-0 whitespace-pre-wrap rounded-md bg-white px-3 py-3 font-mono text-sm leading-relaxed text-[var(--main-text)]';
+
 const ROLE_LABELS = {
   'strapi-super-admin': 'Superadmin',
   'strapi-editor': 'Redaktör',
@@ -624,6 +630,24 @@ export default function AdminPage() {
           </span>
           <ArrowRight className="h-7 w-7 shrink-0" strokeWidth={2} aria-hidden />
         </a>
+
+        <div className={helpCard}>
+          <h2 className={helpTitle}>Nyheter från Facebook</h2>
+          <p className={helpText}>
+            Skriv inlägget som vanligt på Facebook och lägg till raden{' '}
+            <strong>simonstorp.se</strong>. Varje natt hämtas nya inlägg med den raden
+            automatiskt hit. Bilden i inlägget följer med.
+          </p>
+          <p className={`${helpText} mt-2`}>
+            <strong>Titel</strong>, <strong>Datum</strong> och <strong>Plats</strong> är
+            frivilliga — skriv dem på egna rader så hamnar de på rätt plats på hemsidan.
+          </p>
+          <pre className={helpExample}>{`Kom och fira in våren med grannar och vänner!
+simonstorp.se
+Titel: Valborg
+Datum: 2026-04-30 19:00
+Plats: Bolenparken`}</pre>
+        </div>
 
         {usersError ? <p className={`${errorBox} mt-6`}>{usersError}</p> : null}
         {notice ? (
