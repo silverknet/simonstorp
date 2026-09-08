@@ -31,29 +31,45 @@ const WEIGHTS = [200, 300, 400, 500, 600, 700];
 
 /** Each scope maps to the data-font marks placed on the page. */
 const SCOPES = [
-  { key: 'hero', label: 'Rubrik på bilden', min: 24, max: 96, size: 60 },
-  { key: 'newstitle', label: 'Nyhetsrubriker', min: 14, max: 48, size: 23 },
-  { key: 'body', label: 'Brödtext', min: 11, max: 26, size: 16 },
-  { key: 'stamp', label: 'Datumstämpel', min: 16, max: 64, size: 32 },
+  { key: 'hero', label: 'Rubrik på bilden', min: 24, max: 96, size: 60, leading: 1 },
+  { key: 'newstitle', label: 'Nyhetsrubriker', min: 14, max: 48, size: 23, leading: 1.2 },
+  { key: 'body', label: 'Brödtext', min: 11, max: 26, size: 16, leading: 1.75 },
+  { key: 'stamp', label: 'Datumstämpel', min: 16, max: 64, size: 32, leading: 1 },
 ];
 
 const defaults = () =>
   Object.fromEntries(
-    SCOPES.map((s) => [s.key, { font: FONTS[0].stack, weight: 300, size: s.size }])
+    SCOPES.map((s) => [
+      s.key,
+      { font: FONTS[0].stack, weight: 300, size: s.size, leading: s.leading },
+    ])
   );
 
 function load() {
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    return raw ? { ...defaults(), ...JSON.parse(raw) } : defaults();
+    const saved = raw ? JSON.parse(raw) : {};
+    const base = defaults();
+
+    // Merge per scope, not just at the top level: settings saved before a control
+    // existed would otherwise replace a whole scope and drop the new field.
+    return Object.fromEntries(
+      Object.entries(base).map(([key, value]) => [key, { ...value, ...(saved[key] ?? {}) }])
+    );
   } catch (err) {
     return defaults();
   }
 }
 
+/** Reads back as the font name rather than the CSS stack, so the copied text is legible. */
+function labelFor(stack) {
+  return FONTS.find((f) => f.stack === stack)?.label ?? stack;
+}
+
 export default function FontLab() {
   const [open, setOpen] = useState(false);
   const [state, setState] = useState(load);
+  const [copied, setCopied] = useState(false);
 
   /* Pull every face up front: switching should be instant, and this panel is temporary. */
   useEffect(() => {
@@ -76,7 +92,7 @@ export default function FontLab() {
   font-family: ${v.font} !important;
   font-weight: ${v.weight} !important;
   font-size: ${v.size}px !important;
-  line-height: 1.25 !important;
+  line-height: ${v.leading} !important;
 }`;
       }).join('\n'),
     [state]
@@ -89,6 +105,38 @@ export default function FontLab() {
       /* ignore */
     }
   }, [state]);
+
+  /* What to hand back: named faces and plain numbers, not internal keys. */
+  const summary = useMemo(
+    () =>
+      JSON.stringify(
+        Object.fromEntries(
+          SCOPES.map((scope) => [
+            scope.label,
+            {
+              typsnitt: labelFor(state[scope.key].font),
+              css: state[scope.key].font,
+              tjocklek: state[scope.key].weight,
+              storlek: `${state[scope.key].size}px`,
+              radavstånd: state[scope.key].leading,
+            },
+          ])
+        ),
+        null,
+        2
+      ),
+    [state]
+  );
+
+  async function copySummary() {
+    try {
+      await navigator.clipboard.writeText(summary);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      setCopied(false);
+    }
+  }
 
   const set = (scopeKey, patch) =>
     setState((prev) => ({ ...prev, [scopeKey]: { ...prev[scopeKey], ...patch } }));
@@ -155,7 +203,7 @@ export default function FontLab() {
                   </select>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="mb-2 flex items-center gap-2">
                   <span className="w-14 shrink-0 text-xs text-neutral-500">Storlek</span>
                   <input
                     type="range"
@@ -169,9 +217,40 @@ export default function FontLab() {
                     {v.size}px
                   </span>
                 </div>
+
+                <div className="flex items-center gap-2">
+                  <span className="w-14 shrink-0 text-xs text-neutral-500">Radavst.</span>
+                  <input
+                    type="range"
+                    className="flex-1"
+                    min={0.85}
+                    max={2.4}
+                    step={0.05}
+                    value={v.leading}
+                    onChange={(e) => set(scope.key, { leading: Number(e.target.value) })}
+                  />
+                  <span className="w-10 shrink-0 text-right text-xs tabular-nums text-neutral-600">
+                    {Number(v.leading).toFixed(2)}
+                  </span>
+                </div>
               </div>
             );
           })}
+
+          <button
+            type="button"
+            onClick={copySummary}
+            className="mb-2 w-full rounded-md bg-black/85 px-3 py-2 text-sm text-white"
+          >
+            {copied ? 'Kopierat ✓' : 'Kopiera inställningar (JSON)'}
+          </button>
+
+          <textarea
+            readOnly
+            value={summary}
+            onFocus={(e) => e.target.select()}
+            className="mb-2 h-28 w-full resize-none rounded border border-black/15 p-2 font-mono text-[11px] leading-snug"
+          />
 
           <p className="m-0 text-[11px] leading-snug text-neutral-500">
             Sparas i webbläsaren. Tillfälligt verktyg — tas bort sen.
