@@ -56,7 +56,9 @@ const introHeadingRow = `${headingRow} max-[800px]:mt-12`;
 
 const introMarkdown =
   'text-left font-["Lato",sans-serif] text-base leading-relaxed tracking-wide text-[var(--main-text)] ' +
-  '[&_p]:m-0 [&_a]:text-[var(--accent-one)] [&_strong]:font-semibold ' +
+  // m-0 keeps the block flush with the heading; a following paragraph still needs the
+  // blank line the author typed in Strapi to survive as visible space.
+  '[&_p]:m-0 [&_p+p]:mt-4 [&_a]:text-[var(--accent-one)] [&_strong]:font-semibold ' +
   'max-[800px]:mt-0 max-[800px]:text-lg';
 
 /* -------------------------------------------------------------------------- */
