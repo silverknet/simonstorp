@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   AlertTriangle,
-  ArrowRight,
   Check,
   Copy,
   MailCheck,
@@ -42,7 +41,7 @@ const button =
   'transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60';
 /* One huge, unmistakable target: icon, what it is, and what you do there. */
 const primaryLink =
-  'flex w-full items-center gap-4 rounded-xl bg-[var(--accent-one)] px-6 py-6 text-left text-white no-underline ' +
+  'flex w-full items-center gap-3 rounded-xl bg-[var(--accent-one)] px-4 py-5 text-left text-white no-underline ' +
   'shadow-sm transition-transform hover:scale-[1.01] hover:opacity-95 ' +
   'focus:outline-none focus-visible:ring-4 focus-visible:ring-[var(--accent-one)]/40';
 const linkButton =
@@ -63,8 +62,12 @@ const ghostButton =
 const linkBox =
   'mb-3 w-full break-all rounded-md bg-[var(--bg-white-accent)] px-3 py-3 text-sm text-[var(--main-text)]';
 
-/** Two columns on a wide screen, stacked on anything narrower. */
-const splitGrid = 'grid w-full grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-10';
+/** Members take the width; tools sit in a narrower rail beside them. */
+const pageGrid = 'mt-8 grid w-full grid-cols-1 gap-10 lg:grid-cols-[7fr_3fr]';
+const toolRail = 'min-w-0 lg:sticky lg:top-6 lg:self-start';
+
+/** The two member lists split the wide side once there is room for both. */
+const splitGrid = 'grid w-full grid-cols-1 gap-8 xl:grid-cols-2 xl:gap-8';
 const listCol = 'min-w-0';
 
 /** Fixed height so the two lists line up and nothing jumps as statuses change. */
@@ -87,7 +90,7 @@ const checkBar = 'mt-4 flex flex-wrap items-center gap-3 text-sm text-[var(--gre
 const checkButton =
   'rounded-md border border-black/20 bg-white px-3 py-2 text-sm text-[var(--main-text)] hover:bg-black/5 disabled:opacity-50';
 
-const helpCard = 'mt-4 rounded-xl bg-[var(--bg-white-accent)] px-5 py-4';
+const helpCard = 'mt-4 rounded-xl bg-[var(--bg-white-accent)] px-4 py-4';
 const helpTitle = 'm-0 mb-2 text-[1.05rem] font-medium text-[var(--main-text)]';
 const helpText = 'm-0 text-base leading-relaxed text-[var(--grey-text)]';
 const helpExample =
@@ -646,35 +649,6 @@ export default function AdminPage() {
           Inloggad som {displayName(user)} ({roleText(user.roles)}).
         </p>
 
-        <a className={primaryLink} href={`${apiBaseUrl}/admin`}>
-          <SquarePen className="h-10 w-10 shrink-0" strokeWidth={1.75} aria-hidden />
-          <span className="min-w-0 flex-1">
-            <span className="block text-[1.25rem] font-semibold leading-tight">
-              Innehållshanteraren
-            </span>
-            <span className="block text-base leading-snug opacity-95">Redigera innehåll</span>
-          </span>
-          <ArrowRight className="h-7 w-7 shrink-0" strokeWidth={2} aria-hidden />
-        </a>
-
-        <div className={helpCard}>
-          <h2 className={helpTitle}>Nyheter från Facebook</h2>
-          <p className={helpText}>
-            Skriv inlägget som vanligt på Facebook och lägg till raden{' '}
-            <strong>simonstorp.se</strong>. Varje natt hämtas nya inlägg med den raden
-            automatiskt hit. Bilden i inlägget följer med.
-          </p>
-          <p className={`${helpText} mt-2`}>
-            <strong>Titel</strong>, <strong>Datum</strong> och <strong>Plats</strong> är
-            frivilliga — skriv dem på egna rader så hamnar de på rätt plats på hemsidan.
-          </p>
-          <pre className={helpExample}>{`Kom och fira in våren med grannar och vänner!
-simonstorp.se
-Titel: Valborg
-Datum: 2026-04-30 19:00
-Plats: Bolenparken`}</pre>
-        </div>
-
         {usersError ? <p className={`${errorBox} mt-6`}>{usersError}</p> : null}
         {notice ? (
           <p className="mt-6 rounded-md bg-[var(--bg-white-accent)] px-3 py-2 text-base">
@@ -682,7 +656,9 @@ Plats: Bolenparken`}</pre>
           </p>
         ) : null}
 
-        <div className={`${splitGrid} mt-8`}>
+        <div className={pageGrid}>
+          <div className="min-w-0">
+            <div className={splitGrid}>
           <section className={listCol}>
             <h2 className={sectionTitle}>Styrelsen</h2>
             <p className="mb-2 flex items-center gap-2 px-3 text-sm text-[var(--grey-text)]">
@@ -730,25 +706,57 @@ Plats: Bolenparken`}</pre>
               Lägg till ny medlem
             </button>
           </section>
-        </div>
+            </div>
 
-        <div className={checkBar}>
-          <span>
-            {checkedAt
-              ? `E-postadresserna kontrollerades ${new Date(checkedAt).toLocaleTimeString('sv-SE', {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}`
-              : 'E-postadresserna har inte kontrollerats än'}
+            <div className={checkBar}>
+              <span>
+                {checkedAt
+                  ? `E-postadresserna kontrollerades ${new Date(checkedAt).toLocaleTimeString(
+                      'sv-SE',
+                      { hour: '2-digit', minute: '2-digit' }
+                    )}`
+                  : 'E-postadresserna har inte kontrollerats än'}
+              </span>
+              <button
+                type="button"
+                className={checkButton}
+                disabled={checking2}
+                onClick={() => loadUsers({ refresh: true })}
+              >
+                {checking2 ? 'Kontrollerar…' : 'Kontrollera nu'}
+              </button>
+            </div>
+          </div>
+
+          <aside className={toolRail}>
+        <a className={primaryLink} href={`${apiBaseUrl}/admin`}>
+          <SquarePen className="h-10 w-10 shrink-0" strokeWidth={1.75} aria-hidden />
+          <span className="min-w-0 flex-1">
+            <span className="block text-[1.25rem] font-semibold leading-tight">
+              Innehållshanteraren
+            </span>
+            <span className="block text-base leading-snug opacity-95">Redigera innehåll</span>
           </span>
-          <button
-            type="button"
-            className={checkButton}
-            disabled={checking2}
-            onClick={() => loadUsers({ refresh: true })}
-          >
-            {checking2 ? 'Kontrollerar…' : 'Kontrollera nu'}
-          </button>
+        </a>
+
+        <div className={helpCard}>
+          <h2 className={helpTitle}>Nyheter från Facebook</h2>
+          <p className={helpText}>
+            Skriv inlägget som vanligt på Facebook och lägg till raden{' '}
+            <strong>simonstorp.se</strong>. Varje natt hämtas nya inlägg med den raden
+            automatiskt hit. Bilden i inlägget följer med.
+          </p>
+          <p className={`${helpText} mt-2`}>
+            <strong>Titel</strong>, <strong>Datum</strong> och <strong>Plats</strong> är
+            frivilliga — skriv dem på egna rader så hamnar de på rätt plats på hemsidan.
+          </p>
+          <pre className={helpExample}>{`Kom och fira in våren med grannar och vänner!
+simonstorp.se
+Titel: Valborg
+Datum: 2026-04-30 19:00
+Plats: Bolenparken`}</pre>
+        </div>
+          </aside>
         </div>
 
         <button type="button" className={linkButton} onClick={handleLogout}>
