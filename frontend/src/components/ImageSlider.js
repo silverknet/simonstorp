@@ -297,7 +297,7 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
 
     <div
       ref={frameRef}
-      className="relative isolate z-[1] h-[min(56vh,600px)] w-full overflow-hidden bg-[#272926] rounded-md"
+      className="relative isolate z-[1] h-[min(56vh,600px)] w-full overflow-hidden bg-[#272926] rounded-md max-[800px]:rounded-t-none"
     >
       <style>{sliderAnimationStyles}</style>
       {images.map((img, index) => {

@@ -22,7 +22,7 @@ const sortByRank = (pages = []) =>
  * Phone uses a smaller floor (~collapsed top row); desktop keeps more headroom.
  */
 const MIN_INFO_HEADER_RESERVE_DESKTOP_PX = 160;
-const MIN_INFO_HEADER_RESERVE_MOBILE_PX = 64;
+const MIN_INFO_HEADER_RESERVE_MOBILE_PX = 56;
 
 export default function Menubar({
   categories,
@@ -272,7 +272,7 @@ export default function Menubar({
   const shellClassName = [
     'w-full',
     isFixed ? 'fixed left-0 top-0 z-20' : 'relative z-20',
-    !isDesktop ? 'bg-[var(--bg-white)]' : '',
+    !isDesktop && !isHome ? 'bg-[var(--bg-white)]' : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -282,9 +282,14 @@ export default function Menubar({
     // Homepage only: match .App column — var(--width), e.g. 70% desktop; 100% @max-width 800px in CSS
     isHome ? (isDesktop ? 'mx-auto box-border w-[var(--width)]' : 'mx-auto box-border w-full') : '',
     'transition-[background-color,box-shadow,border-color,backdrop-filter] duration-300 ease-out',
-    (!isDesktop || (isInfo && !isCompactDesktop)) ? 'bg-[var(--bg-white)]' : '',
-    !isDesktop ? 'border-b border-black/10 shadow-[0_4px_18px_rgba(0,0,0,0.06)]' : '',
+    ((!isDesktop && !isHome) || (isInfo && !isCompactDesktop)) ? 'bg-[var(--bg-white)]' : '',
+    // Phone start page: the bar floats over the photograph, so it is glass
+    // rather than a solid fill, and carries neither border nor shadow — both
+    // would draw exactly the hard edge the blur spill exists to avoid.
+    !isDesktop && isHome ? 'nav-glass-mobile' : '',
+    !isDesktop && !isHome ? 'border-b border-black/10 shadow-[0_4px_18px_rgba(0,0,0,0.06)]' : '',
     isCompactDesktop ? 'liquid-glass' : '',
+    !isDesktop && isHome && !menuDown ? 'rounded-b-md' : '',
     // Air above the logo. Padding rather than margin so the header's own
     // background covers it and it can't collapse out of the wrapper.
     isDesktop && !isCompactDesktop ? 'pt-2' : '',
@@ -311,7 +316,7 @@ export default function Menubar({
       'justify-between',
       'transition-[height,padding] duration-300 ease-out',
       !isDesktop
-        ? 'h-16 w-full gap-3 px-3.5 py-0'
+        ? 'h-14 w-full gap-3 px-3.5 py-0'
         : isCompactDesktop
           ? 'w-auto shrink-0 justify-start pl-5 pr-0 py-0'
           : 'h-28 w-full px-5 py-0',
@@ -321,7 +326,7 @@ export default function Menubar({
 
     const logoClassName = [
       'transition-[width,margin,transform] duration-200',
-      !isDesktop ? 'm-0 w-[8.75rem]' : '',
+      !isDesktop ? 'm-0 w-[7rem]' : '',
       isDesktop && !isCompactDesktop ? 'm-0 w-40' : '',
       isDesktop && isCompactDesktop ? 'm-0 mr-10 w-28' : '',
       'hover:cursor-pointer',

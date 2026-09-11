@@ -1239,8 +1239,9 @@ strong{
     padding-top: 120px;
   }
 
+  /* 50px = 56px bar height - 6px overlap, matching the bar's rounded-b-md */
   .App.app-home-mobile-flush {
-    padding-top: 64px !important;
+    padding-top: 50px !important;
     margin-top: 0;
   }
 
@@ -1610,6 +1611,67 @@ strong{
     background-color: rgba(255, 255, 255, 0.97);
   }
   .liquid-glass::before {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------
+   Phone start page menubar.
+   The bar sits over the photograph, so a blur that simply stops at
+   its bottom edge draws a line across the picture. Two stacked
+   masked layers below the bar approximate a progressive blur — a
+   short strong one, then a long weak tail — so the sharpness comes
+   back gradually instead of all at once.
+   Neither layer carries a tint: filling that strip would paint over
+   the rounded corners and hide the photograph meant to show there.
+   --------------------------------------------------------------- */
+.nav-glass-mobile {
+  position: relative;
+  background-color: rgba(249, 249, 249, 0.82);
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .nav-glass-mobile {
+    background-color: rgba(249, 249, 249, 0.93);
+    -webkit-backdrop-filter: blur(2px) saturate(105%);
+    backdrop-filter: blur(7px) saturate(105%);
+  }
+
+  .nav-glass-mobile::before,
+  .nav-glass-mobile::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    pointer-events: none;
+  }
+
+  .nav-glass-mobile::before {
+    height: 18px;
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0));
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0));
+  }
+
+  .nav-glass-mobile::after {
+    height: 44px;
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0) 90%);
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0) 90%);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .nav-glass-mobile {
+    background-color: rgba(249, 249, 249, 0.97);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .nav-glass-mobile::before,
+  .nav-glass-mobile::after {
     display: none;
   }
 }

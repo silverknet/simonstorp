@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom';
 import ImageSlider from '../components/ImageSlider';
 import FontLab from '../components/FontLab';
 import useFetch from '../hooks/useFetch';
-import useWindowDimensions from '../hooks/getWindowDimensions';
 import apiBaseUrl from '../config/apiBaseUrl';
 import { usePageMeta } from '../utils/pageMeta';
 import { getOptimizedDisplayUrl } from '../utils/strapiMedia';
@@ -166,9 +165,6 @@ export default function Homepage(props) {
 
   const { data: newsTeaser, loading: newsLoading, error: newsError } = useFetch(HOME_NEWS_URL);
   const homeData = props.homecontent?.data?.data ?? {};
-  const { width: viewportWidth } = useWindowDimensions();
-  const showAktuelltMobileRules = viewportWidth <= 800;
-
   const [contentVisible, setContentVisible] = useState(false);
 
   useEffect(() => {
@@ -202,10 +198,6 @@ export default function Homepage(props) {
           style={{ transitionDelay: '260ms' }}
         >
           <div className={newsSection}>
-            {showAktuelltMobileRules ? (
-              <div className={newsCardDivider} aria-hidden />
-            ) : null}
-
             {newsLoading || newsError
               ? null
               : (Array.isArray(newsTeaser?.data) ? newsTeaser.data : []).map((value, index) => {
