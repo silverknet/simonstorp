@@ -429,7 +429,7 @@ export default function ImageSlider({ eyebrow, title, bodyText, ...props }) {
 
           <div
             ref={captionRef}
-            className="pointer-events-none absolute bottom-0 left-0 z-[3] p-6 md:p-10"
+            className="pointer-events-none absolute bottom-0 left-0 z-[3] p-6 max-[800px]:pb-[4.5rem] md:p-10"
           >
             {eyebrow ? (
               <p

@@ -286,10 +286,10 @@ export default function Menubar({
     // Phone start page: the bar floats over the photograph, so it is glass
     // rather than a solid fill, and carries neither border nor shadow — both
     // would draw exactly the hard edge the blur spill exists to avoid.
-    !isDesktop && isHome ? 'nav-glass-mobile' : '',
+    // Only the spill hangs off the wrapper; the glass itself is on the top row.
+    !isDesktop && isHome ? 'nav-glass-spill' : '',
     !isDesktop && !isHome ? 'border-b border-black/10 shadow-[0_4px_18px_rgba(0,0,0,0.06)]' : '',
     isCompactDesktop ? 'liquid-glass' : '',
-    !isDesktop && isHome && !menuDown ? 'rounded-b-md' : '',
     // Air above the logo. Padding rather than margin so the header's own
     // background covers it and it can't collapse out of the wrapper.
     isDesktop && !isCompactDesktop ? 'pt-2' : '',
@@ -320,6 +320,10 @@ export default function Menubar({
         : isCompactDesktop
           ? 'w-auto shrink-0 justify-start pl-5 pr-0 py-0'
           : 'h-28 w-full px-5 py-0',
+      // Glass belongs here rather than on the wrapper: backdrop-filter on an
+      // ancestor makes a backdrop root, which would kill the dropdown's blur.
+      !isDesktop && isHome ? 'nav-glass-mobile' : '',
+      !isDesktop && isHome && !menuDown ? 'rounded-b-md' : '',
     ]
       .filter(Boolean)
       .join(' ');
